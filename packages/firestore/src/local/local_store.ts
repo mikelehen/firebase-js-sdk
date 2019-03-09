@@ -37,7 +37,7 @@ import {
 } from '../model/mutation_batch';
 import { RemoteEvent, TargetChange } from '../remote/remote_event';
 import { assert } from '../util/assert';
-import * as log from '../util/log';
+// import * as log from '../util/log';
 import * as objUtils from '../util/obj';
 
 import { ObjectValue } from '../model/field_value';
@@ -539,15 +539,15 @@ export class LocalStore {
                 documentBuffer.addEntry(doc);
                 changedDocs = changedDocs.insert(key, doc);
               } else {
-                log.debug(
-                  LOG_TAG,
-                  'Ignoring outdated watch update for ',
-                  key,
-                  '. Current version:',
-                  existingDoc.version,
-                  ' Watch version:',
-                  doc.version
-                );
+                // log.debug(
+                //   LOG_TAG,
+                //   'Ignoring outdated watch update for ',
+                //   key,
+                //   '. Current version:',
+                //   existingDoc.version,
+                //   ' Watch version:',
+                //   doc.version
+                // );
               }
 
               if (remoteEvent.resolvedLimboDocuments.has(key)) {

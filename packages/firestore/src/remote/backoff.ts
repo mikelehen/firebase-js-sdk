@@ -16,9 +16,9 @@
  */
 
 import { AsyncQueue, TimerId } from '../util/async_queue';
-import * as log from '../util/log';
+// import * as log from '../util/log';
 import { CancelablePromise } from '../util/promise';
-const LOG_TAG = 'ExponentialBackoff';
+// const LOG_TAG = 'ExponentialBackoff';
 
 /**
  * A helper for running delayed tasks following an exponential backoff curve
@@ -109,13 +109,13 @@ export class ExponentialBackoff {
     );
 
     if (this.currentBaseMs > 0) {
-      log.debug(
-        LOG_TAG,
-        `Backing off for ${remainingDelayMs} ms ` +
-          `(base delay: ${this.currentBaseMs} ms, ` +
-          `delay with jitter: ${desiredDelayWithJitterMs} ms, ` +
-          `last attempt: ${delaySoFarMs} ms ago)`
-      );
+      // log.debug(
+      //   LOG_TAG,
+      //   `Backing off for ${remainingDelayMs} ms ` +
+      //     `(base delay: ${this.currentBaseMs} ms, ` +
+      //     `delay with jitter: ${desiredDelayWithJitterMs} ms, ` +
+      //     `last attempt: ${delaySoFarMs} ms ago)`
+      // );
     }
 
     this.timerPromise = this.queue.enqueueAfterDelay(

@@ -24,7 +24,7 @@ import * as api from '../protos/firestore_proto_api';
 import { assert } from '../util/assert';
 import { AsyncQueue, TimerId } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
-import * as log from '../util/log';
+// import * as log from '../util/log';
 
 import { CancelablePromise } from '../util/promise';
 import { isNullOrUndefined } from '../util/types';
@@ -344,10 +344,10 @@ export abstract class PersistentStream<
       this.backoff.reset();
     } else if (error && error.code === Code.RESOURCE_EXHAUSTED) {
       // Log the error. (Probably either 'quota exceeded' or 'max queue length reached'.)
-      log.error(error.toString());
-      log.error(
-        'Using maximum backoff delay to prevent overloading the backend.'
-      );
+      // log.error(error.toString());
+      // log.error(
+      //   'Using maximum backoff delay to prevent overloading the backend.'
+      // );
       this.backoff.resetToMax();
     } else if (error && error.code === Code.UNAUTHENTICATED) {
       // "unauthenticated" error means the token was rejected. Try force refreshing it in case it
@@ -482,7 +482,7 @@ export abstract class PersistentStream<
   // Visible for tests
   handleStreamClose(error?: FirestoreError): Promise<void> {
     assert(this.isStarted(), "Can't handle server close on non-started stream");
-    log.debug(LOG_TAG, `close with error: ${error}`);
+    // log.debug(LOG_TAG, `close with error: ${error}`);
 
     this.stream = null;
 
@@ -507,10 +507,10 @@ export abstract class PersistentStream<
         if (this.closeCount === startCloseCount) {
           return fn();
         } else {
-          log.debug(
-            LOG_TAG,
-            'stream callback skipped by getCloseGuardedDispatcher.'
-          );
+          // log.debug(
+          //   LOG_TAG,
+          //   'stream callback skipped by getCloseGuardedDispatcher.'
+          // );
           return Promise.resolve();
         }
       });

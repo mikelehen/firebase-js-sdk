@@ -35,7 +35,7 @@ import { RemoteStore } from '../remote/remote_store';
 import { JsonProtoSerializer } from '../remote/serializer';
 import { AsyncQueue } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
-import { debug } from '../util/log';
+// import { debug } from '../util/log';
 import { Deferred } from '../util/promise';
 import {
   EventManager,
@@ -382,7 +382,7 @@ export class FirestoreClient {
     user: User,
     maybeLruGc: LruGarbageCollector | null
   ): Promise<void> {
-    debug(LOG_TAG, 'Initializing. user=', user.uid);
+    // debug(LOG_TAG, 'Initializing. user=', user.uid);
     return this.platform
       .loadConnection(this.databaseInfo)
       .then(async connection => {
@@ -460,7 +460,7 @@ export class FirestoreClient {
   private handleCredentialChange(user: User): Promise<void> {
     this.asyncQueue.verifyOperationInProgress();
 
-    debug(LOG_TAG, 'Credential Changed. Current user: ' + user.uid);
+    // debug(LOG_TAG, 'Credential Changed. Current user: ' + user.uid);
     return this.syncEngine.handleCredentialChange(user);
   }
 

@@ -19,10 +19,10 @@ import { OnlineState } from '../core/types';
 import { assert } from '../util/assert';
 import { AsyncQueue, TimerId } from '../util/async_queue';
 import { FirestoreError } from '../util/error';
-import * as log from '../util/log';
+// import * as log from '../util/log';
 import { CancelablePromise } from '../util/promise';
 
-const LOG_TAG = 'OnlineStateTracker';
+// const LOG_TAG = 'OnlineStateTracker';
 
 // To deal with transient failures, we allow multiple stream attempts before
 // giving up and transitioning from OnlineState.Unknown to Offline.
@@ -181,10 +181,10 @@ export class OnlineStateTracker {
       `Internet connection at the moment. The client will operate in offline ` +
       `mode until it is able to successfully connect to the backend.`;
     if (this.shouldWarnClientIsOffline) {
-      log.error(message);
+      // log.error(message);
       this.shouldWarnClientIsOffline = false;
     } else {
-      log.debug(LOG_TAG, message);
+      // log.debug(LOG_TAG, message);
     }
   }
 

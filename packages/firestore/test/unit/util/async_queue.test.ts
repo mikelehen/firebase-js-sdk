@@ -18,7 +18,7 @@
 import { expect } from 'chai';
 import { AsyncQueue, TimerId } from '../../../src/util/async_queue';
 import { Code } from '../../../src/util/error';
-import { getLogLevel, LogLevel, setLogLevel } from '../../../src/util/log';
+// import { getLogLevel, LogLevel, setLogLevel } from '../../../src/util/log';
 import { Deferred, Rejecter, Resolver } from '../../../src/util/promise';
 
 describe('AsyncQueue', () => {
@@ -75,8 +75,8 @@ describe('AsyncQueue', () => {
     const expected = new Error('Firestore Test Simulated Error');
 
     // Disable logging for this test to avoid the assertion being logged
-    const oldLogLevel = getLogLevel();
-    setLogLevel(LogLevel.SILENT);
+    // const oldLogLevel = getLogLevel();
+    // setLogLevel(LogLevel.SILENT);
 
     // Schedule a failing operation and make sure it's handled correctly.
     const op1Promise = queue
@@ -126,7 +126,7 @@ describe('AsyncQueue', () => {
       }).to.throw(/already failed:.*Simulated Error/);
 
       // Finally, restore log level.
-      setLogLevel(oldLogLevel);
+      // setLogLevel(oldLogLevel);
     });
   });
 

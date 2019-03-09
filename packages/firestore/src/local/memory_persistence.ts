@@ -20,7 +20,7 @@ import { MaybeDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
 import { JsonProtoSerializer } from '../remote/serializer';
 import { fail } from '../util/assert';
-import { debug } from '../util/log';
+// import { debug } from '../util/log';
 import * as obj from '../util/obj';
 import { ObjectMap } from '../util/obj_map';
 import { encode } from './encoded_resource_path';
@@ -170,7 +170,7 @@ export class MemoryPersistence implements Persistence {
       transaction: PersistenceTransaction
     ) => PersistencePromise<T>
   ): Promise<T> {
-    debug(LOG_TAG, 'Starting transaction:', action);
+    // debug(LOG_TAG, 'Starting transaction:', action);
     const txn = new MemoryTransaction(this.listenSequence.next());
     this.referenceDelegate.onTransactionStarted();
     return transactionOperation(txn)

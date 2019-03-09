@@ -72,8 +72,8 @@ import {
   validateOptionNames,
   valueDescription
 } from '../util/input_validation';
-import * as log from '../util/log';
-import { LogLevel } from '../util/log';
+// import * as log from '../util/log';
+// import { LogLevel } from '../util/log';
 import { AutoId } from '../util/misc';
 import * as objUtils from '../util/obj';
 import { Rejecter, Resolver } from '../util/promise';
@@ -198,32 +198,32 @@ class FirestoreSettings {
     // Nobody should set timestampsInSnapshots anymore, but the error depends on
     // whether they set it to true or false...
     if (settings.timestampsInSnapshots === true) {
-      log.error(`
-  The timestampsInSnapshots setting now defaults to true and you no
-  longer need to explicitly set it. In a future release, the setting
-  will be removed entirely and so it is recommended that you remove it
-  from your firestore.settings() call now.`);
+  //     log.error(`
+  // The timestampsInSnapshots setting now defaults to true and you no
+  // longer need to explicitly set it. In a future release, the setting
+  // will be removed entirely and so it is recommended that you remove it
+  // from your firestore.settings() call now.`);
     } else if (settings.timestampsInSnapshots === false) {
-      log.error(`
-  The timestampsInSnapshots setting will soon be removed. YOU MUST UPDATE
-  YOUR CODE.
+  //     log.error(`
+  // The timestampsInSnapshots setting will soon be removed. YOU MUST UPDATE
+  // YOUR CODE.
 
-  To hide this warning, stop using the timestampsInSnapshots setting in your
-  firestore.settings({ ... }) call.
+  // To hide this warning, stop using the timestampsInSnapshots setting in your
+  // firestore.settings({ ... }) call.
 
-  Once you remove the setting, Timestamps stored in Cloud Firestore will be
-  read back as Firebase Timestamp objects instead of as system Date objects.
-  So you will also need to update code expecting a Date to instead expect a
-  Timestamp. For example:
+  // Once you remove the setting, Timestamps stored in Cloud Firestore will be
+  // read back as Firebase Timestamp objects instead of as system Date objects.
+  // So you will also need to update code expecting a Date to instead expect a
+  // Timestamp. For example:
 
-  // Old:
-  const date = snapshot.get('created_at');
-  // New:
-  const timestamp = snapshot.get('created_at'); const date =
-  timestamp.toDate();
+  // // Old:
+  // const date = snapshot.get('created_at');
+  // // New:
+  // const timestamp = snapshot.get('created_at'); const date =
+  // timestamp.toDate();
 
-  Please audit all existing usages of Date when you enable the new
-  behavior.`);
+  // Please audit all existing usages of Date when you enable the new
+  // behavior.`);
     }
     this.timestampsInSnapshots = objUtils.defaulted(
       settings.timestampsInSnapshots,
@@ -539,37 +539,38 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   }
 
   static get logLevel(): firestore.LogLevel {
-    switch (log.getLogLevel()) {
-      case LogLevel.DEBUG:
-        return 'debug';
-      case LogLevel.ERROR:
-        return 'error';
-      case LogLevel.SILENT:
-        return 'silent';
-      default:
-        return fail('Unknown log level: ' + log.getLogLevel());
-    }
+    return 'silent';
+    // switch (log.getLogLevel()) {
+    //   case LogLevel.DEBUG:
+    //     return 'debug';
+    //   case LogLevel.ERROR:
+    //     return 'error';
+    //   case LogLevel.SILENT:
+    //     return 'silent';
+    //   default:
+    //     return fail('Unknown log level: ' + log.getLogLevel());
+    // }
   }
 
   static setLogLevel(level: firestore.LogLevel): void {
-    validateExactNumberOfArgs('Firestore.setLogLevel', arguments, 1);
-    validateArgType('Firestore.setLogLevel', 'non-empty string', 1, level);
-    switch (level) {
-      case 'debug':
-        log.setLogLevel(log.LogLevel.DEBUG);
-        break;
-      case 'error':
-        log.setLogLevel(log.LogLevel.ERROR);
-        break;
-      case 'silent':
-        log.setLogLevel(log.LogLevel.SILENT);
-        break;
-      default:
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          'Invalid log level: ' + level
-        );
-    }
+    // validateExactNumberOfArgs('Firestore.setLogLevel', arguments, 1);
+    // validateArgType('Firestore.setLogLevel', 'non-empty string', 1, level);
+    // switch (level) {
+    //   case 'debug':
+    //     log.setLogLevel(log.LogLevel.DEBUG);
+    //     break;
+    //   case 'error':
+    //     log.setLogLevel(log.LogLevel.ERROR);
+    //     break;
+    //   case 'silent':
+    //     log.setLogLevel(log.LogLevel.SILENT);
+    //     break;
+    //   default:
+    //     throw new FirestoreError(
+    //       Code.INVALID_ARGUMENT,
+    //       'Invalid log level: ' + level
+    //     );
+    // }
   }
 
   // Note: this is not a property because the minifier can't work correctly with
@@ -1294,16 +1295,16 @@ export class DocumentSnapshot implements firestore.DocumentSnapshot {
       const database = this._firestore.ensureClientConfigured().databaseId();
       if (!value.databaseId.isEqual(database)) {
         // TODO(b/64130202): Somehow support foreign references.
-        log.error(
-          `Document ${this._key.path} contains a document ` +
-            `reference within a different database (` +
-            `${value.databaseId.projectId}/${
-              value.databaseId.database
-            }) which is not ` +
-            `supported. It will be treated as a reference in the current ` +
-            `database (${database.projectId}/${database.database}) ` +
-            `instead.`
-        );
+        // log.error(
+        //   `Document ${this._key.path} contains a document ` +
+        //     `reference within a different database (` +
+        //     `${value.databaseId.projectId}/${
+        //       value.databaseId.database
+        //     }) which is not ` +
+        //     `supported. It will be treated as a reference in the current ` +
+        //     `database (${database.projectId}/${database.database}) ` +
+        //     `instead.`
+        // );
       }
       return new DocumentReference(key, this._firestore);
     } else {

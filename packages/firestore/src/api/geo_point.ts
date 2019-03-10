@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Code, FirestoreError } from '../util/error';
-import {
-  validateArgType,
-  validateExactNumberOfArgs
-} from '../util/input_validation';
+// import { Code, FirestoreError } from '../util/error';
+// import {
+//   validateArgType,
+//   validateExactNumberOfArgs
+// } from '../util/input_validation';
 import { primitiveComparator } from '../util/misc';
 
 /**
@@ -33,21 +33,21 @@ export class GeoPoint {
   private _long: number;
 
   constructor(latitude: number, longitude: number) {
-    validateExactNumberOfArgs('GeoPoint', arguments, 2);
-    validateArgType('GeoPoint', 'number', 1, latitude);
-    validateArgType('GeoPoint', 'number', 2, longitude);
-    if (!isFinite(latitude) || latitude < -90 || latitude > 90) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Latitude must be a number between -90 and 90, but was: ' + latitude
-      );
-    }
-    if (!isFinite(longitude) || longitude < -180 || longitude > 180) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Longitude must be a number between -180 and 180, but was: ' + longitude
-      );
-    }
+    // validateExactNumberOfArgs('GeoPoint', arguments, 2);
+    // validateArgType('GeoPoint', 'number', 1, latitude);
+    // validateArgType('GeoPoint', 'number', 2, longitude);
+    // if (!isFinite(latitude) || latitude < -90 || latitude > 90) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Latitude must be a number between -90 and 90, but was: ' + latitude
+    //   );
+    // }
+    // if (!isFinite(longitude) || longitude < -180 || longitude > 180) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Longitude must be a number between -180 and 180, but was: ' + longitude
+    //   );
+    // }
 
     this._lat = latitude;
     this._long = longitude;

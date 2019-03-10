@@ -18,12 +18,12 @@
 import * as firestore from '@firebase/firestore-types';
 
 import { makeConstructorPrivate } from '../util/api';
-import {
-  validateArgType,
-  validateAtLeastNumberOfArgs,
-  validateExactNumberOfArgs,
-  validateNoArgs
-} from '../util/input_validation';
+// import {
+//   validateArgType,
+//   validateAtLeastNumberOfArgs,
+//   validateExactNumberOfArgs,
+//   validateNoArgs
+// } from '../util/input_validation';
 
 /**
  * An opaque base class for FieldValue sentinel objects in our public API,
@@ -34,32 +34,32 @@ export abstract class FieldValueImpl implements firestore.FieldValue {
   protected constructor(readonly _methodName: string) {}
 
   static delete(): FieldValueImpl {
-    validateNoArgs('FieldValue.delete', arguments);
+    // validateNoArgs('FieldValue.delete', arguments);
     return DeleteFieldValueImpl.instance;
   }
 
   static serverTimestamp(): FieldValueImpl {
-    validateNoArgs('FieldValue.serverTimestamp', arguments);
+    // validateNoArgs('FieldValue.serverTimestamp', arguments);
     return ServerTimestampFieldValueImpl.instance;
   }
 
   static arrayUnion(...elements: unknown[]): FieldValueImpl {
-    validateAtLeastNumberOfArgs('FieldValue.arrayUnion', arguments, 1);
+    // validateAtLeastNumberOfArgs('FieldValue.arrayUnion', arguments, 1);
     // NOTE: We don't actually parse the data until it's used in set() or
     // update() since we need access to the Firestore instance.
     return new ArrayUnionFieldValueImpl(elements);
   }
 
   static arrayRemove(...elements: unknown[]): FieldValueImpl {
-    validateAtLeastNumberOfArgs('FieldValue.arrayRemove', arguments, 1);
+    // validateAtLeastNumberOfArgs('FieldValue.arrayRemove', arguments, 1);
     // NOTE: We don't actually parse the data until it's used in set() or
     // update() since we need access to the Firestore instance.
     return new ArrayRemoveFieldValueImpl(elements);
   }
 
   static increment(n: number): FieldValueImpl {
-    validateArgType('FieldValue.increment', 'number', 1, n);
-    validateExactNumberOfArgs('FieldValue.increment', arguments, 1);
+    // validateArgType('FieldValue.increment', 'number', 1, n);
+    // validateExactNumberOfArgs('FieldValue.increment', arguments, 1);
     return new NumericIncrementFieldValueImpl(n);
   }
 

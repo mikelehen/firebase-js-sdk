@@ -17,32 +17,32 @@
 
 import { PlatformSupport } from '../platform/platform';
 import { makeConstructorPrivate } from '../util/api';
-import { Code, FirestoreError } from '../util/error';
-import {
-  invalidClassError,
-  validateArgType,
-  validateExactNumberOfArgs
-} from '../util/input_validation';
+// import { Code, FirestoreError } from '../util/error';
+// import {
+//   invalidClassError,
+//   validateArgType,
+//   validateExactNumberOfArgs
+// } from '../util/input_validation';
 import { primitiveComparator } from '../util/misc';
 
 /** Helper function to assert Uint8Array is available at runtime. */
 function assertUint8ArrayAvailable(): void {
-  if (typeof Uint8Array === 'undefined') {
-    throw new FirestoreError(
-      Code.UNIMPLEMENTED,
-      'Uint8Arrays are not available in this environment.'
-    );
-  }
+  // if (typeof Uint8Array === 'undefined') {
+  //   throw new FirestoreError(
+  //     Code.UNIMPLEMENTED,
+  //     'Uint8Arrays are not available in this environment.'
+  //   );
+  // }
 }
 
 /** Helper function to assert Base64 functions are available at runtime. */
 function assertBase64Available(): void {
-  if (!PlatformSupport.getPlatform().base64Available) {
-    throw new FirestoreError(
-      Code.UNIMPLEMENTED,
-      'Blobs are unavailable in Firestore in this environment.'
-    );
-  }
+  // if (!PlatformSupport.getPlatform().base64Available) {
+  //   throw new FirestoreError(
+  //     Code.UNIMPLEMENTED,
+  //     'Blobs are unavailable in Firestore in this environment.'
+  //   );
+  // }
 }
 
 /**
@@ -65,26 +65,27 @@ export class Blob {
   }
 
   static fromBase64String(base64: string): Blob {
-    validateExactNumberOfArgs('Blob.fromBase64String', arguments, 1);
-    validateArgType('Blob.fromBase64String', 'string', 1, base64);
+    // validateExactNumberOfArgs('Blob.fromBase64String', arguments, 1);
+    // validateArgType('Blob.fromBase64String', 'string', 1, base64);
     assertBase64Available();
     try {
       const binaryString = PlatformSupport.getPlatform().atob(base64);
       return new Blob(binaryString);
     } catch (e) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Failed to construct Blob from Base64 string: ' + e
-      );
+      // throw new FirestoreError(
+      //   Code.INVALID_ARGUMENT,
+      //   'Failed to construct Blob from Base64 string: ' + e
+      // );
+      throw 0;
     }
   }
 
   static fromUint8Array(array: Uint8Array): Blob {
-    validateExactNumberOfArgs('Blob.fromUint8Array', arguments, 1);
+    // validateExactNumberOfArgs('Blob.fromUint8Array', arguments, 1);
     assertUint8ArrayAvailable();
-    if (!(array instanceof Uint8Array)) {
-      throw invalidClassError('Blob.fromUint8Array', 'Uint8Array', 1, array);
-    }
+    // if (!(array instanceof Uint8Array)) {
+    //   throw invalidClassError('Blob.fromUint8Array', 'Uint8Array', 1, array);
+    // }
     // We can't call array.map directly because it expects the return type to
     // be a Uint8Array, whereas we can convert it to a regular array by invoking
     // map on the Array prototype.
@@ -97,13 +98,13 @@ export class Blob {
   }
 
   toBase64(): string {
-    validateExactNumberOfArgs('Blob.toBase64', arguments, 0);
+    // validateExactNumberOfArgs('Blob.toBase64', arguments, 0);
     assertBase64Available();
     return PlatformSupport.getPlatform().btoa(this._binaryString);
   }
 
   toUint8Array(): Uint8Array {
-    validateExactNumberOfArgs('Blob.toUint8Array', arguments, 0);
+    // validateExactNumberOfArgs('Blob.toUint8Array', arguments, 0);
     assertUint8ArrayAvailable();
     const buffer = new Uint8Array(this._binaryString.length);
     for (let i = 0; i < this._binaryString.length; i++) {

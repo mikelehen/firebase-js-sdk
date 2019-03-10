@@ -44,8 +44,8 @@ import {
 } from '../model/mutation';
 import { FieldPath } from '../model/path';
 import { assert, fail } from '../util/assert';
-import { Code, FirestoreError } from '../util/error';
-import { isPlainObject, valueDescription } from '../util/input_validation';
+// import { Code, FirestoreError } from '../util/error';
+// import { isPlainObject, valueDescription } from '../util/input_validation';
 import { primitiveComparator } from '../util/misc';
 import * as objUtils from '../util/obj';
 import { Dict } from '../util/obj';
@@ -233,18 +233,18 @@ class ParseContext {
     );
   }
 
-  createError(reason: string): Error {
-    const fieldDescription =
-      this.path === null || this.path.isEmpty()
-        ? ''
-        : ` (found in field ${this.path.toString()})`;
-    return new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      `Function ${this.methodName}() called with invalid data. ` +
-        reason +
-        fieldDescription
-    );
-  }
+  // createError(reason: string): Error {
+  //   const fieldDescription =
+  //     this.path === null || this.path.isEmpty()
+  //       ? ''
+  //       : ` (found in field ${this.path.toString()})`;
+  //   return new FirestoreError(
+  //     Code.INVALID_ARGUMENT,
+  //     `Function ${this.methodName}() called with invalid data. ` +
+  //       reason +
+  //       fieldDescription
+  //   );
+  // }
 
   /** Returns 'true' if 'fieldPath' was traversed when creating this context. */
   contains(fieldPath: FieldPath): boolean {
@@ -269,7 +269,7 @@ class ParseContext {
 
   private validatePathSegment(segment: string): void {
     if (isWrite(this.dataSource) && RESERVED_FIELD_REGEX.test(segment)) {
-      throw this.createError('Document fields cannot begin and end with __');
+      // throw this.createError('Document fields cannot begin and end with __');
     }
   }
 }
@@ -311,7 +311,7 @@ export class UserDataConverter {
       methodName,
       FieldPath.EMPTY_PATH
     );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+    // validatePlainObject('Data must be an object, but it was:', context, input);
 
     const updateData = this.parseData(input, context);
 
@@ -333,7 +333,7 @@ export class UserDataConverter {
       methodName,
       FieldPath.EMPTY_PATH
     );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+    // validatePlainObject('Data must be an object, but it was:', context, input);
 
     const updateData = this.parseData(input, context) as ObjectValue;
     let fieldMask: FieldMask;
@@ -361,12 +361,12 @@ export class UserDataConverter {
           );
         }
 
-        if (!context.contains(fieldPath)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Field '${fieldPath}' is specified in your field mask but missing from your input data.`
-          );
-        }
+        // if (!context.contains(fieldPath)) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Field '${fieldPath}' is specified in your field mask but missing from your input data.`
+        //   );
+        // }
 
         validatedFieldPaths = validatedFieldPaths.add(fieldPath);
       }
@@ -390,7 +390,7 @@ export class UserDataConverter {
       methodName,
       FieldPath.EMPTY_PATH
     );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+    // validatePlainObject('Data must be an object, but it was:', context, input);
 
     let fieldMaskPaths = new SortedSet<FieldPath>(FieldPath.comparator);
     let updateData = ObjectValue.EMPTY;
@@ -430,13 +430,13 @@ export class UserDataConverter {
     const keys = [fieldPathFromArgument(methodName, field)];
     const values = [value];
 
-    if (moreFieldsAndValues.length % 2 !== 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Function ${methodName}() needs to be called with an even number ` +
-          'of arguments that alternate between field names and values.'
-      );
-    }
+    // if (moreFieldsAndValues.length % 2 !== 0) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Function ${methodName}() needs to be called with an even number ` +
+    //       'of arguments that alternate between field names and values.'
+    //   );
+    // }
 
     for (let i = 0; i < moreFieldsAndValues.length; i += 2) {
       keys.push(
@@ -494,8 +494,8 @@ export class UserDataConverter {
     try {
       return this.preConverter(input);
     } catch (e) {
-      const message = errorMessage(e);
-      throw context.createError(message);
+      // const message = errorMessage(e);
+      // throw context.createError(message);
     }
   }
 
@@ -511,7 +511,7 @@ export class UserDataConverter {
   private parseData(input: unknown, context: ParseContext): FieldValue | null {
     input = this.runPreConverter(input, context);
     if (looksLikeJsonObject(input)) {
-      validatePlainObject('Unsupported field value:', context, input);
+      // validatePlainObject('Unsupported field value:', context, input);
       return this.parseObject(input as Dict<unknown>, context);
     } else if (input instanceof FieldValueImpl) {
       // FieldValues usually parse into transforms (except FieldValue.delete())
@@ -531,9 +531,9 @@ export class UserDataConverter {
       if (input instanceof Array) {
         // TODO(b/34871131): Include the path containing the array in the error
         // message.
-        if (context.arrayElement) {
-          throw context.createError('Nested arrays are not supported');
-        }
+        // if (context.arrayElement) {
+        //   throw context.createError('Nested arrays are not supported');
+        // }
         return this.parseArray(input as unknown[], context);
       } else {
         return this.parseScalarValue(input, context);
@@ -593,42 +593,42 @@ export class UserDataConverter {
     context: ParseContext
   ): void {
     // Sentinels are only supported with writes, and not within arrays.
-    if (!isWrite(context.dataSource)) {
-      throw context.createError(
-        `${value._methodName}() can only be used with update() and set()`
-      );
-    }
-    if (context.path === null) {
-      throw context.createError(
-        `${value._methodName}() is not currently supported inside arrays`
-      );
-    }
+    // if (!isWrite(context.dataSource)) {
+    //   throw context.createError(
+    //     `${value._methodName}() can only be used with update() and set()`
+    //   );
+    // }
+    // if (context.path === null) {
+    //   throw context.createError(
+    //     `${value._methodName}() is not currently supported inside arrays`
+    //   );
+    // }
 
     if (value instanceof DeleteFieldValueImpl) {
       if (context.dataSource === UserDataSource.MergeSet) {
         // No transform to add for a delete, but we need to add it to our
         // fieldMask so it gets deleted.
-        context.fieldMask.push(context.path);
+        context.fieldMask.push(context.path!);
       } else if (context.dataSource === UserDataSource.Update) {
         assert(
-          context.path.length > 0,
+          context.path!.length > 0,
           'FieldValue.delete() at the top level should have already' +
             ' been handled.'
         );
-        throw context.createError(
-          'FieldValue.delete() can only appear at the top level ' +
-            'of your update data'
-        );
+        // throw context.createError(
+        //   'FieldValue.delete() can only appear at the top level ' +
+        //     'of your update data'
+        // );
       } else {
         // We shouldn't encounter delete sentinels for queries or non-merge set() calls.
-        throw context.createError(
-          'FieldValue.delete() cannot be used with set() unless you pass ' +
-            '{merge:true}'
-        );
+        // throw context.createError(
+        //   'FieldValue.delete() cannot be used with set() unless you pass ' +
+        //     '{merge:true}'
+        // );
       }
     } else if (value instanceof ServerTimestampFieldValueImpl) {
       context.fieldTransforms.push(
-        new FieldTransform(context.path, ServerTimestampTransform.instance)
+        new FieldTransform(context.path!, ServerTimestampTransform.instance)
       );
     } else if (value instanceof ArrayUnionFieldValueImpl) {
       const parsedElements = this.parseArrayTransformElements(
@@ -637,7 +637,7 @@ export class UserDataConverter {
       );
       const arrayUnion = new ArrayUnionTransformOperation(parsedElements);
       context.fieldTransforms.push(
-        new FieldTransform(context.path, arrayUnion)
+        new FieldTransform(context.path!, arrayUnion)
       );
     } else if (value instanceof ArrayRemoveFieldValueImpl) {
       const parsedElements = this.parseArrayTransformElements(
@@ -646,7 +646,7 @@ export class UserDataConverter {
       );
       const arrayRemove = new ArrayRemoveTransformOperation(parsedElements);
       context.fieldTransforms.push(
-        new FieldTransform(context.path, arrayRemove)
+        new FieldTransform(context.path!, arrayRemove)
       );
     } else if (value instanceof NumericIncrementFieldValueImpl) {
       const operand = this.parseQueryValue(
@@ -655,7 +655,7 @@ export class UserDataConverter {
       ) as NumberValue;
       const numericIncrement = new NumericIncrementTransformOperation(operand);
       context.fieldTransforms.push(
-        new FieldTransform(context.path, numericIncrement)
+        new FieldTransform(context.path!, numericIncrement)
       );
     } else {
       fail('Unknown FieldValue type: ' + value);
@@ -699,9 +699,10 @@ export class UserDataConverter {
     } else if (value instanceof DocumentKeyReference) {
       return new RefValue(value.databaseId, value.key);
     } else {
-      throw context.createError(
-        `Unsupported field value: ${valueDescription(value)}`
-      );
+      // throw context.createError(
+      //   `Unsupported field value: ${valueDescription(value)}`
+      // );
+      throw 0;
     }
   }
 
@@ -744,21 +745,21 @@ function looksLikeJsonObject(input: unknown): boolean {
   );
 }
 
-function validatePlainObject(
-  message: string,
-  context: ParseContext,
-  input: unknown
-): void {
-  if (!looksLikeJsonObject(input) || !isPlainObject(input)) {
-    const description = valueDescription(input);
-    if (description === 'an object') {
-      // Massage the error if it was an object.
-      throw context.createError(message + ' a custom object');
-    } else {
-      throw context.createError(message + ' ' + description);
-    }
-  }
-}
+// function validatePlainObject(
+//   message: string,
+//   context: ParseContext,
+//   input: unknown
+// ): void {
+//   if (!looksLikeJsonObject(input) || !isPlainObject(input)) {
+//     const description = valueDescription(input);
+//     if (description === 'an object') {
+//       Massage the error if it was an object.
+//       throw context.createError(message + ' a custom object');
+//     } else {
+//       throw context.createError(message + ' ' + description);
+//     }
+//   }
+// }
 
 /**
  * Helper that calls fromDotSeparatedString() but wraps any error thrown.
@@ -772,11 +773,12 @@ export function fieldPathFromArgument(
   } else if (typeof path === 'string') {
     return fieldPathFromDotSeparatedString(methodName, path);
   } else {
-    const message = 'Field path arguments must be of type string or FieldPath.';
-    throw new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      `Function ${methodName}() called with invalid data. ${message}`
-    );
+    // const message = 'Field path arguments must be of type string or FieldPath.';
+    // throw new FirestoreError(
+    //   Code.INVALID_ARGUMENT,
+    //   `Function ${methodName}() called with invalid data. ${message}`
+    // );
+    throw 0;
   }
 }
 
@@ -794,11 +796,12 @@ function fieldPathFromDotSeparatedString(
   try {
     return fromDotSeparatedString(path)._internalPath;
   } catch (e) {
-    const message = errorMessage(e);
-    throw new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      `Function ${methodName}() called with invalid data. ${message}`
-    );
+    // const message = errorMessage(e);
+    // throw new FirestoreError(
+    //   Code.INVALID_ARGUMENT,
+    //   `Function ${methodName}() called with invalid data. ${message}`
+    // );
+    throw 0;
   }
 }
 
@@ -806,6 +809,6 @@ function fieldPathFromDotSeparatedString(
  * Extracts the message from a caught exception, which should be an Error object
  * though JS doesn't guarantee that.
  */
-function errorMessage(error: Error | object): string {
-  return error instanceof Error ? error.message : error.toString();
-}
+// function errorMessage(error: Error | object): string {
+//   return error instanceof Error ? error.message : error.toString();
+// }

@@ -57,21 +57,21 @@ import { assert, fail } from '../util/assert';
 import { AsyncObserver } from '../util/async_observer';
 import { AsyncQueue } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
-import {
-  invalidClassError,
-  validateArgType,
-  validateAtLeastNumberOfArgs,
-  validateBetweenNumberOfArgs,
-  validateDefined,
-  validateExactNumberOfArgs,
-  validateNamedOptionalPropertyEquals,
-  validateNamedOptionalType,
-  validateNamedType,
-  validateOptionalArgType,
-  validateOptionalArrayElements,
-  validateOptionNames,
-  valueDescription
-} from '../util/input_validation';
+// import {
+//   invalidClassError,
+//   validateArgType,
+//   validateAtLeastNumberOfArgs,
+//   validateBetweenNumberOfArgs,
+//   validateDefined,
+//   validateExactNumberOfArgs,
+//   validateNamedOptionalPropertyEquals,
+//   validateNamedOptionalType,
+//   validateNamedType,
+//   validateOptionalArgType,
+//   validateOptionalArrayElements,
+//   validateOptionNames,
+//   valueDescription
+// } from '../util/input_validation';
 import * as log from '../util/log';
 import { LogLevel } from '../util/log';
 import { AutoId } from '../util/misc';
@@ -157,43 +157,43 @@ class FirestoreSettings {
 
   constructor(settings: PrivateSettings) {
     if (settings.host === undefined) {
-      if (settings.ssl !== undefined) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          "Can't provide ssl option if host option is not set"
-        );
-      }
+      // if (settings.ssl !== undefined) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     "Can't provide ssl option if host option is not set"
+      //   );
+      // }
       this.host = DEFAULT_HOST;
       this.ssl = DEFAULT_SSL;
     } else {
-      validateNamedType('settings', 'non-empty string', 'host', settings.host);
+      // validateNamedType('settings', 'non-empty string', 'host', settings.host);
       this.host = settings.host;
 
-      validateNamedOptionalType('settings', 'boolean', 'ssl', settings.ssl);
+      // validateNamedOptionalType('settings', 'boolean', 'ssl', settings.ssl);
       this.ssl = objUtils.defaulted(settings.ssl, DEFAULT_SSL);
     }
-    validateOptionNames('settings', settings, [
-      'host',
-      'ssl',
-      'credentials',
-      'timestampsInSnapshots',
-      'cacheSizeBytes'
-    ]);
+    // validateOptionNames('settings', settings, [
+    //   'host',
+    //   'ssl',
+    //   'credentials',
+    //   'timestampsInSnapshots',
+    //   'cacheSizeBytes'
+    // ]);
 
-    validateNamedOptionalType(
-      'settings',
-      'object',
-      'credentials',
-      settings.credentials
-    );
+    // validateNamedOptionalType(
+    //   'settings',
+    //   'object',
+    //   'credentials',
+    //   settings.credentials
+    // );
     this.credentials = settings.credentials;
 
-    validateNamedOptionalType(
-      'settings',
-      'boolean',
-      'timestampsInSnapshots',
-      settings.timestampsInSnapshots
-    );
+    // validateNamedOptionalType(
+    //   'settings',
+    //   'boolean',
+    //   'timestampsInSnapshots',
+    //   settings.timestampsInSnapshots
+    // );
 
     // Nobody should set timestampsInSnapshots anymore, but the error depends on
     // whether they set it to true or false...
@@ -230,28 +230,28 @@ class FirestoreSettings {
       DEFAULT_TIMESTAMPS_IN_SNAPSHOTS
     );
 
-    validateNamedOptionalType(
-      'settings',
-      'number',
-      'cacheSizeBytes',
-      settings.cacheSizeBytes
-    );
+    // validateNamedOptionalType(
+    //   'settings',
+    //   'number',
+    //   'cacheSizeBytes',
+    //   settings.cacheSizeBytes
+    // );
     if (settings.cacheSizeBytes === undefined) {
       this.cacheSizeBytes = LruParams.DEFAULT_CACHE_SIZE_BYTES;
     } else {
-      if (
-        settings.cacheSizeBytes !== CACHE_SIZE_UNLIMITED &&
-        settings.cacheSizeBytes < LruParams.MINIMUM_CACHE_SIZE_BYTES
-      ) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `cacheSizeBytes must be at least ${
-            LruParams.MINIMUM_CACHE_SIZE_BYTES
-          }`
-        );
-      } else {
+      // if (
+      //   settings.cacheSizeBytes !== CACHE_SIZE_UNLIMITED &&
+      //   settings.cacheSizeBytes < LruParams.MINIMUM_CACHE_SIZE_BYTES
+      // ) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     `cacheSizeBytes must be at least ${
+      //       LruParams.MINIMUM_CACHE_SIZE_BYTES
+      //     }`
+      //   );
+      // } else {
         this.cacheSizeBytes = settings.cacheSizeBytes;
-      }
+      // }
     }
   }
 
@@ -308,12 +308,12 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
       config.credentials = new FirebaseCredentialsProvider(app);
     } else {
       const external = databaseIdOrApp as FirestoreDatabase;
-      if (!external.projectId) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          'Must provide projectId'
-        );
-      }
+      // if (!external.projectId) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     'Must provide projectId'
+      //   );
+      // }
 
       config.databaseId = new DatabaseId(external.projectId, external.database);
       // Use a default persistenceKey that lines up with FirebaseApp.
@@ -327,28 +327,28 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   }
 
   settings(settingsLiteral: firestore.Settings): void {
-    validateExactNumberOfArgs('Firestore.settings', arguments, 1);
-    validateArgType('Firestore.settings', 'object', 1, settingsLiteral);
+    // validateExactNumberOfArgs('Firestore.settings', arguments, 1);
+    // validateArgType('Firestore.settings', 'object', 1, settingsLiteral);
 
-    if (
-      objUtils.contains(settingsLiteral as objUtils.Dict<{}>, 'persistence')
-    ) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        '"persistence" is now specified with a separate call to ' +
-          'firestore.enablePersistence().'
-      );
-    }
+    // if (
+    //   objUtils.contains(settingsLiteral as objUtils.Dict<{}>, 'persistence')
+    // ) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     '"persistence" is now specified with a separate call to ' +
+    //       'firestore.enablePersistence().'
+    //   );
+    // }
 
     const newSettings = new FirestoreSettings(settingsLiteral);
-    if (this._firestoreClient && !this._config.settings.isEqual(newSettings)) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'Firestore has already been started and its settings can no longer ' +
-          'be changed. You can only call settings() before calling any other ' +
-          'methods on a Firestore object.'
-      );
-    }
+    // if (this._firestoreClient && !this._config.settings.isEqual(newSettings)) {
+    //   throw new FirestoreError(
+    //     Code.FAILED_PRECONDITION,
+    //     'Firestore has already been started and its settings can no longer ' +
+    //       'be changed. You can only call settings() before calling any other ' +
+    //       'methods on a Firestore object.'
+    //   );
+    // }
 
     this._config.settings = newSettings;
     if (newSettings.credentials !== undefined) {
@@ -369,14 +369,14 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   }
 
   enablePersistence(settings?: firestore.PersistenceSettings): Promise<void> {
-    if (this._firestoreClient) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'Firestore has already been started and persistence can no longer ' +
-          'be enabled. You can only call enablePersistence() before calling ' +
-          'any other methods on a Firestore object.'
-      );
-    }
+    // if (this._firestoreClient) {
+    //   throw new FirestoreError(
+    //     Code.FAILED_PRECONDITION,
+    //     'Firestore has already been started and persistence can no longer ' +
+    //       'be enabled. You can only call enablePersistence() before calling ' +
+    //       'any other methods on a Firestore object.'
+    //   );
+    // }
     return this.configureClient(
       new IndexedDbPersistenceSettings(
         this._config.settings.cacheSizeBytes,
@@ -419,14 +419,14 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
       if (value instanceof DocumentReference) {
         const thisDb = this._config.databaseId;
         const otherDb = value.firestore._config.databaseId;
-        if (!otherDb.isEqual(thisDb)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Document reference is for database ' +
-              `${otherDb.projectId}/${otherDb.database} but should be ` +
-              `for database ${thisDb.projectId}/${thisDb.database}`
-          );
-        }
+        // if (!otherDb.isEqual(thisDb)) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Document reference is for database ' +
+        //       `${otherDb.projectId}/${otherDb.database} but should be ` +
+        //       `for database ${thisDb.projectId}/${thisDb.database}`
+        //   );
+        // }
         return new DocumentKeyReference(this._config.databaseId, value._key);
       } else {
         return value;
@@ -446,30 +446,31 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   private static databaseIdFromApp(app: FirebaseApp): DatabaseId {
     const options = app.options as objUtils.Dict<{}>;
     if (!objUtils.contains(options, 'projectId')) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        '"projectId" not provided in firebase.initializeApp.'
-      );
+      // throw new FirestoreError(
+      //   Code.INVALID_ARGUMENT,
+      //   '"projectId" not provided in firebase.initializeApp.'
+      // );
     }
 
     const projectId = options['projectId'];
-    if (!projectId || typeof projectId !== 'string') {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'projectId must be a string in FirebaseApp.options'
-      );
-    }
-    return new DatabaseId(projectId);
+    // if (!projectId || typeof projectId !== 'string') {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'projectId must be a string in FirebaseApp.options'
+    //   );
+    // }
+    // tslint:disable-next-line
+    return new DatabaseId(projectId as any);
   }
 
   get app(): FirebaseApp {
-    if (!this._config.firebaseApp) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        "Firestore was not initialized using the Firebase SDK. 'app' is " +
-          'not available'
-      );
-    }
+    // if (!this._config.firebaseApp) {
+    //   throw new FirestoreError(
+    //     Code.FAILED_PRECONDITION,
+    //     "Firestore was not initialized using the Firebase SDK. 'app' is " +
+    //       'not available'
+    //   );
+    // }
     return this._config.firebaseApp;
   }
 
@@ -484,35 +485,35 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   };
 
   collection(pathString: string): firestore.CollectionReference {
-    validateExactNumberOfArgs('Firestore.collection', arguments, 1);
-    validateArgType('Firestore.collection', 'non-empty string', 1, pathString);
+    // validateExactNumberOfArgs('Firestore.collection', arguments, 1);
+    // validateArgType('Firestore.collection', 'non-empty string', 1, pathString);
     this.ensureClientConfigured();
     return new CollectionReference(ResourcePath.fromString(pathString), this);
   }
 
   doc(pathString: string): firestore.DocumentReference {
-    validateExactNumberOfArgs('Firestore.doc', arguments, 1);
-    validateArgType('Firestore.doc', 'non-empty string', 1, pathString);
+    // validateExactNumberOfArgs('Firestore.doc', arguments, 1);
+    // validateArgType('Firestore.doc', 'non-empty string', 1, pathString);
     this.ensureClientConfigured();
     return DocumentReference.forPath(ResourcePath.fromString(pathString), this);
   }
 
   // TODO(b/116617988): Fix name, uncomment d.ts definitions, and update CHANGELOG.md.
   _collectionGroup(collectionId: string): firestore.Query {
-    validateExactNumberOfArgs('Firestore.collectionGroup', arguments, 1);
-    validateArgType(
-      'Firestore.collectionGroup',
-      'non-empty string',
-      1,
-      collectionId
-    );
-    if (collectionId.indexOf('/') >= 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid collection ID '${collectionId}' passed to function ` +
-          `Firestore.collectionGroup(). Collection IDs must not contain '/'.`
-      );
-    }
+    // validateExactNumberOfArgs('Firestore.collectionGroup', arguments, 1);
+    // validateArgType(
+    //   'Firestore.collectionGroup',
+    //   'non-empty string',
+    //   1,
+    //   collectionId
+    // );
+    // if (collectionId.indexOf('/') >= 0) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Invalid collection ID '${collectionId}' passed to function ` +
+    //       `Firestore.collectionGroup(). Collection IDs must not contain '/'.`
+    //   );
+    // }
     this.ensureClientConfigured();
     return new Query(
       new InternalQuery(ResourcePath.EMPTY_PATH, collectionId),
@@ -523,8 +524,8 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   runTransaction<T>(
     updateFunction: (transaction: firestore.Transaction) => Promise<T>
   ): Promise<T> {
-    validateExactNumberOfArgs('Firestore.runTransaction', arguments, 1);
-    validateArgType('Firestore.runTransaction', 'function', 1, updateFunction);
+    // validateExactNumberOfArgs('Firestore.runTransaction', arguments, 1);
+    // validateArgType('Firestore.runTransaction', 'function', 1, updateFunction);
     return this.ensureClientConfigured().transaction(
       (transaction: InternalTransaction) => {
         return updateFunction(new Transaction(this, transaction));
@@ -552,8 +553,8 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   }
 
   static setLogLevel(level: firestore.LogLevel): void {
-    validateExactNumberOfArgs('Firestore.setLogLevel', arguments, 1);
-    validateArgType('Firestore.setLogLevel', 'non-empty string', 1, level);
+    // validateExactNumberOfArgs('Firestore.setLogLevel', arguments, 1);
+    // validateArgType('Firestore.setLogLevel', 'non-empty string', 1, level);
     switch (level) {
       case 'debug':
         log.setLogLevel(log.LogLevel.DEBUG);
@@ -565,10 +566,10 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
         log.setLogLevel(log.LogLevel.SILENT);
         break;
       default:
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          'Invalid log level: ' + level
-        );
+        // throw new FirestoreError(
+        //   Code.INVALID_ARGUMENT,
+        //   'Invalid log level: ' + level
+        // );
     }
   }
 
@@ -591,12 +592,13 @@ export class Transaction implements firestore.Transaction {
   get(
     documentRef: firestore.DocumentReference
   ): Promise<firestore.DocumentSnapshot> {
-    validateExactNumberOfArgs('Transaction.get', arguments, 1);
-    const ref = validateReference(
-      'Transaction.get',
-      documentRef,
-      this._firestore
-    );
+    // validateExactNumberOfArgs('Transaction.get', arguments, 1);
+    // const ref = validateReference(
+    //   'Transaction.get',
+    //   documentRef,
+    //   this._firestore
+    // );
+    const ref = documentRef as DocumentReference;
     return this._transaction
       .lookup([ref._key])
       .then((docs: MaybeDocument[]) => {
@@ -635,13 +637,15 @@ export class Transaction implements firestore.Transaction {
     value: firestore.DocumentData,
     options?: firestore.SetOptions
   ): Transaction {
-    validateBetweenNumberOfArgs('Transaction.set', arguments, 2, 3);
-    const ref = validateReference(
-      'Transaction.set',
-      documentRef,
-      this._firestore
-    );
-    options = validateSetOptions('Transaction.set', options);
+    // validateBetweenNumberOfArgs('Transaction.set', arguments, 2, 3);
+    // const ref = validateReference(
+    //   'Transaction.set',
+    //   documentRef,
+    //   this._firestore
+    // );
+    const ref = documentRef as DocumentReference;
+    // options = validateSetOptions('Transaction.set', options);
+    options = options!;
     const parsed =
       options.merge || options.mergeFields
         ? this._firestore._dataConverter.parseMergeData(
@@ -677,12 +681,13 @@ export class Transaction implements firestore.Transaction {
       typeof fieldOrUpdateData === 'string' ||
       fieldOrUpdateData instanceof ExternalFieldPath
     ) {
-      validateAtLeastNumberOfArgs('Transaction.update', arguments, 3);
-      ref = validateReference(
-        'Transaction.update',
-        documentRef,
-        this._firestore
-      );
+      // validateAtLeastNumberOfArgs('Transaction.update', arguments, 3);
+      // ref = validateReference(
+      //   'Transaction.update',
+      //   documentRef,
+      //   this._firestore
+      // );
+      ref = documentRef as DocumentReference;
       parsed = this._firestore._dataConverter.parseUpdateVarargs(
         'Transaction.update',
         fieldOrUpdateData,
@@ -690,12 +695,13 @@ export class Transaction implements firestore.Transaction {
         moreFieldsAndValues
       );
     } else {
-      validateExactNumberOfArgs('Transaction.update', arguments, 2);
-      ref = validateReference(
-        'Transaction.update',
-        documentRef,
-        this._firestore
-      );
+      // validateExactNumberOfArgs('Transaction.update', arguments, 2);
+      // ref = validateReference(
+      //   'Transaction.update',
+      //   documentRef,
+      //   this._firestore
+      // );
+      ref = documentRef as DocumentReference;
       parsed = this._firestore._dataConverter.parseUpdateData(
         'Transaction.update',
         fieldOrUpdateData
@@ -707,12 +713,13 @@ export class Transaction implements firestore.Transaction {
   }
 
   delete(documentRef: firestore.DocumentReference): Transaction {
-    validateExactNumberOfArgs('Transaction.delete', arguments, 1);
-    const ref = validateReference(
-      'Transaction.delete',
-      documentRef,
-      this._firestore
-    );
+    // validateExactNumberOfArgs('Transaction.delete', arguments, 1);
+    // const ref = validateReference(
+    //   'Transaction.delete',
+    //   documentRef,
+    //   this._firestore
+    // );
+    const ref = documentRef as DocumentReference;
     this._transaction.delete(ref._key);
     return this;
   }
@@ -729,14 +736,16 @@ export class WriteBatch implements firestore.WriteBatch {
     value: firestore.DocumentData,
     options?: firestore.SetOptions
   ): WriteBatch {
-    validateBetweenNumberOfArgs('WriteBatch.set', arguments, 2, 3);
+    // validateBetweenNumberOfArgs('WriteBatch.set', arguments, 2, 3);
     this.verifyNotCommitted();
-    const ref = validateReference(
-      'WriteBatch.set',
-      documentRef,
-      this._firestore
-    );
-    options = validateSetOptions('WriteBatch.set', options);
+    // const ref = validateReference(
+    //   'WriteBatch.set',
+    //   documentRef,
+    //   this._firestore
+    // );
+    const ref = documentRef as DocumentReference;
+    // options = validateSetOptions('WriteBatch.set', options);
+    options = options!;
     const parsed =
       options.merge || options.mergeFields
         ? this._firestore._dataConverter.parseMergeData(
@@ -776,12 +785,13 @@ export class WriteBatch implements firestore.WriteBatch {
       typeof fieldOrUpdateData === 'string' ||
       fieldOrUpdateData instanceof ExternalFieldPath
     ) {
-      validateAtLeastNumberOfArgs('WriteBatch.update', arguments, 3);
-      ref = validateReference(
-        'WriteBatch.update',
-        documentRef,
-        this._firestore
-      );
+      // validateAtLeastNumberOfArgs('WriteBatch.update', arguments, 3);
+      // ref = validateReference(
+      //   'WriteBatch.update',
+      //   documentRef,
+      //   this._firestore
+      // );
+      ref = documentRef as DocumentReference;
       parsed = this._firestore._dataConverter.parseUpdateVarargs(
         'WriteBatch.update',
         fieldOrUpdateData,
@@ -789,12 +799,13 @@ export class WriteBatch implements firestore.WriteBatch {
         moreFieldsAndValues
       );
     } else {
-      validateExactNumberOfArgs('WriteBatch.update', arguments, 2);
-      ref = validateReference(
-        'WriteBatch.update',
-        documentRef,
-        this._firestore
-      );
+      // validateExactNumberOfArgs('WriteBatch.update', arguments, 2);
+      // ref = validateReference(
+      //   'WriteBatch.update',
+      //   documentRef,
+      //   this._firestore
+      // );
+      ref = documentRef as DocumentReference;
       parsed = this._firestore._dataConverter.parseUpdateData(
         'WriteBatch.update',
         fieldOrUpdateData
@@ -808,13 +819,14 @@ export class WriteBatch implements firestore.WriteBatch {
   }
 
   delete(documentRef: firestore.DocumentReference): WriteBatch {
-    validateExactNumberOfArgs('WriteBatch.delete', arguments, 1);
+    // validateExactNumberOfArgs('WriteBatch.delete', arguments, 1);
     this.verifyNotCommitted();
-    const ref = validateReference(
-      'WriteBatch.delete',
-      documentRef,
-      this._firestore
-    );
+    // const ref = validateReference(
+    //   'WriteBatch.delete',
+    //   documentRef,
+    //   this._firestore
+    // );
+    const ref = documentRef as DocumentReference;
     this._mutations = this._mutations.concat(
       new DeleteMutation(ref._key, Precondition.NONE)
     );
@@ -830,13 +842,13 @@ export class WriteBatch implements firestore.WriteBatch {
   }
 
   private verifyNotCommitted(): void {
-    if (this._committed) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'A write batch can no longer be used after commit() ' +
-          'has been called.'
-      );
-    }
+    // if (this._committed) {
+    //   throw new FirestoreError(
+    //     Code.FAILED_PRECONDITION,
+    //     'A write batch can no longer be used after commit() ' +
+    //       'has been called.'
+    //   );
+    // }
   }
 }
 
@@ -851,14 +863,14 @@ export class DocumentReference implements firestore.DocumentReference {
   }
 
   static forPath(path: ResourcePath, firestore: Firestore): DocumentReference {
-    if (path.length % 2 !== 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid document reference. Document ' +
-          'references must have an even number of segments, but ' +
-          `${path.canonicalString()} has ${path.length}`
-      );
-    }
+    // if (path.length % 2 !== 0) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Invalid document reference. Document ' +
+    //       'references must have an even number of segments, but ' +
+    //       `${path.canonicalString()} has ${path.length}`
+    //   );
+    // }
     return new DocumentReference(new DocumentKey(path), firestore);
   }
 
@@ -875,36 +887,38 @@ export class DocumentReference implements firestore.DocumentReference {
   }
 
   collection(pathString: string): firestore.CollectionReference {
-    validateExactNumberOfArgs('DocumentReference.collection', arguments, 1);
-    validateArgType(
-      'DocumentReference.collection',
-      'non-empty string',
-      1,
-      pathString
-    );
-    if (!pathString) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Must provide a non-empty collection name to collection()'
-      );
-    }
+    // validateExactNumberOfArgs('DocumentReference.collection', arguments, 1);
+    // validateArgType(
+    //   'DocumentReference.collection',
+    //   'non-empty string',
+    //   1,
+    //   pathString
+    // );
+    // if (!pathString) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Must provide a non-empty collection name to collection()'
+    //   );
+    // }
     const path = ResourcePath.fromString(pathString);
     return new CollectionReference(this._key.path.child(path), this.firestore);
   }
 
   isEqual(other: firestore.DocumentReference): boolean {
-    if (!(other instanceof DocumentReference)) {
-      throw invalidClassError('isEqual', 'DocumentReference', 1, other);
-    }
-    return this.firestore === other.firestore && this._key.isEqual(other._key);
+    // if (!(other instanceof DocumentReference)) {
+    //   throw invalidClassError('isEqual', 'DocumentReference', 1, other);
+    // }
+    return this.firestore === other.firestore && this._key.isEqual(
+      (other as DocumentReference)._key);
   }
 
   set(
     value: firestore.DocumentData,
     options?: firestore.SetOptions
   ): Promise<void> {
-    validateBetweenNumberOfArgs('DocumentReference.set', arguments, 1, 2);
-    options = validateSetOptions('DocumentReference.set', options);
+    // validateBetweenNumberOfArgs('DocumentReference.set', arguments, 1, 2);
+    // options = validateSetOptions('DocumentReference.set', options);
+    options = options!;
 
     const parsed =
       options.merge || options.mergeFields
@@ -939,7 +953,7 @@ export class DocumentReference implements firestore.DocumentReference {
       typeof fieldOrUpdateData === 'string' ||
       fieldOrUpdateData instanceof ExternalFieldPath
     ) {
-      validateAtLeastNumberOfArgs('DocumentReference.update', arguments, 2);
+      // validateAtLeastNumberOfArgs('DocumentReference.update', arguments, 2);
       parsed = this.firestore._dataConverter.parseUpdateVarargs(
         'DocumentReference.update',
         fieldOrUpdateData,
@@ -947,7 +961,7 @@ export class DocumentReference implements firestore.DocumentReference {
         moreFieldsAndValues
       );
     } else {
-      validateExactNumberOfArgs('DocumentReference.update', arguments, 1);
+      // validateExactNumberOfArgs('DocumentReference.update', arguments, 1);
       parsed = this.firestore._dataConverter.parseUpdateData(
         'DocumentReference.update',
         fieldOrUpdateData
@@ -960,7 +974,7 @@ export class DocumentReference implements firestore.DocumentReference {
   }
 
   delete(): Promise<void> {
-    validateExactNumberOfArgs('DocumentReference.delete', arguments, 0);
+    // validateExactNumberOfArgs('DocumentReference.delete', arguments, 0);
     return this._firestoreClient.write([
       new DeleteMutation(this._key, Precondition.NONE)
     ]);
@@ -986,12 +1000,12 @@ export class DocumentReference implements firestore.DocumentReference {
   ): Unsubscribe;
 
   onSnapshot(...args: unknown[]): Unsubscribe {
-    validateBetweenNumberOfArgs(
-      'DocumentReference.onSnapshot',
-      arguments,
-      1,
-      4
-    );
+    // validateBetweenNumberOfArgs(
+    //   'DocumentReference.onSnapshot',
+    //   arguments,
+    //   1,
+    //   4
+    // );
     let options: firestore.SnapshotListenOptions = {
       includeMetadataChanges: false
     };
@@ -1002,15 +1016,15 @@ export class DocumentReference implements firestore.DocumentReference {
       !isPartialObserver(args[currArg])
     ) {
       options = args[currArg] as firestore.SnapshotListenOptions;
-      validateOptionNames('DocumentReference.onSnapshot', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'DocumentReference.onSnapshot',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
+      // validateOptionNames('DocumentReference.onSnapshot', options, [
+      //   'includeMetadataChanges'
+      // ]);
+      // validateNamedOptionalType(
+      //   'DocumentReference.onSnapshot',
+      //   'boolean',
+      //   'includeMetadataChanges',
+      //   options.includeMetadataChanges
+      // );
       currArg++;
     }
 
@@ -1021,24 +1035,24 @@ export class DocumentReference implements firestore.DocumentReference {
     if (isPartialObserver(args[currArg])) {
       observer = args[currArg] as PartialObserver<firestore.DocumentSnapshot>;
     } else {
-      validateArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg,
-        args[currArg]
-      );
-      validateOptionalArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg + 1,
-        args[currArg + 1]
-      );
-      validateOptionalArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg + 2,
-        args[currArg + 2]
-      );
+      // validateArgType(
+      //   'DocumentReference.onSnapshot',
+      //   'function',
+      //   currArg,
+      //   args[currArg]
+      // );
+      // validateOptionalArgType(
+      //   'DocumentReference.onSnapshot',
+      //   'function',
+      //   currArg + 1,
+      //   args[currArg + 1]
+      // );
+      // validateOptionalArgType(
+      //   'DocumentReference.onSnapshot',
+      //   'function',
+      //   currArg + 2,
+      //   args[currArg + 2]
+      // );
       observer = {
         next: args[currArg] as NextFn<firestore.DocumentSnapshot>,
         error: args[currArg + 1] as ErrorFn,
@@ -1094,8 +1108,8 @@ export class DocumentReference implements firestore.DocumentReference {
   }
 
   get(options?: firestore.GetOptions): Promise<firestore.DocumentSnapshot> {
-    validateBetweenNumberOfArgs('DocumentReference.get', arguments, 0, 1);
-    validateGetOptions('DocumentReference.get', options);
+    // validateBetweenNumberOfArgs('DocumentReference.get', arguments, 0, 1);
+    // validateGetOptions('DocumentReference.get', options);
     return new Promise(
       (resolve: Resolver<firestore.DocumentSnapshot>, reject: Rejecter) => {
         if (options && options.source === 'cache') {
@@ -1207,8 +1221,9 @@ export class DocumentSnapshot implements firestore.DocumentSnapshot {
   data(
     options?: firestore.SnapshotOptions
   ): firestore.DocumentData | undefined {
-    validateBetweenNumberOfArgs('DocumentSnapshot.data', arguments, 0, 1);
-    options = validateSnapshotOptions('DocumentSnapshot.data', options);
+    // validateBetweenNumberOfArgs('DocumentSnapshot.data', arguments, 0, 1);
+    // options = validateSnapshotOptions('DocumentSnapshot.data', options);
+    options = options!;
     return !this._document
       ? undefined
       : this.convertObject(
@@ -1224,8 +1239,9 @@ export class DocumentSnapshot implements firestore.DocumentSnapshot {
     fieldPath: string | ExternalFieldPath,
     options?: firestore.SnapshotOptions
   ): unknown {
-    validateBetweenNumberOfArgs('DocumentSnapshot.get', arguments, 1, 2);
-    options = validateSnapshotOptions('DocumentSnapshot.get', options);
+    // validateBetweenNumberOfArgs('DocumentSnapshot.get', arguments, 1, 2);
+    // options = validateSnapshotOptions('DocumentSnapshot.get', options);
+    options = options!;
     if (this._document) {
       const value = this._document.data.field(
         fieldPathFromArgument('DocumentSnapshot.get', fieldPath)
@@ -1261,7 +1277,8 @@ export class DocumentSnapshot implements firestore.DocumentSnapshot {
 
   isEqual(other: firestore.DocumentSnapshot): boolean {
     if (!(other instanceof DocumentSnapshot)) {
-      throw invalidClassError('isEqual', 'DocumentSnapshot', 1, other);
+      // throw invalidClassError('isEqual', 'DocumentSnapshot', 1, other);
+      throw 0;
     }
     return (
       this._firestore === other._firestore &&
@@ -1351,51 +1368,51 @@ export class Query implements firestore.Query {
     opStr: firestore.WhereFilterOp,
     value: unknown
   ): firestore.Query {
-    validateExactNumberOfArgs('Query.where', arguments, 3);
-    validateArgType('Query.where', 'non-empty string', 2, opStr);
-    validateDefined('Query.where', 3, value);
+    // validateExactNumberOfArgs('Query.where', arguments, 3);
+    // validateArgType('Query.where', 'non-empty string', 2, opStr);
+    // validateDefined('Query.where', 3, value);
     let fieldValue;
     const fieldPath = fieldPathFromArgument('Query.where', field);
     const relationOp = RelationOp.fromString(opStr);
     if (fieldPath.isKeyField()) {
-      if (relationOp === RelationOp.ARRAY_CONTAINS) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          "Invalid Query. You can't perform array-contains queries on " +
-            'FieldPath.documentId() since document IDs are not arrays.'
-        );
-      }
+      // if (relationOp === RelationOp.ARRAY_CONTAINS) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     "Invalid Query. You can't perform array-contains queries on " +
+      //       'FieldPath.documentId() since document IDs are not arrays.'
+      //   );
+      // }
       if (typeof value === 'string') {
-        if (value === '') {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Function Query.where() requires its third parameter to be a ' +
-              'valid document ID if the first parameter is ' +
-              'FieldPath.documentId(), but it was an empty string.'
-          );
-        }
-        if (
-          !this._query.isCollectionGroupQuery() &&
-          value.indexOf('/') !== -1
-        ) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid third parameter to Query.where(). When querying a collection by ` +
-              `FieldPath.documentId(), the value provided must be a plain document ID, but ` +
-              `'${value}' contains a slash.`
-          );
-        }
+        // if (value === '') {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Function Query.where() requires its third parameter to be a ' +
+        //       'valid document ID if the first parameter is ' +
+        //       'FieldPath.documentId(), but it was an empty string.'
+        //   );
+        // }
+        // if (
+        //   !this._query.isCollectionGroupQuery() &&
+        //   value.indexOf('/') !== -1
+        // ) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Invalid third parameter to Query.where(). When querying a collection by ` +
+        //       `FieldPath.documentId(), the value provided must be a plain document ID, but ` +
+        //       `'${value}' contains a slash.`
+        //   );
+        // }
         const path = this._query.path.child(ResourcePath.fromString(value));
-        if (!DocumentKey.isDocumentKey(path)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid third parameter to Query.where(). When querying a collection group by ` +
-              `FieldPath.documentId(), the value provided must result in a valid document path, ` +
-              `but '${path}' is not because it has an odd number of segments (${
-                path.length
-              }).`
-          );
-        }
+        // if (!DocumentKey.isDocumentKey(path)) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Invalid third parameter to Query.where(). When querying a collection group by ` +
+        //       `FieldPath.documentId(), the value provided must result in a valid document path, ` +
+        //       `but '${path}' is not because it has an odd number of segments (${
+        //         path.length
+        //       }).`
+        //   );
+        // }
         fieldValue = new RefValue(
           this.firestore._databaseId,
           new DocumentKey(path)
@@ -1404,13 +1421,13 @@ export class Query implements firestore.Query {
         const ref = value as DocumentReference;
         fieldValue = new RefValue(this.firestore._databaseId, ref._key);
       } else {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `Function Query.where() requires its third parameter to be a ` +
-            `string or a DocumentReference if the first parameter is ` +
-            `FieldPath.documentId(), but it was: ` +
-            `${valueDescription(value)}.`
-        );
+        // throw new FirestoreError(
+        //   Code.INVALID_ARGUMENT,
+        //   `Function Query.where() requires its third parameter to be a ` +
+        //     `string or a DocumentReference if the first parameter is ` +
+        //     `FieldPath.documentId(), but it was: ` +
+        //     `${valueDescription(value)}.`
+        // );
       }
     } else {
       fieldValue = this.firestore._dataConverter.parseQueryValue(
@@ -1427,55 +1444,55 @@ export class Query implements firestore.Query {
     field: string | ExternalFieldPath,
     directionStr?: firestore.OrderByDirection
   ): firestore.Query {
-    validateBetweenNumberOfArgs('Query.orderBy', arguments, 1, 2);
-    validateOptionalArgType(
-      'Query.orderBy',
-      'non-empty string',
-      2,
-      directionStr
-    );
+    // validateBetweenNumberOfArgs('Query.orderBy', arguments, 1, 2);
+    // validateOptionalArgType(
+    //   'Query.orderBy',
+    //   'non-empty string',
+    //   2,
+    //   directionStr
+    // );
     let direction: Direction;
     if (directionStr === undefined || directionStr === 'asc') {
       direction = Direction.ASCENDING;
     } else if (directionStr === 'desc') {
       direction = Direction.DESCENDING;
     } else {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Function Query.orderBy() has unknown direction '${directionStr}', ` +
-          `expected 'asc' or 'desc'.`
-      );
+      // throw new FirestoreError(
+      //   Code.INVALID_ARGUMENT,
+      //   `Function Query.orderBy() has unknown direction '${directionStr}', ` +
+      //     `expected 'asc' or 'desc'.`
+      // );
     }
-    if (this._query.startAt !== null) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid query. You must not call Query.startAt() or ' +
-          'Query.startAfter() before calling Query.orderBy().'
-      );
-    }
-    if (this._query.endAt !== null) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid query. You must not call Query.endAt() or ' +
-          'Query.endBefore() before calling Query.orderBy().'
-      );
-    }
+    // if (this._query.startAt !== null) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Invalid query. You must not call Query.startAt() or ' +
+    //       'Query.startAfter() before calling Query.orderBy().'
+    //   );
+    // }
+    // if (this._query.endAt !== null) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Invalid query. You must not call Query.endAt() or ' +
+    //       'Query.endBefore() before calling Query.orderBy().'
+    //   );
+    // }
     const fieldPath = fieldPathFromArgument('Query.orderBy', field);
-    const orderBy = new OrderBy(fieldPath, direction);
+    const orderBy = new OrderBy(fieldPath, direction!);
     this.validateNewOrderBy(orderBy);
     return new Query(this._query.addOrderBy(orderBy), this.firestore);
   }
 
   limit(n: number): firestore.Query {
-    validateExactNumberOfArgs('Query.limit', arguments, 1);
-    validateArgType('Query.limit', 'number', 1, n);
-    if (n <= 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid Query. Query limit (${n}) is invalid. Limit must be ` +
-          'positive.'
-      );
-    }
+    // validateExactNumberOfArgs('Query.limit', arguments, 1);
+    // validateArgType('Query.limit', 'number', 1, n);
+    // if (n <= 0) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Invalid Query. Query limit (${n}) is invalid. Limit must be ` +
+    //       'positive.'
+    //   );
+    // }
     return new Query(this._query.withLimit(n), this.firestore);
   }
 
@@ -1483,7 +1500,7 @@ export class Query implements firestore.Query {
     docOrField: unknown | firestore.DocumentSnapshot,
     ...fields: unknown[]
   ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.startAt', arguments, 1);
+    // validateAtLeastNumberOfArgs('Query.startAt', arguments, 1);
     const bound = this.boundFromDocOrFields(
       'Query.startAt',
       docOrField,
@@ -1497,7 +1514,7 @@ export class Query implements firestore.Query {
     docOrField: unknown | firestore.DocumentSnapshot,
     ...fields: unknown[]
   ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.startAfter', arguments, 1);
+    // validateAtLeastNumberOfArgs('Query.startAfter', arguments, 1);
     const bound = this.boundFromDocOrFields(
       'Query.startAfter',
       docOrField,
@@ -1511,7 +1528,7 @@ export class Query implements firestore.Query {
     docOrField: unknown | firestore.DocumentSnapshot,
     ...fields: unknown[]
   ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.endBefore', arguments, 1);
+    // validateAtLeastNumberOfArgs('Query.endBefore', arguments, 1);
     const bound = this.boundFromDocOrFields(
       'Query.endBefore',
       docOrField,
@@ -1525,7 +1542,7 @@ export class Query implements firestore.Query {
     docOrField: unknown | firestore.DocumentSnapshot,
     ...fields: unknown[]
   ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.endAt', arguments, 1);
+    // validateAtLeastNumberOfArgs('Query.endAt', arguments, 1);
     const bound = this.boundFromDocOrFields(
       'Query.endAt',
       docOrField,
@@ -1537,7 +1554,8 @@ export class Query implements firestore.Query {
 
   isEqual(other: firestore.Query): boolean {
     if (!(other instanceof Query)) {
-      throw invalidClassError('isEqual', 'Query', 1, other);
+      // throw invalidClassError('isEqual', 'Query', 1, other);
+      throw 0;
     }
     return (
       this.firestore === other.firestore && this._query.isEqual(other._query)
@@ -1551,22 +1569,22 @@ export class Query implements firestore.Query {
     fields: unknown[],
     before: boolean
   ): Bound {
-    validateDefined(methodName, 1, docOrField);
+    // validateDefined(methodName, 1, docOrField);
     if (docOrField instanceof DocumentSnapshot) {
-      if (fields.length > 0) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `Too many arguments provided to ${methodName}().`
-        );
-      }
+      // if (fields.length > 0) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     `Too many arguments provided to ${methodName}().`
+      //   );
+      // }
       const snap = docOrField;
-      if (!snap.exists) {
-        throw new FirestoreError(
-          Code.NOT_FOUND,
-          `Can't use a DocumentSnapshot that doesn't exist for ` +
-            `${methodName}().`
-        );
-      }
+      // if (!snap.exists) {
+      //   throw new FirestoreError(
+      //     Code.NOT_FOUND,
+      //     `Can't use a DocumentSnapshot that doesn't exist for ` +
+      //       `${methodName}().`
+      //   );
+      // }
       return this.boundFromDocument(methodName, snap._document!, before);
     } else {
       const allFields = [docOrField].concat(fields);
@@ -1605,24 +1623,25 @@ export class Query implements firestore.Query {
       } else {
         const value = doc.field(orderBy.field);
         if (value instanceof ServerTimestampValue) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. You are trying to start or end a query using a ' +
-              'document for which the field "' +
-              orderBy.field +
-              '" is an uncommitted server timestamp. (Since the value of ' +
-              'this field is unknown, you cannot start/end a query with it.)'
-          );
+          // throw new FirestoreError(
+          //   Code.INVALID_ARGUMENT,
+          //   'Invalid query. You are trying to start or end a query using a ' +
+          //     'document for which the field "' +
+          //     orderBy.field +
+          //     '" is an uncommitted server timestamp. (Since the value of ' +
+          //     'this field is unknown, you cannot start/end a query with it.)'
+          // );
+          throw 0;
         } else if (value !== undefined) {
           components.push(value);
         } else {
           const field = orderBy.field.canonicalString();
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. You are trying to start or end a query using a ` +
-              `document for which the field '${field}' (used as the ` +
-              `orderBy) does not exist.`
-          );
+          // throw new FirestoreError(
+          //   Code.INVALID_ARGUMENT,
+          //   `Invalid query. You are trying to start or end a query using a ` +
+          //     `document for which the field '${field}' (used as the ` +
+          //     `orderBy) does not exist.`
+          // );
         }
       }
     }
@@ -1639,48 +1658,48 @@ export class Query implements firestore.Query {
   ): Bound {
     // Use explicit order by's because it has to match the query the user made
     const orderBy = this._query.explicitOrderBy;
-    if (values.length > orderBy.length) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Too many arguments provided to ${methodName}(). ` +
-          `The number of arguments must be less than or equal to the ` +
-          `number of Query.orderBy() clauses`
-      );
-    }
+    // if (values.length > orderBy.length) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Too many arguments provided to ${methodName}(). ` +
+    //       `The number of arguments must be less than or equal to the ` +
+    //       `number of Query.orderBy() clauses`
+    //   );
+    // }
 
     const components: FieldValue[] = [];
     for (let i = 0; i < values.length; i++) {
       const rawValue = values[i];
       const orderByComponent = orderBy[i];
       if (orderByComponent.field.isKeyField()) {
-        if (typeof rawValue !== 'string') {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. Expected a string for document ID in ` +
-              `${methodName}(), but got a ${typeof rawValue}`
-          );
-        }
-        if (
-          !this._query.isCollectionGroupQuery() &&
-          rawValue.indexOf('/') !== -1
-        ) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. When querying a collection and ordering by FieldPath.documentId(), ` +
-              `the value passed to ${methodName}() must be a plain document ID, but ` +
-              `'${rawValue}' contains a slash.`
-          );
-        }
-        const path = this._query.path.child(ResourcePath.fromString(rawValue));
-        if (!DocumentKey.isDocumentKey(path)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. When querying a collection group and ordering by ` +
-              `FieldPath.documentId(), the value passed to ${methodName}() must result in a ` +
-              `valid document path, but '${path}' is not because it contains an odd number ` +
-              `of segments.`
-          );
-        }
+        // if (typeof rawValue !== 'string') {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Invalid query. Expected a string for document ID in ` +
+        //       `${methodName}(), but got a ${typeof rawValue}`
+        //   );
+        // }
+        // if (
+        //   !this._query.isCollectionGroupQuery() &&
+        //   rawValue.indexOf('/') !== -1
+        // ) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Invalid query. When querying a collection and ordering by FieldPath.documentId(), ` +
+        //       `the value passed to ${methodName}() must be a plain document ID, but ` +
+        //       `'${rawValue}' contains a slash.`
+        //   );
+        // }
+        const path = this._query.path.child(ResourcePath.fromString(rawValue as string));
+        // if (!DocumentKey.isDocumentKey(path)) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     `Invalid query. When querying a collection group and ordering by ` +
+        //       `FieldPath.documentId(), the value passed to ${methodName}() must result in a ` +
+        //       `valid document path, but '${path}' is not because it contains an odd number ` +
+        //       `of segments.`
+        //   );
+        // }
         const key = new DocumentKey(path);
         components.push(new RefValue(this.firestore._databaseId, key));
       } else {
@@ -1713,7 +1732,7 @@ export class Query implements firestore.Query {
   ): Unsubscribe;
 
   onSnapshot(...args: unknown[]): Unsubscribe {
-    validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
+    // validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
     let options: firestore.SnapshotListenOptions = {};
     let observer: PartialObserver<firestore.QuerySnapshot>;
     let currArg = 0;
@@ -1722,34 +1741,34 @@ export class Query implements firestore.Query {
       !isPartialObserver(args[currArg])
     ) {
       options = args[currArg] as firestore.SnapshotListenOptions;
-      validateOptionNames('Query.onSnapshot', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'Query.onSnapshot',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
+      // validateOptionNames('Query.onSnapshot', options, [
+      //   'includeMetadataChanges'
+      // ]);
+      // validateNamedOptionalType(
+      //   'Query.onSnapshot',
+      //   'boolean',
+      //   'includeMetadataChanges',
+      //   options.includeMetadataChanges
+      // );
       currArg++;
     }
 
     if (isPartialObserver(args[currArg])) {
       observer = args[currArg] as PartialObserver<firestore.QuerySnapshot>;
     } else {
-      validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
-      validateOptionalArgType(
-        'Query.onSnapshot',
-        'function',
-        currArg + 1,
-        args[currArg + 1]
-      );
-      validateOptionalArgType(
-        'Query.onSnapshot',
-        'function',
-        currArg + 2,
-        args[currArg + 2]
-      );
+      // validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
+      // validateOptionalArgType(
+      //   'Query.onSnapshot',
+      //   'function',
+      //   currArg + 1,
+      //   args[currArg + 1]
+      // );
+      // validateOptionalArgType(
+      //   'Query.onSnapshot',
+      //   'function',
+      //   currArg + 2,
+      //   args[currArg + 2]
+      // );
       observer = {
         next: args[currArg] as NextFn<firestore.QuerySnapshot>,
         error: args[currArg + 1] as ErrorFn,
@@ -1792,8 +1811,8 @@ export class Query implements firestore.Query {
   }
 
   get(options?: firestore.GetOptions): Promise<firestore.QuerySnapshot> {
-    validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
-    validateGetOptions('Query.get', options);
+    // validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
+    // validateGetOptions('Query.get', options);
     return new Promise(
       (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
         if (options && options.source === 'cache') {
@@ -1853,15 +1872,15 @@ export class Query implements firestore.Query {
     if (filter instanceof RelationFilter) {
       if (filter.isInequality()) {
         const existingField = this._query.getInequalityFilterField();
-        if (existingField !== null && !existingField.isEqual(filter.field)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. All where filters with an inequality' +
-              ' (<, <=, >, or >=) must be on the same field. But you have' +
-              ` inequality filters on '${existingField.toString()}'` +
-              ` and '${filter.field.toString()}'`
-          );
-        }
+        // if (existingField !== null && !existingField.isEqual(filter.field)) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Invalid query. All where filters with an inequality' +
+        //       ' (<, <=, >, or >=) must be on the same field. But you have' +
+        //       ` inequality filters on '${existingField.toString()}'` +
+        //       ` and '${filter.field.toString()}'`
+        //   );
+        // }
 
         const firstOrderByField = this._query.getFirstOrderByField();
         if (firstOrderByField !== null) {
@@ -1871,13 +1890,13 @@ export class Query implements firestore.Query {
           );
         }
       } else if (filter.op === RelationOp.ARRAY_CONTAINS) {
-        if (this._query.hasArrayContainsFilter()) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. Queries only support a single array-contains ' +
-              'filter.'
-          );
-        }
+        // if (this._query.hasArrayContainsFilter()) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Invalid query. Queries only support a single array-contains ' +
+        //       'filter.'
+        //   );
+        // }
       }
     }
   }
@@ -1896,16 +1915,16 @@ export class Query implements firestore.Query {
     inequality: FieldPath,
     orderBy: FieldPath
   ): void {
-    if (!orderBy.isEqual(inequality)) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid query. You have a where filter with an inequality ` +
-          `(<, <=, >, or >=) on field '${inequality.toString()}' ` +
-          `and so you must also use '${inequality.toString()}' ` +
-          `as your first Query.orderBy(), but your first Query.orderBy() ` +
-          `is on field '${orderBy.toString()}' instead.`
-      );
-    }
+    // if (!orderBy.isEqual(inequality)) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Invalid query. You have a where filter with an inequality ` +
+    //       `(<, <=, >, or >=) on field '${inequality.toString()}' ` +
+    //       `and so you must also use '${inequality.toString()}' ` +
+    //       `as your first Query.orderBy(), but your first Query.orderBy() ` +
+    //       `is on field '${orderBy.toString()}' instead.`
+    //   );
+    // }
   }
 }
 
@@ -1944,8 +1963,8 @@ export class QuerySnapshot implements firestore.QuerySnapshot {
     callback: (result: firestore.QueryDocumentSnapshot) => void,
     thisArg?: unknown
   ): void {
-    validateBetweenNumberOfArgs('QuerySnapshot.forEach', arguments, 1, 2);
-    validateArgType('QuerySnapshot.forEach', 'function', 1, callback);
+    // validateBetweenNumberOfArgs('QuerySnapshot.forEach', arguments, 1, 2);
+    // validateArgType('QuerySnapshot.forEach', 'function', 1, callback);
     this._snapshot.docs.forEach(doc => {
       callback.call(thisArg, this.convertToDocumentImpl(doc));
     });
@@ -1959,28 +1978,28 @@ export class QuerySnapshot implements firestore.QuerySnapshot {
     options?: firestore.SnapshotListenOptions
   ): firestore.DocumentChange[] {
     if (options) {
-      validateOptionNames('QuerySnapshot.docChanges', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'QuerySnapshot.docChanges',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
+      // validateOptionNames('QuerySnapshot.docChanges', options, [
+      //   'includeMetadataChanges'
+      // ]);
+      // validateNamedOptionalType(
+      //   'QuerySnapshot.docChanges',
+      //   'boolean',
+      //   'includeMetadataChanges',
+      //   options.includeMetadataChanges
+      // );
     }
 
     const includeMetadataChanges = !!(
       options && options.includeMetadataChanges
     );
 
-    if (includeMetadataChanges && this._snapshot.excludesMetadataChanges) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'To include metadata changes with your document changes, you must ' +
-          'also pass { includeMetadataChanges:true } to onSnapshot().'
-      );
-    }
+    // if (includeMetadataChanges && this._snapshot.excludesMetadataChanges) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'To include metadata changes with your document changes, you must ' +
+    //       'also pass { includeMetadataChanges:true } to onSnapshot().'
+    //   );
+    // }
 
     if (
       !this._cachedChanges ||
@@ -2000,7 +2019,8 @@ export class QuerySnapshot implements firestore.QuerySnapshot {
   /** Check the equality. The call can be very expensive. */
   isEqual(other: firestore.QuerySnapshot): boolean {
     if (!(other instanceof QuerySnapshot)) {
-      throw invalidClassError('isEqual', 'QuerySnapshot', 1, other);
+      // throw invalidClassError('isEqual', 'QuerySnapshot', 1, other);
+      throw 0;
     }
 
     return (
@@ -2027,48 +2047,48 @@ export class QuerySnapshot implements firestore.QuerySnapshot {
 // properties (including Symbol.iterator) to throw a custom error message. In
 // ~6 months we can delete the custom error as most folks will have hopefully
 // migrated.
-function throwDocChangesMethodError(): never {
-  throw new FirestoreError(
-    Code.INVALID_ARGUMENT,
-    'QuerySnapshot.docChanges has been changed from a property into a ' +
-      'method, so usages like "querySnapshot.docChanges" should become ' +
-      '"querySnapshot.docChanges()"'
-  );
-}
+// function throwDocChangesMethodError(): never {
+//   throw new FirestoreError(
+//     Code.INVALID_ARGUMENT,
+//     'QuerySnapshot.docChanges has been changed from a property into a ' +
+//       'method, so usages like "querySnapshot.docChanges" should become ' +
+//       '"querySnapshot.docChanges()"'
+//   );
+// }
 
-const docChangesPropertiesToOverride = [
-  'length',
-  'forEach',
-  'map',
-  ...(typeof Symbol !== 'undefined' ? [Symbol.iterator] : [])
-];
-docChangesPropertiesToOverride.forEach(property => {
-  /**
-   * We are (re-)defining properties on QuerySnapshot.prototype.docChanges which
-   * is a Function. This could fail, in particular in the case of 'length' which
-   * already exists on Function.prototype and on IE11 is improperly defined with
-   * `{ configurable: false }`. So we wrap this in a try/catch to ensure that we
-   * still have a functional SDK.
-   */
-  try {
-    Object.defineProperty(QuerySnapshot.prototype.docChanges, property, {
-      get: () => throwDocChangesMethodError()
-    });
-  } catch (err) {} // Ignore this failure intentionally
-});
+// const docChangesPropertiesToOverride = [
+//   'length',
+//   'forEach',
+//   'map',
+//   ...(typeof Symbol !== 'undefined' ? [Symbol.iterator] : [])
+// ];
+// docChangesPropertiesToOverride.forEach(property => {
+//   /**
+//    * We are (re-)defining properties on QuerySnapshot.prototype.docChanges which
+//    * is a Function. This could fail, in particular in the case of 'length' which
+//    * already exists on Function.prototype and on IE11 is improperly defined with
+//    * `{ configurable: false }`. So we wrap this in a try/catch to ensure that we
+//    * still have a functional SDK.
+//    */
+//   try {
+//     Object.defineProperty(QuerySnapshot.prototype.docChanges, property, {
+//       get: () => throwDocChangesMethodError()
+//     });
+//   } catch (err) {} // Ignore this failure intentionally
+// });
 
 export class CollectionReference extends Query
   implements firestore.CollectionReference {
   constructor(path: ResourcePath, firestore: Firestore) {
     super(InternalQuery.atPath(path), firestore);
-    if (path.length % 2 !== 1) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid collection reference. Collection ' +
-          'references must have an odd number of segments, but ' +
-          `${path.canonicalString()} has ${path.length}`
-      );
-    }
+    // if (path.length % 2 !== 1) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Invalid collection reference. Collection ' +
+    //       'references must have an odd number of segments, but ' +
+    //       `${path.canonicalString()} has ${path.length}`
+    //   );
+    // }
   }
 
   get id(): string {
@@ -2089,24 +2109,24 @@ export class CollectionReference extends Query
   }
 
   doc(pathString?: string): firestore.DocumentReference {
-    validateBetweenNumberOfArgs('CollectionReference.doc', arguments, 0, 1);
+    // validateBetweenNumberOfArgs('CollectionReference.doc', arguments, 0, 1);
     // We allow omission of 'pathString' but explicitly prohibit passing in both
     // 'undefined' and 'null'.
     if (arguments.length === 0) {
       pathString = AutoId.newId();
     }
-    validateArgType(
-      'CollectionReference.doc',
-      'non-empty string',
-      1,
-      pathString
-    );
-    if (pathString === '') {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Document path must be a non-empty string'
-      );
-    }
+    // validateArgType(
+    //   'CollectionReference.doc',
+    //   'non-empty string',
+    //   1,
+    //   pathString
+    // );
+    // if (pathString === '') {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Document path must be a non-empty string'
+    //   );
+    // }
     const path = ResourcePath.fromString(pathString!);
     return DocumentReference.forPath(
       this._query.path.child(path),
@@ -2115,97 +2135,97 @@ export class CollectionReference extends Query
   }
 
   add(value: firestore.DocumentData): Promise<firestore.DocumentReference> {
-    validateExactNumberOfArgs('CollectionReference.add', arguments, 1);
-    validateArgType('CollectionReference.add', 'object', 1, value);
+    // validateExactNumberOfArgs('CollectionReference.add', arguments, 1);
+    // validateArgType('CollectionReference.add', 'object', 1, value);
     const docRef = this.doc();
     return docRef.set(value).then(() => docRef);
   }
 }
 
-function validateSetOptions(
-  methodName: string,
-  options: firestore.SetOptions | undefined
-): firestore.SetOptions {
-  if (options === undefined) {
-    return {
-      merge: false
-    };
-  }
+// function validateSetOptions(
+//   methodName: string,
+//   options: firestore.SetOptions | undefined
+// ): firestore.SetOptions {
+//   if (options === undefined) {
+//     return {
+//       merge: false
+//     };
+//   }
 
-  validateOptionNames(methodName, options, ['merge', 'mergeFields']);
-  validateNamedOptionalType(methodName, 'boolean', 'merge', options.merge);
-  validateOptionalArrayElements(
-    methodName,
-    'mergeFields',
-    'a string or a FieldPath',
-    options.mergeFields,
-    element =>
-      typeof element === 'string' || element instanceof ExternalFieldPath
-  );
+//   validateOptionNames(methodName, options, ['merge', 'mergeFields']);
+//   validateNamedOptionalType(methodName, 'boolean', 'merge', options.merge);
+//   validateOptionalArrayElements(
+//     methodName,
+//     'mergeFields',
+//     'a string or a FieldPath',
+//     options.mergeFields,
+//     element =>
+//       typeof element === 'string' || element instanceof ExternalFieldPath
+//   );
 
-  if (options.mergeFields !== undefined && options.merge !== undefined) {
-    throw new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      `Invalid options passed to function ${methodName}(): You cannot specify both "merge" ` +
-        `and "mergeFields".`
-    );
-  }
+//   if (options.mergeFields !== undefined && options.merge !== undefined) {
+//     throw new FirestoreError(
+//       Code.INVALID_ARGUMENT,
+//       `Invalid options passed to function ${methodName}(): You cannot specify both "merge" ` +
+//         `and "mergeFields".`
+//     );
+//   }
 
-  return options;
-}
+//   return options;
+// }
 
-function validateSnapshotOptions(
-  methodName: string,
-  options: firestore.SnapshotOptions | undefined
-): firestore.SnapshotOptions {
-  if (options === undefined) {
-    return {};
-  }
+// function validateSnapshotOptions(
+//   methodName: string,
+//   options: firestore.SnapshotOptions | undefined
+// ): firestore.SnapshotOptions {
+//   if (options === undefined) {
+//     return {};
+//   }
 
-  validateOptionNames(methodName, options, ['serverTimestamps']);
-  validateNamedOptionalPropertyEquals(
-    methodName,
-    'options',
-    'serverTimestamps',
-    options.serverTimestamps,
-    ['estimate', 'previous', 'none']
-  );
-  return options;
-}
+//   validateOptionNames(methodName, options, ['serverTimestamps']);
+//   validateNamedOptionalPropertyEquals(
+//     methodName,
+//     'options',
+//     'serverTimestamps',
+//     options.serverTimestamps,
+//     ['estimate', 'previous', 'none']
+//   );
+//   return options;
+// }
 
-function validateGetOptions(
-  methodName: string,
-  options: firestore.GetOptions | undefined
-): void {
-  validateOptionalArgType(methodName, 'object', 1, options);
-  if (options) {
-    validateOptionNames(methodName, options, ['source']);
-    validateNamedOptionalPropertyEquals(
-      methodName,
-      'options',
-      'source',
-      options.source,
-      ['default', 'server', 'cache']
-    );
-  }
-}
+// function validateGetOptions(
+//   methodName: string,
+//   options: firestore.GetOptions | undefined
+// ): void {
+//   validateOptionalArgType(methodName, 'object', 1, options);
+//   if (options) {
+//     validateOptionNames(methodName, options, ['source']);
+//     validateNamedOptionalPropertyEquals(
+//       methodName,
+//       'options',
+//       'source',
+//       options.source,
+//       ['default', 'server', 'cache']
+//     );
+//   }
+// }
 
-function validateReference(
-  methodName: string,
-  documentRef: firestore.DocumentReference,
-  firestore: Firestore
-): DocumentReference {
-  if (!(documentRef instanceof DocumentReference)) {
-    throw invalidClassError(methodName, 'DocumentReference', 1, documentRef);
-  } else if (documentRef.firestore !== firestore) {
-    throw new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      'Provided document reference is from a different Firestore instance.'
-    );
-  } else {
-    return documentRef;
-  }
-}
+// function validateReference(
+//   methodName: string,
+//   documentRef: firestore.DocumentReference,
+//   firestore: Firestore
+// ): DocumentReference {
+//   if (!(documentRef instanceof DocumentReference)) {
+//     throw invalidClassError(methodName, 'DocumentReference', 1, documentRef);
+//   } else if (documentRef.firestore !== firestore) {
+//     throw new FirestoreError(
+//       Code.INVALID_ARGUMENT,
+//       'Provided document reference is from a different Firestore instance.'
+//     );
+//   } else {
+//     return documentRef;
+//   }
+// }
 
 /**
  * Calculates the array of firestore.DocumentChange's for a given ViewSnapshot.

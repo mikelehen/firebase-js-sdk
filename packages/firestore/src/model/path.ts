@@ -16,7 +16,7 @@
  */
 
 import { assert, fail } from '../util/assert';
-import { Code, FirestoreError } from '../util/error';
+// import { Code, FirestoreError } from '../util/error';
 
 export const DOCUMENT_KEY_NAME = '__name__';
 
@@ -206,12 +206,12 @@ export class ResourcePath extends Path {
     // sequences (e.g. __id123__) and just passes them through raw (they exist
     // for legacy reasons and should not be used frequently).
 
-    if (path.indexOf('//') >= 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid path (${path}). Paths must not contain // in them.`
-      );
-    }
+    // if (path.indexOf('//') >= 0) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     `Invalid path (${path}). Paths must not contain // in them.`
+    //   );
+    // }
 
     // We may still have an empty segment at the beginning or end if they had a
     // leading or trailing slash (which we allow).
@@ -281,13 +281,13 @@ export class FieldPath extends Path {
     let i = 0;
 
     const addCurrentSegment = () => {
-      if (current.length === 0) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `Invalid field path (${path}). Paths must not be empty, begin ` +
-            `with '.', end with '.', or contain '..'`
-        );
-      }
+      // if (current.length === 0) {
+      //   throw new FirestoreError(
+      //     Code.INVALID_ARGUMENT,
+      //     `Invalid field path (${path}). Paths must not be empty, begin ` +
+      //       `with '.', end with '.', or contain '..'`
+      //   );
+      // }
       segments.push(current);
       current = '';
     };
@@ -297,19 +297,19 @@ export class FieldPath extends Path {
     while (i < path.length) {
       const c = path[i];
       if (c === '\\') {
-        if (i + 1 === path.length) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Path has trailing escape character: ' + path
-          );
-        }
+        // if (i + 1 === path.length) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Path has trailing escape character: ' + path
+        //   );
+        // }
         const next = path[i + 1];
-        if (!(next === '\\' || next === '.' || next === '`')) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Path has invalid escape sequence: ' + path
-          );
-        }
+        // if (!(next === '\\' || next === '.' || next === '`')) {
+        //   throw new FirestoreError(
+        //     Code.INVALID_ARGUMENT,
+        //     'Path has invalid escape sequence: ' + path
+        //   );
+        // }
         current += next;
         i += 2;
       } else if (c === '`') {
@@ -325,12 +325,12 @@ export class FieldPath extends Path {
     }
     addCurrentSegment();
 
-    if (inBackticks) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Unterminated ` in path: ' + path
-      );
-    }
+    // if (inBackticks) {
+    //   throw new FirestoreError(
+    //     Code.INVALID_ARGUMENT,
+    //     'Unterminated ` in path: ' + path
+    //   );
+    // }
 
     return new FieldPath(segments);
   }

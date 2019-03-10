@@ -20,10 +20,15 @@ import replace from 'rollup-plugin-replace';
 import copy from 'rollup-plugin-copy-assets';
 import pkg from './package.json';
 import { dirname, resolve } from 'path';
+import { assertTransformer } from './assert-transformer';
 
 const plugins = [
   typescript({
-    typescript: require('typescript')
+    typescript: require('typescript'),
+    transformers: [service => ({
+      before: [ assertTransformer(service.getProgram()) ],
+      after: []
+    })]
   })
 ];
 

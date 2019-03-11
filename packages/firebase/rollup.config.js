@@ -57,6 +57,19 @@ const external = Object.keys(pkg.dependencies || {});
  */
 const GLOBAL_NAME = 'firebase';
 
+const uglifyOptions = {
+  compress: {
+    passes: 3
+  },
+  toplevel: true,
+  mangle: {
+    toplevel: true,
+    properties: {
+      keep_quoted: true
+    }
+  }
+};
+
 /**
  * Individual Component Builds
  */
@@ -84,7 +97,7 @@ const appBuilds = [
       format: 'umd',
       name: GLOBAL_NAME
     },
-    plugins: [...plugins, uglify()]
+    plugins: [...plugins, uglify(uglifyOptions)]
   }
 ];
 
@@ -149,7 +162,7 @@ const componentBuilds = components
               );
             }`
         },
-        plugins: [...plugins, uglify()],
+        plugins: [...plugins, uglify(uglifyOptions)],
         external: ['@firebase/app']
       }
     ];
@@ -180,7 +193,7 @@ const completeBuilds = [
       sourcemap: true,
       name: GLOBAL_NAME
     },
-    plugins: [...plugins, uglify()]
+    plugins: [...plugins, uglify(uglifyOptions)]
   },
   /**
    * App Node.js Builds

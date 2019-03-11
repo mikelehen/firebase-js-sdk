@@ -188,11 +188,11 @@ export interface SharedClientState {
  * WebStorage serialization. The UserId and BatchId is omitted as it is
  * encoded as part of the key.
  */
-interface MutationMetadataSchema {
-  state: MutationBatchState;
-  error?: { code: string; message: string }; // Only set when state === 'rejected'
-  updateTimeMs: number;
-}
+// interface MutationMetadataSchema {
+//   state: MutationBatchState;
+//   error?: { code: string; message: string }; // Only set when state === 'rejected'
+//   updateTimeMs: number;
+// }
 
 /**
  * Holds the state of a mutation batch, including its user ID, batch ID and
@@ -216,76 +216,76 @@ export class MutationMetadata {
    * Parses a MutationMetadata from its JSON representation in WebStorage.
    * Logs a warning and returns null if the format of the data is not valid.
    */
-  static fromWebStorageEntry(
-    user: User,
-    batchId: BatchId,
-    value: string
-  ): MutationMetadata | null {
-    const mutationBatch = JSON.parse(value) as MutationMetadataSchema;
+//   static fromWebStorageEntry(
+//     user: User,
+//     batchId: BatchId,
+//     value: string
+//   ): MutationMetadata | null {
+//     const mutationBatch = JSON.parse(value) as MutationMetadataSchema;
 
-    let validData =
-      typeof mutationBatch === 'object' &&
-      ['pending', 'acknowledged', 'rejected'].indexOf(mutationBatch.state) !==
-        -1 &&
-      (mutationBatch.error === undefined ||
-        typeof mutationBatch.error === 'object');
+//     let validData =
+//       typeof mutationBatch === 'object' &&
+//       ['pending', 'acknowledged', 'rejected'].indexOf(mutationBatch.state) !==
+//         -1 &&
+//       (mutationBatch.error === undefined ||
+//         typeof mutationBatch.error === 'object');
 
-    let firestoreError: FirestoreError | undefined = undefined;
+//     let firestoreError: FirestoreError | undefined = undefined;
 
-    if (validData && mutationBatch.error) {
-      validData =
-        typeof mutationBatch.error.message === 'string' &&
-        typeof mutationBatch.error.code === 'string';
-      if (validData) {
-        firestoreError = new FirestoreError(
-          mutationBatch.error.code as Code,
-          mutationBatch.error.message
-        );
-      }
-    }
+//     if (validData && mutationBatch.error) {
+//       validData =
+//         typeof mutationBatch.error.message === 'string' &&
+//         typeof mutationBatch.error.code === 'string';
+//       if (validData) {
+//         firestoreError = new FirestoreError(
+//           mutationBatch.error.code as Code,
+//           mutationBatch.error.message
+//         );
+//       }
+//     }
 
-    if (validData) {
-      return new MutationMetadata(
-        user,
-        batchId,
-        mutationBatch.state,
-        firestoreError
-      );
-    } else {
-      error(
-        LOG_TAG,
-        `Failed to parse mutation state for ID '${batchId}': ${value}`
-      );
-      return null;
-    }
-  }
+//     if (validData) {
+//       return new MutationMetadata(
+//         user,
+//         batchId,
+//         mutationBatch.state,
+//         firestoreError
+//       );
+//     } else {
+//       error(
+//         LOG_TAG,
+//         `Failed to parse mutation state for ID '${batchId}': ${value}`
+//       );
+//       return null;
+//     }
+//   }
 
-  toWebStorageJSON(): string {
-    const batchMetadata: MutationMetadataSchema = {
-      state: this.state,
-      updateTimeMs: Date.now() // Modify the existing value to trigger update.
-    };
+//   toWebStorageJSON(): string {
+//     const batchMetadata: MutationMetadataSchema = {
+//       state: this.state,
+//       updateTimeMs: Date.now() // Modify the existing value to trigger update.
+//     };
 
-    if (this.error) {
-      batchMetadata.error = {
-        code: this.error.code,
-        message: this.error.message
-      };
-    }
+//     if (this.error) {
+//       batchMetadata.error = {
+//         code: this.error.code,
+//         message: this.error.message
+//       };
+//     }
 
-    return JSON.stringify(batchMetadata);
-  }
+//     return JSON.stringify(batchMetadata);
+//   }
 }
 
-/**
- * The JSON representation of a query target's state as used during WebStorage
- * serialization. The TargetId is omitted as it is encoded as part of the key.
- */
-interface QueryTargetStateSchema {
-  state: QueryTargetState;
-  error?: { code: string; message: string }; // Only set when state === 'rejected'
-  updateTimeMs: number;
-}
+// /**
+//  * The JSON representation of a query target's state as used during WebStorage
+//  * serialization. The TargetId is omitted as it is encoded as part of the key.
+//  */
+// interface QueryTargetStateSchema {
+//   state: QueryTargetState;
+//   error?: { code: string; message: string }; // Only set when state === 'rejected'
+//   updateTimeMs: number;
+// }
 
 /**
  * Holds the state of a query target, including its target ID and whether the
@@ -304,67 +304,67 @@ export class QueryTargetMetadata {
     );
   }
 
-  /**
-   * Parses a QueryTargetMetadata from its JSON representation in WebStorage.
-   * Logs a warning and returns null if the format of the data is not valid.
-   */
-  static fromWebStorageEntry(
-    targetId: TargetId,
-    value: string
-  ): QueryTargetMetadata | null {
-    const targetState = JSON.parse(value) as QueryTargetStateSchema;
+  // /**
+  //  * Parses a QueryTargetMetadata from its JSON representation in WebStorage.
+  //  * Logs a warning and returns null if the format of the data is not valid.
+  //  */
+  // static fromWebStorageEntry(
+  //   targetId: TargetId,
+  //   value: string
+  // ): QueryTargetMetadata | null {
+  //   const targetState = JSON.parse(value) as QueryTargetStateSchema;
 
-    let validData =
-      typeof targetState === 'object' &&
-      ['not-current', 'current', 'rejected'].indexOf(targetState.state) !==
-        -1 &&
-      (targetState.error === undefined ||
-        typeof targetState.error === 'object');
+  //   let validData =
+  //     typeof targetState === 'object' &&
+  //     ['not-current', 'current', 'rejected'].indexOf(targetState.state) !==
+  //       -1 &&
+  //     (targetState.error === undefined ||
+  //       typeof targetState.error === 'object');
 
-    let firestoreError: FirestoreError | undefined = undefined;
+  //   let firestoreError: FirestoreError | undefined = undefined;
 
-    if (validData && targetState.error) {
-      validData =
-        typeof targetState.error.message === 'string' &&
-        typeof targetState.error.code === 'string';
-      if (validData) {
-        firestoreError = new FirestoreError(
-          targetState.error.code as Code,
-          targetState.error.message
-        );
-      }
-    }
+  //   if (validData && targetState.error) {
+  //     validData =
+  //       typeof targetState.error.message === 'string' &&
+  //       typeof targetState.error.code === 'string';
+  //     if (validData) {
+  //       firestoreError = new FirestoreError(
+  //         targetState.error.code as Code,
+  //         targetState.error.message
+  //       );
+  //     }
+  //   }
 
-    if (validData) {
-      return new QueryTargetMetadata(
-        targetId,
-        targetState.state,
-        firestoreError
-      );
-    } else {
-      error(
-        LOG_TAG,
-        `Failed to parse target state for ID '${targetId}': ${value}`
-      );
-      return null;
-    }
-  }
+  //   if (validData) {
+  //     return new QueryTargetMetadata(
+  //       targetId,
+  //       targetState.state,
+  //       firestoreError
+  //     );
+  //   } else {
+  //     error(
+  //       LOG_TAG,
+  //       `Failed to parse target state for ID '${targetId}': ${value}`
+  //     );
+  //     return null;
+  //   }
+  // }
 
-  toWebStorageJSON(): string {
-    const targetState: QueryTargetStateSchema = {
-      state: this.state,
-      updateTimeMs: Date.now() // Modify the existing value to trigger update.
-    };
+  // toWebStorageJSON(): string {
+  //   const targetState: QueryTargetStateSchema = {
+  //     state: this.state,
+  //     updateTimeMs: Date.now() // Modify the existing value to trigger update.
+  //   };
 
-    if (this.error) {
-      targetState.error = {
-        code: this.error.code,
-        message: this.error.message
-      };
-    }
+  //   if (this.error) {
+  //     targetState.error = {
+  //       code: this.error.code,
+  //       message: this.error.message
+  //     };
+  //   }
 
-    return JSON.stringify(targetState);
-  }
+  //   return JSON.stringify(targetState);
+  // }
 }
 
 /**
@@ -390,60 +390,60 @@ export interface ClientState {
  * This class represents the immutable ClientState for a client read from
  * WebStorage, containing the list of active query targets.
  */
-class RemoteClientState implements ClientState {
-  private constructor(
-    readonly clientId: ClientId,
-    readonly activeTargetIds: TargetIdSet
-  ) {}
+// class RemoteClientState implements ClientState {
+//   private constructor(
+//     readonly clientId: ClientId,
+//     readonly activeTargetIds: TargetIdSet
+//   ) {}
 
-  /**
-   * Parses a RemoteClientState from the JSON representation in WebStorage.
-   * Logs a warning and returns null if the format of the data is not valid.
-   */
-  static fromWebStorageEntry(
-    clientId: ClientId,
-    value: string
-  ): RemoteClientState | null {
-    const clientState = JSON.parse(value) as ClientStateSchema;
+//   /**
+//    * Parses a RemoteClientState from the JSON representation in WebStorage.
+//    * Logs a warning and returns null if the format of the data is not valid.
+//    */
+//   static fromWebStorageEntry(
+//     clientId: ClientId,
+//     value: string
+//   ): RemoteClientState | null {
+//     const clientState = JSON.parse(value) as ClientStateSchema;
 
-    let validData =
-      typeof clientState === 'object' &&
-      clientState.activeTargetIds instanceof Array;
+//     let validData =
+//       typeof clientState === 'object' &&
+//       clientState.activeTargetIds instanceof Array;
 
-    let activeTargetIdsSet = targetIdSet();
+//     let activeTargetIdsSet = targetIdSet();
 
-    for (let i = 0; validData && i < clientState.activeTargetIds.length; ++i) {
-      validData = isSafeInteger(clientState.activeTargetIds[i]);
-      activeTargetIdsSet = activeTargetIdsSet.add(
-        clientState.activeTargetIds[i]
-      );
-    }
+//     for (let i = 0; validData && i < clientState.activeTargetIds.length; ++i) {
+//       validData = isSafeInteger(clientState.activeTargetIds[i]);
+//       activeTargetIdsSet = activeTargetIdsSet.add(
+//         clientState.activeTargetIds[i]
+//       );
+//     }
 
-    if (validData) {
-      return new RemoteClientState(clientId, activeTargetIdsSet);
-    } else {
-      error(
-        LOG_TAG,
-        `Failed to parse client data for instance '${clientId}': ${value}`
-      );
-      return null;
-    }
-  }
-}
+//     if (validData) {
+//       return new RemoteClientState(clientId, activeTargetIdsSet);
+//     } else {
+//       error(
+//         LOG_TAG,
+//         `Failed to parse client data for instance '${clientId}': ${value}`
+//       );
+//       return null;
+//     }
+//   }
+// }
 
 /**
  * The JSON representation of the system's online state, as written by the
  * primary client.
  */
-export interface SharedOnlineStateSchema {
-  /**
-   * The clientId of the client that wrote this onlineState value. Tracked so
-   * that on startup, clients can check if this client is still active when
-   * determining whether to apply this value or not.
-   */
-  readonly clientId: string;
-  readonly onlineState: string;
-}
+// export interface SharedOnlineStateSchema {
+//   /**
+//    * The clientId of the client that wrote this onlineState value. Tracked so
+//    * that on startup, clients can check if this client is still active when
+//    * determining whether to apply this value or not.
+//    */
+//   readonly clientId: string;
+//   readonly onlineState: string;
+// }
 
 /**
  * This class represents the online state for all clients participating in
@@ -453,28 +453,28 @@ export interface SharedOnlineStateSchema {
 export class SharedOnlineState {
   constructor(readonly clientId: string, readonly onlineState: OnlineState) {}
 
-  /**
-   * Parses a SharedOnlineState from its JSON representation in WebStorage.
-   * Logs a warning and returns null if the format of the data is not valid.
-   */
-  static fromWebStorageEntry(value: string): SharedOnlineState | null {
-    const onlineState = JSON.parse(value) as SharedOnlineStateSchema;
+  // /**
+  //  * Parses a SharedOnlineState from its JSON representation in WebStorage.
+  //  * Logs a warning and returns null if the format of the data is not valid.
+  //  */
+  // static fromWebStorageEntry(value: string): SharedOnlineState | null {
+  //   const onlineState = JSON.parse(value) as SharedOnlineStateSchema;
 
-    const validData =
-      typeof onlineState === 'object' &&
-      OnlineState[onlineState.onlineState] !== undefined &&
-      typeof onlineState.clientId === 'string';
+  //   const validData =
+  //     typeof onlineState === 'object' &&
+  //     OnlineState[onlineState.onlineState] !== undefined &&
+  //     typeof onlineState.clientId === 'string';
 
-    if (validData) {
-      return new SharedOnlineState(
-        onlineState.clientId,
-        OnlineState[onlineState.onlineState]
-      );
-    } else {
-      error(LOG_TAG, `Failed to parse online state: ${value}`);
-      return null;
-    }
-  }
+  //   if (validData) {
+  //     return new SharedOnlineState(
+  //       onlineState.clientId,
+  //       OnlineState[onlineState.onlineState]
+  //     );
+  //   } else {
+  //     error(LOG_TAG, `Failed to parse online state: ${value}`);
+  //     return null;
+  //   }
+  // }
 }
 
 /**
@@ -503,605 +503,605 @@ export class LocalClientState implements ClientState {
     this.activeTargetIds = this.activeTargetIds.delete(targetId);
   }
 
-  /**
-   * Converts this entry into a JSON-encoded format we can use for WebStorage.
-   * Does not encode `clientId` as it is part of the key in WebStorage.
-   */
-  toWebStorageJSON(): string {
-    const data: ClientStateSchema = {
-      activeTargetIds: this.activeTargetIds.toArray(),
-      updateTimeMs: Date.now() // Modify the existing value to trigger update.
-    };
-    return JSON.stringify(data);
-  }
+  // /**
+  //  * Converts this entry into a JSON-encoded format we can use for WebStorage.
+  //  * Does not encode `clientId` as it is part of the key in WebStorage.
+  //  */
+  // toWebStorageJSON(): string {
+  //   const data: ClientStateSchema = {
+  //     activeTargetIds: this.activeTargetIds.toArray(),
+  //     updateTimeMs: Date.now() // Modify the existing value to trigger update.
+  //   };
+  //   return JSON.stringify(data);
+  // }
 }
 
-/**
- * `WebStorageSharedClientState` uses WebStorage (window.localStorage) as the
- * backing store for the SharedClientState. It keeps track of all active
- * clients and supports modifications of the local client's data.
- */
-export class WebStorageSharedClientState implements SharedClientState {
-  syncEngine: SharedClientStateSyncer | null = null;
-  onlineStateHandler: ((onlineState: OnlineState) => void) | null = null;
-  sequenceNumberHandler:
-    | ((sequenceNumber: ListenSequenceNumber) => void)
-    | null = null;
-
-  private readonly storage: Storage;
-  private readonly localClientStorageKey: string;
-  private readonly sequenceNumberKey: string;
-  private readonly activeClients: { [key: string]: ClientState } = {};
-  private readonly storageListener = this.handleWebStorageEvent.bind(this);
-  private readonly onlineStateKey: string;
-  private readonly clientStateKeyRe: RegExp;
-  private readonly mutationBatchKeyRe: RegExp;
-  private readonly queryTargetKeyRe: RegExp;
-  private started = false;
-  private currentUser: User;
-
-  /**
-   * Captures WebStorage events that occur before `start()` is called. These
-   * events are replayed once `WebStorageSharedClientState` is started.
-   */
-  private earlyEvents: StorageEvent[] = [];
-
-  constructor(
-    private readonly queue: AsyncQueue,
-    private readonly platform: Platform,
-    private readonly persistenceKey: string,
-    private readonly localClientId: ClientId,
-    initialUser: User
-  ) {
-    if (!WebStorageSharedClientState.isAvailable(this.platform)) {
-      throw new FirestoreError(
-        Code.UNIMPLEMENTED,
-        'LocalStorage is not available on this platform.'
-      );
-    }
-    // Escape the special characters mentioned here:
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    const escapedPersistenceKey = persistenceKey.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      '\\$&'
-    );
-
-    this.storage = this.platform.window!.localStorage;
-    this.currentUser = initialUser;
-    this.localClientStorageKey = this.toWebStorageClientStateKey(
-      this.localClientId
-    );
-    this.sequenceNumberKey = `${SEQUENCE_NUMBER_KEY_PREFIX}_${persistenceKey}`;
-    this.activeClients[this.localClientId] = new LocalClientState();
-
-    this.clientStateKeyRe = new RegExp(
-      `^${CLIENT_STATE_KEY_PREFIX}_${escapedPersistenceKey}_([^_]*)$`
-    );
-    this.mutationBatchKeyRe = new RegExp(
-      `^${MUTATION_BATCH_KEY_PREFIX}_${escapedPersistenceKey}_(\\d+)(?:_(.*))?$`
-    );
-    this.queryTargetKeyRe = new RegExp(
-      `^${QUERY_TARGET_KEY_PREFIX}_${escapedPersistenceKey}_(\\d+)$`
-    );
-
-    this.onlineStateKey = `${ONLINE_STATE_KEY_PREFIX}_${persistenceKey}`;
-
-    // Rather than adding the storage observer during start(), we add the
-    // storage observer during initialization. This ensures that we collect
-    // events before other components populate their initial state (during their
-    // respective start() calls). Otherwise, we might for example miss a
-    // mutation that is added after LocalStore's start() processed the existing
-    // mutations but before we observe WebStorage events.
-    this.platform.window!.addEventListener('storage', this.storageListener);
-  }
-
-  /** Returns 'true' if WebStorage is available in the current environment. */
-  static isAvailable(platform: Platform): boolean {
-    return !!(platform.window && platform.window.localStorage != null);
-  }
-
-  async start(): Promise<void> {
-    assert(!this.started, 'WebStorageSharedClientState already started');
-    assert(
-      this.syncEngine !== null,
-      'syncEngine property must be set before calling start()'
-    );
-    assert(
-      this.onlineStateHandler !== null,
-      'onlineStateHandler property must be set before calling start()'
-    );
-
-    // Retrieve the list of existing clients to backfill the data in
-    // SharedClientState.
-    const existingClients = await this.syncEngine!.getActiveClients();
-
-    for (const clientId of existingClients) {
-      if (clientId === this.localClientId) {
-        continue;
-      }
-
-      const storageItem = this.getItem(
-        this.toWebStorageClientStateKey(clientId)
-      );
-      if (storageItem) {
-        const clientState = RemoteClientState.fromWebStorageEntry(
-          clientId,
-          storageItem
-        );
-        if (clientState) {
-          this.activeClients[clientState.clientId] = clientState;
-        }
-      }
-    }
-
-    this.persistClientState();
-
-    // Check if there is an existing online state and call the callback handler
-    // if applicable.
-    const onlineStateJSON = this.storage.getItem(this.onlineStateKey);
-    if (onlineStateJSON) {
-      const onlineState = this.fromWebStorageOnlineState(onlineStateJSON);
-      if (onlineState) {
-        this.handleOnlineStateEvent(onlineState);
-      }
-    }
-
-    for (const event of this.earlyEvents) {
-      this.handleWebStorageEvent(event);
-    }
-
-    this.earlyEvents = [];
-
-    // Register a window unload hook to remove the client metadata entry from
-    // WebStorage even if `shutdown()` was not called.
-    this.platform.window!.addEventListener('unload', () => this.shutdown());
-
-    this.started = true;
-  }
-
-  writeSequenceNumber(sequenceNumber: ListenSequenceNumber): void {
-    this.setItem(this.sequenceNumberKey, JSON.stringify(sequenceNumber));
-  }
-
-  getAllActiveQueryTargets(): TargetIdSet {
-    let activeTargets = targetIdSet();
-    objUtils.forEach(this.activeClients, (key, value) => {
-      activeTargets = activeTargets.unionWith(value.activeTargetIds);
-    });
-    return activeTargets;
-  }
-
-  isActiveQueryTarget(targetId: TargetId): boolean {
-    // This is not using `obj.forEach` since `forEach` doesn't support early
-    // return.
-    for (const clientId in this.activeClients) {
-      if (this.activeClients.hasOwnProperty(clientId)) {
-        if (this.activeClients[clientId].activeTargetIds.has(targetId)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  addPendingMutation(batchId: BatchId): void {
-    this.persistMutationState(batchId, 'pending');
-  }
-
-  updateMutationState(
-    batchId: BatchId,
-    state: 'acknowledged' | 'rejected',
-    error?: FirestoreError
-  ): void {
-    this.persistMutationState(batchId, state, error);
-
-    // Once a final mutation result is observed by other clients, they no longer
-    // access the mutation's metadata entry. Since WebStorage replays events
-    // in order, it is safe to delete the entry right after updating it.
-    this.removeMutationState(batchId);
-  }
-
-  addLocalQueryTarget(targetId: TargetId): QueryTargetState {
-    let queryState: QueryTargetState = 'not-current';
-
-    // Lookup an existing query state if the target ID was already registered
-    // by another tab
-    if (this.isActiveQueryTarget(targetId)) {
-      const storageItem = this.storage.getItem(
-        this.toWebStorageQueryTargetMetadataKey(targetId)
-      );
-
-      if (storageItem) {
-        const metadata = QueryTargetMetadata.fromWebStorageEntry(
-          targetId,
-          storageItem
-        );
-        if (metadata) {
-          queryState = metadata.state;
-        }
-      }
-    }
-
-    this.localClientState.addQueryTarget(targetId);
-    this.persistClientState();
-
-    return queryState;
-  }
-
-  removeLocalQueryTarget(targetId: TargetId): void {
-    this.localClientState.removeQueryTarget(targetId);
-    this.persistClientState();
-  }
-
-  isLocalQueryTarget(targetId: TargetId): boolean {
-    return this.localClientState.activeTargetIds.has(targetId);
-  }
-
-  clearQueryState(targetId: TargetId): void {
-    this.removeItem(this.toWebStorageQueryTargetMetadataKey(targetId));
-  }
-
-  updateQueryState(
-    targetId: TargetId,
-    state: QueryTargetState,
-    error?: FirestoreError
-  ): void {
-    this.persistQueryTargetState(targetId, state, error);
-  }
-
-  handleUserChange(
-    user: User,
-    removedBatchIds: BatchId[],
-    addedBatchIds: BatchId[]
-  ): void {
-    removedBatchIds.forEach(batchId => {
-      this.removeMutationState(batchId);
-    });
-    this.currentUser = user;
-    addedBatchIds.forEach(batchId => {
-      this.addPendingMutation(batchId);
-    });
-  }
-
-  setOnlineState(onlineState: OnlineState): void {
-    this.persistOnlineState(onlineState);
-  }
-
-  shutdown(): void {
-    if (this.started) {
-      this.platform.window!.removeEventListener(
-        'storage',
-        this.storageListener
-      );
-      this.removeItem(this.localClientStorageKey);
-      this.started = false;
-    }
-  }
-
-  private getItem(key: string): string | null {
-    const value = this.storage.getItem(key);
-    debug(LOG_TAG, 'READ', key, value);
-    return value;
-  }
-
-  private setItem(key: string, value: string): void {
-    debug(LOG_TAG, 'SET', key, value);
-    this.storage.setItem(key, value);
-  }
-
-  private removeItem(key: string): void {
-    debug(LOG_TAG, 'REMOVE', key);
-    this.storage.removeItem(key);
-  }
-
-  private handleWebStorageEvent(event: StorageEvent): void {
-    if (event.storageArea === this.storage) {
-      debug(LOG_TAG, 'EVENT', event.key, event.newValue);
-
-      if (event.key === this.localClientStorageKey) {
-        error(
-          'Received WebStorage notification for local change. Another client might have ' +
-            'garbage-collected our state'
-        );
-        return;
-      }
-
-      this.queue.enqueueAndForget(async () => {
-        if (!this.started) {
-          this.earlyEvents.push(event);
-          return;
-        }
-
-        if (event.key === null) {
-          return;
-        }
-
-        if (this.clientStateKeyRe.test(event.key)) {
-          if (event.newValue != null) {
-            const clientState = this.fromWebStorageClientState(
-              event.key,
-              event.newValue
-            );
-            if (clientState) {
-              return this.handleClientStateEvent(
-                clientState.clientId,
-                clientState
-              );
-            }
-          } else {
-            const clientId = this.fromWebStorageClientStateKey(event.key)!;
-            return this.handleClientStateEvent(clientId, null);
-          }
-        } else if (this.mutationBatchKeyRe.test(event.key)) {
-          if (event.newValue !== null) {
-            const mutationMetadata = this.fromWebStorageMutationMetadata(
-              event.key,
-              event.newValue
-            );
-            if (mutationMetadata) {
-              return this.handleMutationBatchEvent(mutationMetadata);
-            }
-          }
-        } else if (this.queryTargetKeyRe.test(event.key)) {
-          if (event.newValue !== null) {
-            const queryTargetMetadata = this.fromWebStorageQueryTargetMetadata(
-              event.key,
-              event.newValue
-            );
-            if (queryTargetMetadata) {
-              return this.handleQueryTargetEvent(queryTargetMetadata);
-            }
-          }
-        } else if (event.key === this.onlineStateKey) {
-          if (event.newValue !== null) {
-            const onlineState = this.fromWebStorageOnlineState(event.newValue);
-            if (onlineState) {
-              return this.handleOnlineStateEvent(onlineState);
-            }
-          }
-        } else if (event.key === this.sequenceNumberKey) {
-          assert(!!this.sequenceNumberHandler, 'Missing sequenceNumberHandler');
-          const sequenceNumber = fromWebStorageSequenceNumber(event.newValue);
-          if (sequenceNumber !== ListenSequence.INVALID) {
-            this.sequenceNumberHandler!(sequenceNumber);
-          }
-        }
-      });
-    }
-  }
-
-  private get localClientState(): LocalClientState {
-    return this.activeClients[this.localClientId] as LocalClientState;
-  }
-
-  private persistClientState(): void {
-    this.setItem(
-      this.localClientStorageKey,
-      this.localClientState.toWebStorageJSON()
-    );
-  }
-
-  private persistMutationState(
-    batchId: BatchId,
-    state: MutationBatchState,
-    error?: FirestoreError
-  ): void {
-    const mutationState = new MutationMetadata(
-      this.currentUser,
-      batchId,
-      state,
-      error
-    );
-    const mutationKey = this.toWebStorageMutationBatchKey(batchId);
-    this.setItem(mutationKey, mutationState.toWebStorageJSON());
-  }
-
-  private removeMutationState(batchId: BatchId): void {
-    const mutationKey = this.toWebStorageMutationBatchKey(batchId);
-    this.removeItem(mutationKey);
-  }
-
-  private persistOnlineState(onlineState: OnlineState): void {
-    const entry: SharedOnlineStateSchema = {
-      clientId: this.localClientId,
-      onlineState: OnlineState[onlineState]
-    };
-    this.storage.setItem(this.onlineStateKey, JSON.stringify(entry));
-  }
-
-  private persistQueryTargetState(
-    targetId: TargetId,
-    state: QueryTargetState,
-    error?: FirestoreError
-  ): void {
-    const targetKey = this.toWebStorageQueryTargetMetadataKey(targetId);
-    const targetMetadata = new QueryTargetMetadata(targetId, state, error);
-    this.setItem(targetKey, targetMetadata.toWebStorageJSON());
-  }
-
-  /** Assembles the key for a client state in WebStorage */
-  private toWebStorageClientStateKey(clientId: ClientId): string {
-    assert(
-      clientId.indexOf('_') === -1,
-      `Client key cannot contain '_', but was '${clientId}'`
-    );
-
-    return `${CLIENT_STATE_KEY_PREFIX}_${this.persistenceKey}_${clientId}`;
-  }
-
-  /** Assembles the key for a query state in WebStorage */
-  private toWebStorageQueryTargetMetadataKey(targetId: TargetId): string {
-    return `${QUERY_TARGET_KEY_PREFIX}_${this.persistenceKey}_${targetId}`;
-  }
-
-  /** Assembles the key for a mutation batch in WebStorage */
-  private toWebStorageMutationBatchKey(batchId: BatchId): string {
-    let mutationKey = `${MUTATION_BATCH_KEY_PREFIX}_${
-      this.persistenceKey
-    }_${batchId}`;
-
-    if (this.currentUser.isAuthenticated()) {
-      mutationKey += `_${this.currentUser.uid}`;
-    }
-
-    return mutationKey;
-  }
-
-  /**
-   * Parses a client state key in WebStorage. Returns null if the key does not
-   * match the expected key format.
-   */
-  private fromWebStorageClientStateKey(key: string): ClientId | null {
-    const match = this.clientStateKeyRe.exec(key);
-    return match ? match[1] : null;
-  }
-
-  /**
-   * Parses a client state in WebStorage. Returns 'null' if the value could not
-   * be parsed.
-   */
-  private fromWebStorageClientState(
-    key: string,
-    value: string
-  ): RemoteClientState | null {
-    const clientId = this.fromWebStorageClientStateKey(key);
-    assert(clientId !== null, `Cannot parse client state key '${key}'`);
-    return RemoteClientState.fromWebStorageEntry(clientId!, value);
-  }
-
-  /**
-   * Parses a mutation batch state in WebStorage. Returns 'null' if the value
-   * could not be parsed.
-   */
-  private fromWebStorageMutationMetadata(
-    key: string,
-    value: string
-  ): MutationMetadata | null {
-    const match = this.mutationBatchKeyRe.exec(key);
-    assert(match !== null, `Cannot parse mutation batch key '${key}'`);
-
-    const batchId = Number(match![1]);
-    const userId = match![2] !== undefined ? match![2] : null;
-    return MutationMetadata.fromWebStorageEntry(
-      new User(userId),
-      batchId,
-      value
-    );
-  }
-
-  /**
-   * Parses a query target state from WebStorage. Returns 'null' if the value
-   * could not be parsed.
-   */
-  private fromWebStorageQueryTargetMetadata(
-    key: string,
-    value: string
-  ): QueryTargetMetadata | null {
-    const match = this.queryTargetKeyRe.exec(key);
-    assert(match !== null, `Cannot parse query target key '${key}'`);
-
-    const targetId = Number(match![1]);
-    return QueryTargetMetadata.fromWebStorageEntry(targetId, value);
-  }
-
-  /**
-   * Parses an online state from WebStorage. Returns 'null' if the value
-   * could not be parsed.
-   */
-  private fromWebStorageOnlineState(value: string): SharedOnlineState | null {
-    return SharedOnlineState.fromWebStorageEntry(value);
-  }
-
-  private async handleMutationBatchEvent(
-    mutationBatch: MutationMetadata
-  ): Promise<void> {
-    if (mutationBatch.user.uid !== this.currentUser.uid) {
-      debug(
-        LOG_TAG,
-        `Ignoring mutation for non-active user ${mutationBatch.user.uid}`
-      );
-      return;
-    }
-
-    return this.syncEngine!.applyBatchState(
-      mutationBatch.batchId,
-      mutationBatch.state,
-      mutationBatch.error
-    );
-  }
-
-  private handleQueryTargetEvent(
-    targetMetadata: QueryTargetMetadata
-  ): Promise<void> {
-    return this.syncEngine!.applyTargetState(
-      targetMetadata.targetId,
-      targetMetadata.state,
-      targetMetadata.error
-    );
-  }
-
-  private handleClientStateEvent(
-    clientId: ClientId,
-    clientState: RemoteClientState | null
-  ): Promise<void> {
-    const existingTargets = this.getAllActiveQueryTargets();
-
-    if (clientState) {
-      this.activeClients[clientId] = clientState;
-    } else {
-      delete this.activeClients[clientId];
-    }
-
-    const newTargets = this.getAllActiveQueryTargets();
-
-    const addedTargets: TargetId[] = [];
-    const removedTargets: TargetId[] = [];
-
-    newTargets.forEach(async targetId => {
-      if (!existingTargets.has(targetId)) {
-        addedTargets.push(targetId);
-      }
-    });
-
-    existingTargets.forEach(async targetId => {
-      if (!newTargets.has(targetId)) {
-        removedTargets.push(targetId);
-      }
-    });
-
-    return this.syncEngine!.applyActiveTargetsChange(
-      addedTargets,
-      removedTargets
-    );
-  }
-
-  private handleOnlineStateEvent(onlineState: SharedOnlineState): void {
-    // We check whether the client that wrote this online state is still active
-    // by comparing its client ID to the list of clients kept active in
-    // IndexedDb. If a client does not update their IndexedDb client state
-    // within 5 seconds, it is considered inactive and we don't emit an online
-    // state event.
-    if (this.activeClients[onlineState.clientId]) {
-      this.onlineStateHandler!(onlineState.onlineState);
-    }
-  }
-}
-
-function fromWebStorageSequenceNumber(
-  seqString: string | null
-): ListenSequenceNumber {
-  let sequenceNumber = ListenSequence.INVALID;
-  if (seqString != null) {
-    try {
-      const parsed = JSON.parse(seqString);
-      assert(typeof parsed === 'number', 'Found non-numeric sequence number');
-      sequenceNumber = parsed;
-    } catch (e) {
-      error(LOG_TAG, 'Failed to read sequence number from WebStorage', e);
-    }
-  }
-  return sequenceNumber;
-}
+// /**
+//  * `WebStorageSharedClientState` uses WebStorage (window.localStorage) as the
+//  * backing store for the SharedClientState. It keeps track of all active
+//  * clients and supports modifications of the local client's data.
+//  */
+// class WebStorageSharedClientState implements SharedClientState {
+//   syncEngine: SharedClientStateSyncer | null = null;
+//   onlineStateHandler: ((onlineState: OnlineState) => void) | null = null;
+//   sequenceNumberHandler:
+//     | ((sequenceNumber: ListenSequenceNumber) => void)
+//     | null = null;
+
+//   private readonly storage: Storage;
+//   private readonly localClientStorageKey: string;
+//   private readonly sequenceNumberKey: string;
+//   private readonly activeClients: { [key: string]: ClientState } = {};
+//   private readonly storageListener = this.handleWebStorageEvent.bind(this);
+//   private readonly onlineStateKey: string;
+//   private readonly clientStateKeyRe: RegExp;
+//   private readonly mutationBatchKeyRe: RegExp;
+//   private readonly queryTargetKeyRe: RegExp;
+//   private started = false;
+//   private currentUser: User;
+
+//   /**
+//    * Captures WebStorage events that occur before `start()` is called. These
+//    * events are replayed once `WebStorageSharedClientState` is started.
+//    */
+//   private earlyEvents: StorageEvent[] = [];
+
+//   constructor(
+//     private readonly queue: AsyncQueue,
+//     private readonly platform: Platform,
+//     private readonly persistenceKey: string,
+//     private readonly localClientId: ClientId,
+//     initialUser: User
+//   ) {
+//     if (!WebStorageSharedClientState.isAvailable(this.platform)) {
+//       throw new FirestoreError(
+//         Code.UNIMPLEMENTED,
+//         'LocalStorage is not available on this platform.'
+//       );
+//     }
+//     // Escape the special characters mentioned here:
+//     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+//     const escapedPersistenceKey = persistenceKey.replace(
+//       /[.*+?^${}()|[\]\\]/g,
+//       '\\$&'
+//     );
+
+//     this.storage = this.platform.window!.localStorage;
+//     this.currentUser = initialUser;
+//     this.localClientStorageKey = this.toWebStorageClientStateKey(
+//       this.localClientId
+//     );
+//     this.sequenceNumberKey = `${SEQUENCE_NUMBER_KEY_PREFIX}_${persistenceKey}`;
+//     this.activeClients[this.localClientId] = new LocalClientState();
+
+//     this.clientStateKeyRe = new RegExp(
+//       `^${CLIENT_STATE_KEY_PREFIX}_${escapedPersistenceKey}_([^_]*)$`
+//     );
+//     this.mutationBatchKeyRe = new RegExp(
+//       `^${MUTATION_BATCH_KEY_PREFIX}_${escapedPersistenceKey}_(\\d+)(?:_(.*))?$`
+//     );
+//     this.queryTargetKeyRe = new RegExp(
+//       `^${QUERY_TARGET_KEY_PREFIX}_${escapedPersistenceKey}_(\\d+)$`
+//     );
+
+//     this.onlineStateKey = `${ONLINE_STATE_KEY_PREFIX}_${persistenceKey}`;
+
+//     // Rather than adding the storage observer during start(), we add the
+//     // storage observer during initialization. This ensures that we collect
+//     // events before other components populate their initial state (during their
+//     // respective start() calls). Otherwise, we might for example miss a
+//     // mutation that is added after LocalStore's start() processed the existing
+//     // mutations but before we observe WebStorage events.
+//     this.platform.window!.addEventListener('storage', this.storageListener);
+//   }
+
+//   /** Returns 'true' if WebStorage is available in the current environment. */
+//   static isAvailable(platform: Platform): boolean {
+//     return !!(platform.window && platform.window.localStorage != null);
+//   }
+
+//   async start(): Promise<void> {
+//     assert(!this.started, 'WebStorageSharedClientState already started');
+//     assert(
+//       this.syncEngine !== null,
+//       'syncEngine property must be set before calling start()'
+//     );
+//     assert(
+//       this.onlineStateHandler !== null,
+//       'onlineStateHandler property must be set before calling start()'
+//     );
+
+//     // Retrieve the list of existing clients to backfill the data in
+//     // SharedClientState.
+//     const existingClients = await this.syncEngine!.getActiveClients();
+
+//     for (const clientId of existingClients) {
+//       if (clientId === this.localClientId) {
+//         continue;
+//       }
+
+//       const storageItem = this.getItem(
+//         this.toWebStorageClientStateKey(clientId)
+//       );
+//       if (storageItem) {
+//         const clientState = RemoteClientState.fromWebStorageEntry(
+//           clientId,
+//           storageItem
+//         );
+//         if (clientState) {
+//           this.activeClients[clientState.clientId] = clientState;
+//         }
+//       }
+//     }
+
+//     this.persistClientState();
+
+//     // Check if there is an existing online state and call the callback handler
+//     // if applicable.
+//     const onlineStateJSON = this.storage.getItem(this.onlineStateKey);
+//     if (onlineStateJSON) {
+//       const onlineState = this.fromWebStorageOnlineState(onlineStateJSON);
+//       if (onlineState) {
+//         this.handleOnlineStateEvent(onlineState);
+//       }
+//     }
+
+//     for (const event of this.earlyEvents) {
+//       this.handleWebStorageEvent(event);
+//     }
+
+//     this.earlyEvents = [];
+
+//     // Register a window unload hook to remove the client metadata entry from
+//     // WebStorage even if `shutdown()` was not called.
+//     this.platform.window!.addEventListener('unload', () => this.shutdown());
+
+//     this.started = true;
+//   }
+
+//   writeSequenceNumber(sequenceNumber: ListenSequenceNumber): void {
+//     this.setItem(this.sequenceNumberKey, JSON.stringify(sequenceNumber));
+//   }
+
+//   getAllActiveQueryTargets(): TargetIdSet {
+//     let activeTargets = targetIdSet();
+//     objUtils.forEach(this.activeClients, (key, value) => {
+//       activeTargets = activeTargets.unionWith(value.activeTargetIds);
+//     });
+//     return activeTargets;
+//   }
+
+//   isActiveQueryTarget(targetId: TargetId): boolean {
+//     // This is not using `obj.forEach` since `forEach` doesn't support early
+//     // return.
+//     for (const clientId in this.activeClients) {
+//       if (this.activeClients.hasOwnProperty(clientId)) {
+//         if (this.activeClients[clientId].activeTargetIds.has(targetId)) {
+//           return true;
+//         }
+//       }
+//     }
+//     return false;
+//   }
+
+//   addPendingMutation(batchId: BatchId): void {
+//     this.persistMutationState(batchId, 'pending');
+//   }
+
+//   updateMutationState(
+//     batchId: BatchId,
+//     state: 'acknowledged' | 'rejected',
+//     error?: FirestoreError
+//   ): void {
+//     this.persistMutationState(batchId, state, error);
+
+//     // Once a final mutation result is observed by other clients, they no longer
+//     // access the mutation's metadata entry. Since WebStorage replays events
+//     // in order, it is safe to delete the entry right after updating it.
+//     this.removeMutationState(batchId);
+//   }
+
+//   addLocalQueryTarget(targetId: TargetId): QueryTargetState {
+//     let queryState: QueryTargetState = 'not-current';
+
+//     // Lookup an existing query state if the target ID was already registered
+//     // by another tab
+//     if (this.isActiveQueryTarget(targetId)) {
+//       const storageItem = this.storage.getItem(
+//         this.toWebStorageQueryTargetMetadataKey(targetId)
+//       );
+
+//       if (storageItem) {
+//         const metadata = QueryTargetMetadata.fromWebStorageEntry(
+//           targetId,
+//           storageItem
+//         );
+//         if (metadata) {
+//           queryState = metadata.state;
+//         }
+//       }
+//     }
+
+//     this.localClientState.addQueryTarget(targetId);
+//     this.persistClientState();
+
+//     return queryState;
+//   }
+
+//   removeLocalQueryTarget(targetId: TargetId): void {
+//     this.localClientState.removeQueryTarget(targetId);
+//     this.persistClientState();
+//   }
+
+//   isLocalQueryTarget(targetId: TargetId): boolean {
+//     return this.localClientState.activeTargetIds.has(targetId);
+//   }
+
+//   clearQueryState(targetId: TargetId): void {
+//     this.removeItem(this.toWebStorageQueryTargetMetadataKey(targetId));
+//   }
+
+//   updateQueryState(
+//     targetId: TargetId,
+//     state: QueryTargetState,
+//     error?: FirestoreError
+//   ): void {
+//     this.persistQueryTargetState(targetId, state, error);
+//   }
+
+//   handleUserChange(
+//     user: User,
+//     removedBatchIds: BatchId[],
+//     addedBatchIds: BatchId[]
+//   ): void {
+//     removedBatchIds.forEach(batchId => {
+//       this.removeMutationState(batchId);
+//     });
+//     this.currentUser = user;
+//     addedBatchIds.forEach(batchId => {
+//       this.addPendingMutation(batchId);
+//     });
+//   }
+
+//   setOnlineState(onlineState: OnlineState): void {
+//     this.persistOnlineState(onlineState);
+//   }
+
+//   shutdown(): void {
+//     if (this.started) {
+//       this.platform.window!.removeEventListener(
+//         'storage',
+//         this.storageListener
+//       );
+//       this.removeItem(this.localClientStorageKey);
+//       this.started = false;
+//     }
+//   }
+
+//   private getItem(key: string): string | null {
+//     const value = this.storage.getItem(key);
+//     debug(LOG_TAG, 'READ', key, value);
+//     return value;
+//   }
+
+//   private setItem(key: string, value: string): void {
+//     debug(LOG_TAG, 'SET', key, value);
+//     this.storage.setItem(key, value);
+//   }
+
+//   private removeItem(key: string): void {
+//     debug(LOG_TAG, 'REMOVE', key);
+//     this.storage.removeItem(key);
+//   }
+
+//   private handleWebStorageEvent(event: StorageEvent): void {
+//     if (event.storageArea === this.storage) {
+//       debug(LOG_TAG, 'EVENT', event.key, event.newValue);
+
+//       if (event.key === this.localClientStorageKey) {
+//         error(
+//           'Received WebStorage notification for local change. Another client might have ' +
+//             'garbage-collected our state'
+//         );
+//         return;
+//       }
+
+//       this.queue.enqueueAndForget(async () => {
+//         if (!this.started) {
+//           this.earlyEvents.push(event);
+//           return;
+//         }
+
+//         if (event.key === null) {
+//           return;
+//         }
+
+//         if (this.clientStateKeyRe.test(event.key)) {
+//           if (event.newValue != null) {
+//             const clientState = this.fromWebStorageClientState(
+//               event.key,
+//               event.newValue
+//             );
+//             if (clientState) {
+//               return this.handleClientStateEvent(
+//                 clientState.clientId,
+//                 clientState
+//               );
+//             }
+//           } else {
+//             const clientId = this.fromWebStorageClientStateKey(event.key)!;
+//             return this.handleClientStateEvent(clientId, null);
+//           }
+//         } else if (this.mutationBatchKeyRe.test(event.key)) {
+//           if (event.newValue !== null) {
+//             const mutationMetadata = this.fromWebStorageMutationMetadata(
+//               event.key,
+//               event.newValue
+//             );
+//             if (mutationMetadata) {
+//               return this.handleMutationBatchEvent(mutationMetadata);
+//             }
+//           }
+//         } else if (this.queryTargetKeyRe.test(event.key)) {
+//           if (event.newValue !== null) {
+//             const queryTargetMetadata = this.fromWebStorageQueryTargetMetadata(
+//               event.key,
+//               event.newValue
+//             );
+//             if (queryTargetMetadata) {
+//               return this.handleQueryTargetEvent(queryTargetMetadata);
+//             }
+//           }
+//         } else if (event.key === this.onlineStateKey) {
+//           if (event.newValue !== null) {
+//             const onlineState = this.fromWebStorageOnlineState(event.newValue);
+//             if (onlineState) {
+//               return this.handleOnlineStateEvent(onlineState);
+//             }
+//           }
+//         } else if (event.key === this.sequenceNumberKey) {
+//           assert(!!this.sequenceNumberHandler, 'Missing sequenceNumberHandler');
+//           const sequenceNumber = fromWebStorageSequenceNumber(event.newValue);
+//           if (sequenceNumber !== ListenSequence.INVALID) {
+//             this.sequenceNumberHandler!(sequenceNumber);
+//           }
+//         }
+//       });
+//     }
+//   }
+
+//   private get localClientState(): LocalClientState {
+//     return this.activeClients[this.localClientId] as LocalClientState;
+//   }
+
+//   private persistClientState(): void {
+//     this.setItem(
+//       this.localClientStorageKey,
+//       this.localClientState.toWebStorageJSON()
+//     );
+//   }
+
+//   private persistMutationState(
+//     batchId: BatchId,
+//     state: MutationBatchState,
+//     error?: FirestoreError
+//   ): void {
+//     const mutationState = new MutationMetadata(
+//       this.currentUser,
+//       batchId,
+//       state,
+//       error
+//     );
+//     const mutationKey = this.toWebStorageMutationBatchKey(batchId);
+//     this.setItem(mutationKey, mutationState.toWebStorageJSON());
+//   }
+
+//   private removeMutationState(batchId: BatchId): void {
+//     const mutationKey = this.toWebStorageMutationBatchKey(batchId);
+//     this.removeItem(mutationKey);
+//   }
+
+//   private persistOnlineState(onlineState: OnlineState): void {
+//     const entry: SharedOnlineStateSchema = {
+//       clientId: this.localClientId,
+//       onlineState: OnlineState[onlineState]
+//     };
+//     this.storage.setItem(this.onlineStateKey, JSON.stringify(entry));
+//   }
+
+//   private persistQueryTargetState(
+//     targetId: TargetId,
+//     state: QueryTargetState,
+//     error?: FirestoreError
+//   ): void {
+//     const targetKey = this.toWebStorageQueryTargetMetadataKey(targetId);
+//     const targetMetadata = new QueryTargetMetadata(targetId, state, error);
+//     this.setItem(targetKey, targetMetadata.toWebStorageJSON());
+//   }
+
+//   /** Assembles the key for a client state in WebStorage */
+//   private toWebStorageClientStateKey(clientId: ClientId): string {
+//     assert(
+//       clientId.indexOf('_') === -1,
+//       `Client key cannot contain '_', but was '${clientId}'`
+//     );
+
+//     return `${CLIENT_STATE_KEY_PREFIX}_${this.persistenceKey}_${clientId}`;
+//   }
+
+//   /** Assembles the key for a query state in WebStorage */
+//   private toWebStorageQueryTargetMetadataKey(targetId: TargetId): string {
+//     return `${QUERY_TARGET_KEY_PREFIX}_${this.persistenceKey}_${targetId}`;
+//   }
+
+//   /** Assembles the key for a mutation batch in WebStorage */
+//   private toWebStorageMutationBatchKey(batchId: BatchId): string {
+//     let mutationKey = `${MUTATION_BATCH_KEY_PREFIX}_${
+//       this.persistenceKey
+//     }_${batchId}`;
+
+//     if (this.currentUser.isAuthenticated()) {
+//       mutationKey += `_${this.currentUser.uid}`;
+//     }
+
+//     return mutationKey;
+//   }
+
+//   /**
+//    * Parses a client state key in WebStorage. Returns null if the key does not
+//    * match the expected key format.
+//    */
+//   private fromWebStorageClientStateKey(key: string): ClientId | null {
+//     const match = this.clientStateKeyRe.exec(key);
+//     return match ? match[1] : null;
+//   }
+
+//   /**
+//    * Parses a client state in WebStorage. Returns 'null' if the value could not
+//    * be parsed.
+//    */
+//   private fromWebStorageClientState(
+//     key: string,
+//     value: string
+//   ): RemoteClientState | null {
+//     const clientId = this.fromWebStorageClientStateKey(key);
+//     assert(clientId !== null, `Cannot parse client state key '${key}'`);
+//     return RemoteClientState.fromWebStorageEntry(clientId!, value);
+//   }
+
+//   /**
+//    * Parses a mutation batch state in WebStorage. Returns 'null' if the value
+//    * could not be parsed.
+//    */
+//   private fromWebStorageMutationMetadata(
+//     key: string,
+//     value: string
+//   ): MutationMetadata | null {
+//     const match = this.mutationBatchKeyRe.exec(key);
+//     assert(match !== null, `Cannot parse mutation batch key '${key}'`);
+
+//     const batchId = Number(match![1]);
+//     const userId = match![2] !== undefined ? match![2] : null;
+//     return MutationMetadata.fromWebStorageEntry(
+//       new User(userId),
+//       batchId,
+//       value
+//     );
+//   }
+
+//   /**
+//    * Parses a query target state from WebStorage. Returns 'null' if the value
+//    * could not be parsed.
+//    */
+//   private fromWebStorageQueryTargetMetadata(
+//     key: string,
+//     value: string
+//   ): QueryTargetMetadata | null {
+//     const match = this.queryTargetKeyRe.exec(key);
+//     assert(match !== null, `Cannot parse query target key '${key}'`);
+
+//     const targetId = Number(match![1]);
+//     return QueryTargetMetadata.fromWebStorageEntry(targetId, value);
+//   }
+
+//   /**
+//    * Parses an online state from WebStorage. Returns 'null' if the value
+//    * could not be parsed.
+//    */
+//   private fromWebStorageOnlineState(value: string): SharedOnlineState | null {
+//     return SharedOnlineState.fromWebStorageEntry(value);
+//   }
+
+//   private async handleMutationBatchEvent(
+//     mutationBatch: MutationMetadata
+//   ): Promise<void> {
+//     if (mutationBatch.user.uid !== this.currentUser.uid) {
+//       debug(
+//         LOG_TAG,
+//         `Ignoring mutation for non-active user ${mutationBatch.user.uid}`
+//       );
+//       return;
+//     }
+
+//     return this.syncEngine!.applyBatchState(
+//       mutationBatch.batchId,
+//       mutationBatch.state,
+//       mutationBatch.error
+//     );
+//   }
+
+//   private handleQueryTargetEvent(
+//     targetMetadata: QueryTargetMetadata
+//   ): Promise<void> {
+//     return this.syncEngine!.applyTargetState(
+//       targetMetadata.targetId,
+//       targetMetadata.state,
+//       targetMetadata.error
+//     );
+//   }
+
+//   private handleClientStateEvent(
+//     clientId: ClientId,
+//     clientState: RemoteClientState | null
+//   ): Promise<void> {
+//     const existingTargets = this.getAllActiveQueryTargets();
+
+//     if (clientState) {
+//       this.activeClients[clientId] = clientState;
+//     } else {
+//       delete this.activeClients[clientId];
+//     }
+
+//     const newTargets = this.getAllActiveQueryTargets();
+
+//     const addedTargets: TargetId[] = [];
+//     const removedTargets: TargetId[] = [];
+
+//     newTargets.forEach(async targetId => {
+//       if (!existingTargets.has(targetId)) {
+//         addedTargets.push(targetId);
+//       }
+//     });
+
+//     existingTargets.forEach(async targetId => {
+//       if (!newTargets.has(targetId)) {
+//         removedTargets.push(targetId);
+//       }
+//     });
+
+//     return this.syncEngine!.applyActiveTargetsChange(
+//       addedTargets,
+//       removedTargets
+//     );
+//   }
+
+//   private handleOnlineStateEvent(onlineState: SharedOnlineState): void {
+//     // We check whether the client that wrote this online state is still active
+//     // by comparing its client ID to the list of clients kept active in
+//     // IndexedDb. If a client does not update their IndexedDb client state
+//     // within 5 seconds, it is considered inactive and we don't emit an online
+//     // state event.
+//     if (this.activeClients[onlineState.clientId]) {
+//       this.onlineStateHandler!(onlineState.onlineState);
+//     }
+//   }
+// }
+
+// function fromWebStorageSequenceNumber(
+//   seqString: string | null
+// ): ListenSequenceNumber {
+//   let sequenceNumber = ListenSequence.INVALID;
+//   if (seqString != null) {
+//     try {
+//       const parsed = JSON.parse(seqString);
+//       assert(typeof parsed === 'number', 'Found non-numeric sequence number');
+//       sequenceNumber = parsed;
+//     } catch (e) {
+//       error(LOG_TAG, 'Failed to read sequence number from WebStorage', e);
+//     }
+//   }
+//   return sequenceNumber;
+// }
 
 /**
  * `MemorySharedClientState` is a simple implementation of SharedClientState for

@@ -23,7 +23,7 @@ import * as log from '../util/log';
 import { primitiveComparator } from '../util/misc';
 import { CancelablePromise } from '../util/promise';
 import { SortedSet } from '../util/sorted_set';
-import { ignoreIfPrimaryLeaseLoss } from './indexeddb_persistence';
+// import { ignoreIfPrimaryLeaseLoss } from './indexeddb_persistence';
 import { LocalStore } from './local_store';
 import { PersistenceTransaction } from './persistence';
 import { PersistencePromise } from './persistence_promise';
@@ -34,53 +34,53 @@ import { QueryData } from './query_data';
  * implement this interface. This interface defines the operations that the LRU garbage collector
  * needs from the persistence layer.
  */
-export interface LruDelegate {
-  readonly garbageCollector: LruGarbageCollector;
+// export interface LruDelegate {
+//   readonly garbageCollector: LruGarbageCollector;
 
-  /** Enumerates all the targets in the QueryCache. */
-  forEachTarget(
-    txn: PersistenceTransaction,
-    f: (target: QueryData) => void
-  ): PersistencePromise<void>;
+//   /** Enumerates all the targets in the QueryCache. */
+//   forEachTarget(
+//     txn: PersistenceTransaction,
+//     f: (target: QueryData) => void
+//   ): PersistencePromise<void>;
 
-  getSequenceNumberCount(
-    txn: PersistenceTransaction
-  ): PersistencePromise<number>;
+//   getSequenceNumberCount(
+//     txn: PersistenceTransaction
+//   ): PersistencePromise<number>;
 
-  /**
-   * Enumerates sequence numbers for documents not associated with a target.
-   * Note that this may include duplicate sequence numbers.
-   */
-  forEachOrphanedDocumentSequenceNumber(
-    txn: PersistenceTransaction,
-    f: (sequenceNumber: ListenSequenceNumber) => void
-  ): PersistencePromise<void>;
+//   /**
+//    * Enumerates sequence numbers for documents not associated with a target.
+//    * Note that this may include duplicate sequence numbers.
+//    */
+//   forEachOrphanedDocumentSequenceNumber(
+//     txn: PersistenceTransaction,
+//     f: (sequenceNumber: ListenSequenceNumber) => void
+//   ): PersistencePromise<void>;
 
-  /**
-   * Removes all targets that have a sequence number less than or equal to `upperBound`, and are not
-   * present in the `activeTargetIds` set.
-   *
-   * @return the number of targets removed.
-   */
-  removeTargets(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber,
-    activeTargetIds: ActiveTargets
-  ): PersistencePromise<number>;
+//   /**
+//    * Removes all targets that have a sequence number less than or equal to `upperBound`, and are not
+//    * present in the `activeTargetIds` set.
+//    *
+//    * @return the number of targets removed.
+//    */
+//   removeTargets(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber,
+//     activeTargetIds: ActiveTargets
+//   ): PersistencePromise<number>;
 
-  /**
-   * Removes all unreferenced documents from the cache that have a sequence number less than or
-   * equal to the given `upperBound`.
-   *
-   * @return the number of documents removed.
-   */
-  removeOrphanedDocuments(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber
-  ): PersistencePromise<number>;
+//   /**
+//    * Removes all unreferenced documents from the cache that have a sequence number less than or
+//    * equal to the given `upperBound`.
+//    *
+//    * @return the number of documents removed.
+//    */
+//   removeOrphanedDocuments(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber
+//   ): PersistencePromise<number>;
 
-  getCacheSize(txn: PersistenceTransaction): PersistencePromise<number>;
-}
+//   getCacheSize(txn: PersistenceTransaction): PersistencePromise<number>;
+// }
 
 /**
  * Describes an object whose keys are active target ids. We do not care about the type of the
@@ -216,229 +216,228 @@ const REGULAR_GC_DELAY_MS = 5 * 60 * 1000;
  * This class is responsible for the scheduling of LRU garbage collection. It handles checking
  * whether or not GC is enabled, as well as which delay to use before the next run.
  */
-export class LruScheduler {
-  private hasRun: boolean;
-  private gcTask: CancelablePromise<void> | null;
+// class LruScheduler {
+//   private hasRun: boolean;
+//   private gcTask: CancelablePromise<void> | null;
 
-  constructor(
-    private readonly garbageCollector: LruGarbageCollector,
-    private readonly asyncQueue: AsyncQueue,
-    private readonly localStore: LocalStore
-  ) {
-    this.gcTask = null;
-  }
+//   constructor(
+//     private readonly garbageCollector: LruGarbageCollector,
+//     private readonly asyncQueue: AsyncQueue,
+//     private readonly localStore: LocalStore
+//   ) {
+//     this.gcTask = null;
+//   }
 
-  start(): void {
-    assert(
-      this.gcTask === null,
-      'Cannot start an already started LruScheduler'
-    );
-    if (
-      this.garbageCollector.params.cacheSizeCollectionThreshold !==
-      LruParams.COLLECTION_DISABLED
-    ) {
-      this.scheduleGC();
-    }
-  }
+//   start(): void {
+//     assert(
+//       this.gcTask === null,
+//       'Cannot start an already started LruScheduler'
+//     );
+//     if (
+//       this.garbageCollector.params.cacheSizeCollectionThreshold !==
+//       LruParams.COLLECTION_DISABLED
+//     ) {
+//       this.scheduleGC();
+//     }
+//   }
 
-  stop(): void {
-    if (this.gcTask) {
-      this.gcTask.cancel();
-      this.gcTask = null;
-    }
-  }
+//   stop(): void {
+//     if (this.gcTask) {
+//       this.gcTask.cancel();
+//       this.gcTask = null;
+//     }
+//   }
 
-  get started(): boolean {
-    return this.gcTask !== null;
-  }
+//   get started(): boolean {
+//     return this.gcTask !== null;
+//   }
 
-  private scheduleGC(): void {
-    assert(this.gcTask === null, 'Cannot schedule GC while a task is pending');
-    const delay = this.hasRun ? REGULAR_GC_DELAY_MS : INITIAL_GC_DELAY_MS;
-    log.debug(
-      'LruGarbageCollector',
-      `Garbage collection scheduled in ${delay}ms`
-    );
-    this.gcTask = this.asyncQueue.enqueueAfterDelay(
-      TimerId.LruGarbageCollection,
-      delay,
-      () => {
-        this.gcTask = null;
-        this.hasRun = true;
-        return this.localStore
-          .collectGarbage(this.garbageCollector)
-          .then(() => this.scheduleGC())
-          .catch(ignoreIfPrimaryLeaseLoss);
-      }
-    );
-  }
-}
+//   private scheduleGC(): void {
+//     // assert(this.gcTask === null, 'Cannot schedule GC while a task is pending');
+//     // const delay = this.hasRun ? REGULAR_GC_DELAY_MS : INITIAL_GC_DELAY_MS;
+//     // log.debug(
+//     //   'LruGarbageCollector',
+//     //   `Garbage collection scheduled in ${delay}ms`
+//     // );
+//     // this.gcTask = this.asyncQueue.enqueueAfterDelay(
+//     //   TimerId.LruGarbageCollection,
+//     //   delay,
+//     //   () => {
+//     //     this.gcTask = null;
+//     //     this.hasRun = true;
+//     //     return this.localStore
+//     //       .collectGarbage(this.garbageCollector)
+//     //       .then(() => this.scheduleGC());
+//     //   }
+//     // );
+//   }
+// }
 
 /** Implements the steps for LRU garbage collection. */
-export class LruGarbageCollector {
-  constructor(
-    private readonly delegate: LruDelegate,
-    readonly params: LruParams
-  ) {}
+// class LruGarbageCollector {
+//   constructor(
+//     private readonly delegate: LruDelegate,
+//     readonly params: LruParams
+//   ) {}
 
-  /** Given a percentile of target to collect, returns the number of targets to collect. */
-  calculateTargetCount(
-    txn: PersistenceTransaction,
-    percentile: number
-  ): PersistencePromise<number> {
-    return this.delegate.getSequenceNumberCount(txn).next(targetCount => {
-      return Math.floor(percentile / 100.0 * targetCount);
-    });
-  }
+//   /** Given a percentile of target to collect, returns the number of targets to collect. */
+//   calculateTargetCount(
+//     txn: PersistenceTransaction,
+//     percentile: number
+//   ): PersistencePromise<number> {
+//     return this.delegate.getSequenceNumberCount(txn).next(targetCount => {
+//       return Math.floor(percentile / 100.0 * targetCount);
+//     });
+//   }
 
-  /** Returns the nth sequence number, counting in order from the smallest. */
-  nthSequenceNumber(
-    txn: PersistenceTransaction,
-    n: number
-  ): PersistencePromise<ListenSequenceNumber> {
-    if (n === 0) {
-      return PersistencePromise.resolve(ListenSequence.INVALID);
-    }
+//   /** Returns the nth sequence number, counting in order from the smallest. */
+//   nthSequenceNumber(
+//     txn: PersistenceTransaction,
+//     n: number
+//   ): PersistencePromise<ListenSequenceNumber> {
+//     if (n === 0) {
+//       return PersistencePromise.resolve(ListenSequence.INVALID);
+//     }
 
-    const buffer = new RollingSequenceNumberBuffer(n);
-    return this.delegate
-      .forEachTarget(txn, target => buffer.addElement(target.sequenceNumber))
-      .next(() => {
-        return this.delegate.forEachOrphanedDocumentSequenceNumber(
-          txn,
-          sequenceNumber => buffer.addElement(sequenceNumber)
-        );
-      })
-      .next(() => buffer.maxValue);
-  }
+//     const buffer = new RollingSequenceNumberBuffer(n);
+//     return this.delegate
+//       .forEachTarget(txn, target => buffer.addElement(target.sequenceNumber))
+//       .next(() => {
+//         return this.delegate.forEachOrphanedDocumentSequenceNumber(
+//           txn,
+//           sequenceNumber => buffer.addElement(sequenceNumber)
+//         );
+//       })
+//       .next(() => buffer.maxValue);
+//   }
 
-  /**
-   * Removes targets with a sequence number equal to or less than the given upper bound, and removes
-   * document associations with those targets.
-   */
-  removeTargets(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber,
-    activeTargetIds: ActiveTargets
-  ): PersistencePromise<number> {
-    return this.delegate.removeTargets(txn, upperBound, activeTargetIds);
-  }
+//   /**
+//    * Removes targets with a sequence number equal to or less than the given upper bound, and removes
+//    * document associations with those targets.
+//    */
+//   removeTargets(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber,
+//     activeTargetIds: ActiveTargets
+//   ): PersistencePromise<number> {
+//     return this.delegate.removeTargets(txn, upperBound, activeTargetIds);
+//   }
 
-  /**
-   * Removes documents that have a sequence number equal to or less than the upper bound and are not
-   * otherwise pinned.
-   */
-  removeOrphanedDocuments(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber
-  ): PersistencePromise<number> {
-    return this.delegate.removeOrphanedDocuments(txn, upperBound);
-  }
+//   /**
+//    * Removes documents that have a sequence number equal to or less than the upper bound and are not
+//    * otherwise pinned.
+//    */
+//   removeOrphanedDocuments(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber
+//   ): PersistencePromise<number> {
+//     return this.delegate.removeOrphanedDocuments(txn, upperBound);
+//   }
 
-  collect(
-    txn: PersistenceTransaction,
-    activeTargetIds: ActiveTargets
-  ): PersistencePromise<LruResults> {
-    if (
-      this.params.cacheSizeCollectionThreshold === LruParams.COLLECTION_DISABLED
-    ) {
-      log.debug('LruGarbageCollector', 'Garbage collection skipped; disabled');
-      return PersistencePromise.resolve(GC_DID_NOT_RUN);
-    }
+//   collect(
+//     txn: PersistenceTransaction,
+//     activeTargetIds: ActiveTargets
+//   ): PersistencePromise<LruResults> {
+//     if (
+//       this.params.cacheSizeCollectionThreshold === LruParams.COLLECTION_DISABLED
+//     ) {
+//       log.debug('LruGarbageCollector', 'Garbage collection skipped; disabled');
+//       return PersistencePromise.resolve(GC_DID_NOT_RUN);
+//     }
 
-    return this.getCacheSize(txn).next(cacheSize => {
-      if (cacheSize < this.params.cacheSizeCollectionThreshold) {
-        log.debug(
-          'LruGarbageCollector',
-          `Garbage collection skipped; Cache size ${cacheSize} ` +
-            `is lower than threshold ${
-              this.params.cacheSizeCollectionThreshold
-            }`
-        );
-        return GC_DID_NOT_RUN;
-      } else {
-        return this.runGarbageCollection(txn, activeTargetIds);
-      }
-    });
-  }
+//     return this.getCacheSize(txn).next(cacheSize => {
+//       if (cacheSize < this.params.cacheSizeCollectionThreshold) {
+//         log.debug(
+//           'LruGarbageCollector',
+//           `Garbage collection skipped; Cache size ${cacheSize} ` +
+//             `is lower than threshold ${
+//               this.params.cacheSizeCollectionThreshold
+//             }`
+//         );
+//         return GC_DID_NOT_RUN;
+//       } else {
+//         return this.runGarbageCollection(txn, activeTargetIds);
+//       }
+//     });
+//   }
 
-  getCacheSize(txn: PersistenceTransaction): PersistencePromise<number> {
-    return this.delegate.getCacheSize(txn);
-  }
+//   getCacheSize(txn: PersistenceTransaction): PersistencePromise<number> {
+//     return this.delegate.getCacheSize(txn);
+//   }
 
-  private runGarbageCollection(
-    txn: PersistenceTransaction,
-    activeTargetIds: ActiveTargets
-  ): PersistencePromise<LruResults> {
-    let upperBoundSequenceNumber: number;
-    let sequenceNumbersToCollect, targetsRemoved: number;
-    // Timestamps for various pieces of the process
-    let startTs: number,
-      countedTargetsTs: number,
-      foundUpperBoundTs: number,
-      removedTargetsTs: number,
-      removedDocumentsTs: number;
-    startTs = Date.now();
-    return this.calculateTargetCount(txn, this.params.percentileToCollect)
-      .next(sequenceNumbers => {
-        // Cap at the configured max
-        if (sequenceNumbers > this.params.maximumSequenceNumbersToCollect) {
-          log.debug(
-            'LruGarbageCollector',
-            'Capping sequence numbers to collect down ' +
-              `to the maximum of ${
-                this.params.maximumSequenceNumbersToCollect
-              } ` +
-              `from ${sequenceNumbers}`
-          );
-          sequenceNumbersToCollect = this.params
-            .maximumSequenceNumbersToCollect;
-        } else {
-          sequenceNumbersToCollect = sequenceNumbers;
-        }
-        countedTargetsTs = Date.now();
+//   private runGarbageCollection(
+//     txn: PersistenceTransaction,
+//     activeTargetIds: ActiveTargets
+//   ): PersistencePromise<LruResults> {
+//     let upperBoundSequenceNumber: number;
+//     let sequenceNumbersToCollect, targetsRemoved: number;
+//     // Timestamps for various pieces of the process
+//     let startTs: number,
+//       countedTargetsTs: number,
+//       foundUpperBoundTs: number,
+//       removedTargetsTs: number,
+//       removedDocumentsTs: number;
+//     startTs = Date.now();
+//     return this.calculateTargetCount(txn, this.params.percentileToCollect)
+//       .next(sequenceNumbers => {
+//         // Cap at the configured max
+//         if (sequenceNumbers > this.params.maximumSequenceNumbersToCollect) {
+//           log.debug(
+//             'LruGarbageCollector',
+//             'Capping sequence numbers to collect down ' +
+//               `to the maximum of ${
+//                 this.params.maximumSequenceNumbersToCollect
+//               } ` +
+//               `from ${sequenceNumbers}`
+//           );
+//           sequenceNumbersToCollect = this.params
+//             .maximumSequenceNumbersToCollect;
+//         } else {
+//           sequenceNumbersToCollect = sequenceNumbers;
+//         }
+//         countedTargetsTs = Date.now();
 
-        return this.nthSequenceNumber(txn, sequenceNumbersToCollect);
-      })
-      .next(upperBound => {
-        upperBoundSequenceNumber = upperBound;
-        foundUpperBoundTs = Date.now();
+//         return this.nthSequenceNumber(txn, sequenceNumbersToCollect);
+//       })
+//       .next(upperBound => {
+//         upperBoundSequenceNumber = upperBound;
+//         foundUpperBoundTs = Date.now();
 
-        return this.removeTargets(
-          txn,
-          upperBoundSequenceNumber,
-          activeTargetIds
-        );
-      })
-      .next(numTargetsRemoved => {
-        targetsRemoved = numTargetsRemoved;
-        removedTargetsTs = Date.now();
+//         return this.removeTargets(
+//           txn,
+//           upperBoundSequenceNumber,
+//           activeTargetIds
+//         );
+//       })
+//       .next(numTargetsRemoved => {
+//         targetsRemoved = numTargetsRemoved;
+//         removedTargetsTs = Date.now();
 
-        return this.removeOrphanedDocuments(txn, upperBoundSequenceNumber);
-      })
-      .next(documentsRemoved => {
-        removedDocumentsTs = Date.now();
+//         return this.removeOrphanedDocuments(txn, upperBoundSequenceNumber);
+//       })
+//       .next(documentsRemoved => {
+//         removedDocumentsTs = Date.now();
 
-        if (log.getLogLevel() <= log.LogLevel.DEBUG) {
-          const desc =
-            'LRU Garbage Collection\n' +
-            `\tCounted targets in ${countedTargetsTs - startTs}ms\n` +
-            `\tDetermined least recently used ${sequenceNumbersToCollect} in ` +
-            `${foundUpperBoundTs - countedTargetsTs}ms\n` +
-            `\tRemoved ${targetsRemoved} targets in ` +
-            `${removedTargetsTs - foundUpperBoundTs}ms\n` +
-            `\tRemoved ${documentsRemoved} documents in ` +
-            `${removedDocumentsTs - removedTargetsTs}ms\n` +
-            `Total Duration: ${removedDocumentsTs - startTs}ms`;
-          log.debug('LruGarbageCollector', desc);
-        }
+//         if (log.getLogLevel() <= log.LogLevel.DEBUG) {
+//           const desc =
+//             'LRU Garbage Collection\n' +
+//             `\tCounted targets in ${countedTargetsTs - startTs}ms\n` +
+//             `\tDetermined least recently used ${sequenceNumbersToCollect} in ` +
+//             `${foundUpperBoundTs - countedTargetsTs}ms\n` +
+//             `\tRemoved ${targetsRemoved} targets in ` +
+//             `${removedTargetsTs - foundUpperBoundTs}ms\n` +
+//             `\tRemoved ${documentsRemoved} documents in ` +
+//             `${removedDocumentsTs - removedTargetsTs}ms\n` +
+//             `Total Duration: ${removedDocumentsTs - startTs}ms`;
+//           log.debug('LruGarbageCollector', desc);
+//         }
 
-        return PersistencePromise.resolve({
-          didRun: true,
-          sequenceNumbersCollected: sequenceNumbersToCollect,
-          targetsRemoved,
-          documentsRemoved
-        });
-      });
-  }
-}
+//         return PersistencePromise.resolve({
+//           didRun: true,
+//           sequenceNumbersCollected: sequenceNumbersToCollect,
+//           targetsRemoved,
+//           documentsRemoved
+//         });
+//       });
+//   }
+// }

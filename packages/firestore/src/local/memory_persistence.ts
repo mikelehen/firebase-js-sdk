@@ -26,10 +26,10 @@ import { ObjectMap } from '../util/obj_map';
 import { encode } from './encoded_resource_path';
 import { LocalSerializer } from './local_serializer';
 import {
-  ActiveTargets,
-  LruDelegate,
-  LruGarbageCollector,
-  LruParams
+  // ActiveTargets,
+  // LruDelegate,
+  // // LruGarbageCollector,
+  // LruParams
 } from './lru_garbage_collector';
 
 import { ListenSequence } from '../core/listen_sequence';
@@ -72,17 +72,17 @@ export class MemoryPersistence implements Persistence {
 
   private _started = false;
 
-  readonly referenceDelegate: MemoryLruDelegate | MemoryEagerDelegate;
+  readonly referenceDelegate: MemoryEagerDelegate;
 
-  static createLruPersistence(
-    clientId: ClientId,
-    serializer: JsonProtoSerializer,
-    params: LruParams
-  ): MemoryPersistence {
-    const factory = (p: MemoryPersistence): MemoryLruDelegate =>
-      new MemoryLruDelegate(p, new LocalSerializer(serializer), params);
-    return new MemoryPersistence(clientId, factory);
-  }
+  // static createLruPersistence(
+  //   clientId: ClientId,
+  //   serializer: JsonProtoSerializer,
+  //   params: LruParams
+  // ): MemoryPersistence {
+  //   const factory = (p: MemoryPersistence): MemoryLruDelegate =>
+  //     new MemoryLruDelegate(p, new LocalSerializer(serializer), params);
+  //   return new MemoryPersistence(clientId, factory);
+  // }
 
   static createEagerPersistence(clientId: ClientId): MemoryPersistence {
     const factory = (p: MemoryPersistence): MemoryEagerDelegate =>
@@ -100,7 +100,7 @@ export class MemoryPersistence implements Persistence {
     private readonly clientId: ClientId,
     referenceDelegateFactory: (
       p: MemoryPersistence
-    ) => MemoryLruDelegate | MemoryEagerDelegate
+    ) => MemoryEagerDelegate
   ) {
     this._started = true;
     this.referenceDelegate = referenceDelegateFactory(this);
@@ -300,193 +300,195 @@ export class MemoryEagerDelegate implements ReferenceDelegate {
   }
 }
 
-export class MemoryLruDelegate implements ReferenceDelegate, LruDelegate {
-  private inMemoryPins: ReferenceSet | null;
-  private orphanedSequenceNumbers: ObjectMap<
-    DocumentKey,
-    ListenSequenceNumber
-  > = new ObjectMap(k => encode(k.path));
+// export class MemoryLruDelegate implements ReferenceDelegate, LruDelegate {
+//   private inMemoryPins: ReferenceSet | null;
+//   private orphanedSequenceNumbers: ObjectMap<
+//     DocumentKey,
+//     ListenSequenceNumber
+//   > = new ObjectMap(k => encode(k.path));
 
-  readonly garbageCollector: LruGarbageCollector;
+//   readonly garbageCollector: LruGarbageCollector;
 
-  constructor(
-    private readonly persistence: MemoryPersistence,
-    private readonly serializer: LocalSerializer,
-    lruParams: LruParams
-  ) {
-    this.garbageCollector = new LruGarbageCollector(this, lruParams);
-  }
+//   constructor(
+//     private readonly persistence: MemoryPersistence,
+//     private readonly serializer: LocalSerializer,
+//     lruParams: LruParams
+//   ) {
+//     this.garbageCollector = new LruGarbageCollector(this, lruParams);
+//   }
 
-  // No-ops, present so memory persistence doesn't have to care which delegate
-  // it has.
-  onTransactionStarted(): void {}
+//   // No-ops, present so memory persistence doesn't have to care which delegate
+//   // it has.
+//   onTransactionStarted(): void {}
 
-  onTransactionCommitted(
-    txn: PersistenceTransaction
-  ): PersistencePromise<void> {
-    return PersistencePromise.resolve();
-  }
+//   onTransactionCommitted(
+//     txn: PersistenceTransaction
+//   ): PersistencePromise<void> {
+//     return PersistencePromise.resolve();
+//   }
 
-  forEachTarget(
-    txn: PersistenceTransaction,
-    f: (q: QueryData) => void
-  ): PersistencePromise<void> {
-    return this.persistence.getQueryCache().forEachTarget(txn, f);
-  }
+//   forEachTarget(
+//     txn: PersistenceTransaction,
+//     f: (q: QueryData) => void
+//   ): PersistencePromise<void> {
+//     return this.persistence.getQueryCache().forEachTarget(txn, f);
+//   }
 
-  getSequenceNumberCount(
-    txn: PersistenceTransaction
-  ): PersistencePromise<number> {
-    const docCountPromise = this.orphanedDocumentCount(txn);
-    const targetCountPromise = this.persistence
-      .getQueryCache()
-      .getTargetCount(txn);
-    return targetCountPromise.next(targetCount =>
-      docCountPromise.next(docCount => targetCount + docCount)
-    );
-  }
+//   getSequenceNumberCount(
+//     txn: PersistenceTransaction
+//   ): PersistencePromise<number> {
+//     const docCountPromise = this.orphanedDocumentCount(txn);
+//     const targetCountPromise = this.persistence
+//       .getQueryCache()
+//       .getTargetCount(txn);
+//     return targetCountPromise.next(targetCount =>
+//       docCountPromise.next(docCount => targetCount + docCount)
+//     );
+//   }
 
-  private orphanedDocumentCount(
-    txn: PersistenceTransaction
-  ): PersistencePromise<number> {
-    let orphanedCount = 0;
-    return this.forEachOrphanedDocumentSequenceNumber(txn, _ => {
-      orphanedCount++;
-    }).next(() => orphanedCount);
-  }
+//   private orphanedDocumentCount(
+//     txn: PersistenceTransaction
+//   ): PersistencePromise<number> {
+//     let orphanedCount = 0;
+//     return this.forEachOrphanedDocumentSequenceNumber(txn, _ => {
+//       orphanedCount++;
+//     }).next(() => orphanedCount);
+//   }
 
-  forEachOrphanedDocumentSequenceNumber(
-    txn: PersistenceTransaction,
-    f: (sequenceNumber: ListenSequenceNumber) => void
-  ): PersistencePromise<void> {
-    return PersistencePromise.forEach(
-      this.orphanedSequenceNumbers,
-      (key, sequenceNumber) => {
-        // Pass in the exact sequence number as the upper bound so we know it won't be pinned by
-        // being too recent.
-        return this.isPinned(txn, key, sequenceNumber).next(isPinned => {
-          if (!isPinned) {
-            return f(sequenceNumber);
-          } else {
-            return PersistencePromise.resolve();
-          }
-        });
-      }
-    );
-  }
+//   forEachOrphanedDocumentSequenceNumber(
+//     txn: PersistenceTransaction,
+//     f: (sequenceNumber: ListenSequenceNumber) => void
+//   ): PersistencePromise<void> {
+//     return PersistencePromise.forEach(
+//       this.orphanedSequenceNumbers,
+//       (key, sequenceNumber) => {
+//         // Pass in the exact sequence number as the upper bound so we know it won't be pinned by
+//         // being too recent.
+//         return this.isPinned(txn, key, sequenceNumber).next(isPinned => {
+//           if (!isPinned) {
+//             return f(sequenceNumber);
+//           } else {
+//             return PersistencePromise.resolve();
+//           }
+//         });
+//       }
+//     );
+//   }
 
-  setInMemoryPins(inMemoryPins: ReferenceSet): void {
-    this.inMemoryPins = inMemoryPins;
-  }
+//   setInMemoryPins(inMemoryPins: ReferenceSet): void {
+//     this.inMemoryPins = inMemoryPins;
+//   }
 
-  removeTargets(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber,
-    activeTargetIds: ActiveTargets
-  ): PersistencePromise<number> {
-    return this.persistence
-      .getQueryCache()
-      .removeTargets(txn, upperBound, activeTargetIds);
-  }
+//   removeTargets(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber,
+//     activeTargetIds: ActiveTargets
+//   ): PersistencePromise<number> {
+//     return this.persistence
+//       .getQueryCache()
+//       .removeTargets(txn, upperBound, activeTargetIds);
+//   }
 
-  removeOrphanedDocuments(
-    txn: PersistenceTransaction,
-    upperBound: ListenSequenceNumber
-  ): PersistencePromise<number> {
-    let count = 0;
-    const cache = this.persistence.getRemoteDocumentCache();
-    const p = cache.forEachDocumentKey(txn, key => {
-      return this.isPinned(txn, key, upperBound).next(isPinned => {
-        if (isPinned) {
-          return PersistencePromise.resolve();
-        } else {
-          count++;
-          // The memory remote document cache does its own byte
-          // accounting on removal. This is ok because updating the size
-          // for memory persistence does not incur IO.
-          return cache.removeEntry(txn, key).next();
-        }
-      });
-    });
-    return p.next(() => count);
-  }
+//   removeOrphanedDocuments(
+//     txn: PersistenceTransaction,
+//     upperBound: ListenSequenceNumber
+//   ): PersistencePromise<number> {
+//     let count = 0;
+//     const cache = this.persistence.getRemoteDocumentCache();
+//     const p = cache.forEachDocumentKey(txn, key => {
+//       return this.isPinned(txn, key, upperBound).next(isPinned => {
+//         if (isPinned) {
+//           return PersistencePromise.resolve();
+//         } else {
+//           count++;
+//           // The memory remote document cache does its own byte
+//           // accounting on removal. This is ok because updating the size
+//           // for memory persistence does not incur IO.
+//           return cache.removeEntry(txn, key).next();
+//         }
+//       });
+//     });
+//     return p.next(() => count);
+//   }
 
-  removeMutationReference(
-    txn: PersistenceTransaction,
-    key: DocumentKey
-  ): PersistencePromise<void> {
-    this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
-    return PersistencePromise.resolve();
-  }
+//   removeMutationReference(
+//     txn: PersistenceTransaction,
+//     key: DocumentKey
+//   ): PersistencePromise<void> {
+//     this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
+//     return PersistencePromise.resolve();
+//   }
 
-  removeTarget(
-    txn: PersistenceTransaction,
-    queryData: QueryData
-  ): PersistencePromise<void> {
-    const updated = queryData.copy({
-      sequenceNumber: txn.currentSequenceNumber
-    });
-    return this.persistence.getQueryCache().updateQueryData(txn, updated);
-  }
+//   removeTarget(
+//     txn: PersistenceTransaction,
+//     queryData: QueryData
+//   ): PersistencePromise<void> {
+//     const updated = queryData.copy({
+//       sequenceNumber: txn.currentSequenceNumber
+//     });
+//     return this.persistence.getQueryCache().updateQueryData(txn, updated);
+//   }
 
-  addReference(
-    txn: PersistenceTransaction,
-    key: DocumentKey
-  ): PersistencePromise<void> {
-    this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
-    return PersistencePromise.resolve();
-  }
+//   addReference(
+//     txn: PersistenceTransaction,
+//     key: DocumentKey
+//   ): PersistencePromise<void> {
+//     this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
+//     return PersistencePromise.resolve();
+//   }
 
-  removeReference(
-    txn: PersistenceTransaction,
-    key: DocumentKey
-  ): PersistencePromise<void> {
-    this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
-    return PersistencePromise.resolve();
-  }
+//   removeReference(
+//     txn: PersistenceTransaction,
+//     key: DocumentKey
+//   ): PersistencePromise<void> {
+//     this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
+//     return PersistencePromise.resolve();
+//   }
 
-  updateLimboDocument(
-    txn: PersistenceTransaction,
-    key: DocumentKey
-  ): PersistencePromise<void> {
-    this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
-    return PersistencePromise.resolve();
-  }
+//   updateLimboDocument(
+//     txn: PersistenceTransaction,
+//     key: DocumentKey
+//   ): PersistencePromise<void> {
+//     this.orphanedSequenceNumbers.set(key, txn.currentSequenceNumber);
+//     return PersistencePromise.resolve();
+//   }
 
-  documentSize(maybeDoc: MaybeDocument): number {
-    const remoteDocument = this.serializer.toDbRemoteDocument(maybeDoc);
-    let value: unknown;
-    if (remoteDocument.document) {
-      value = remoteDocument.document;
-    } else if (remoteDocument.unknownDocument) {
-      value = remoteDocument.unknownDocument;
-    } else if (remoteDocument.noDocument) {
-      value = remoteDocument.noDocument;
-    } else {
-      throw fail('Unknown remote document type');
-    }
-    return JSON.stringify(value).length;
-  }
+//   documentSize(maybeDoc: MaybeDocument): number {
+//     return 0;
+//     /*
+//     const remoteDocument = this.serializer.toDbRemoteDocument(maybeDoc);
+//     let value: unknown;
+//     if (remoteDocument.document) {
+//       value = remoteDocument.document;
+//     } else if (remoteDocument.unknownDocument) {
+//       value = remoteDocument.unknownDocument;
+//     } else if (remoteDocument.noDocument) {
+//       value = remoteDocument.noDocument;
+//     } else {
+//       throw fail('Unknown remote document type');
+//     }
+//     return JSON.stringify(value).length;*/
+//   }
 
-  private isPinned(
-    txn: PersistenceTransaction,
-    key: DocumentKey,
-    upperBound: ListenSequenceNumber
-  ): PersistencePromise<boolean> {
-    return PersistencePromise.or([
-      () => this.persistence.mutationQueuesContainKey(txn, key),
-      () => PersistencePromise.resolve(this.inMemoryPins!.containsKey(key)),
-      () => this.persistence.getQueryCache().containsKey(txn, key),
-      () => {
-        const orphanedAt = this.orphanedSequenceNumbers.get(key);
-        return PersistencePromise.resolve(
-          orphanedAt !== undefined && orphanedAt > upperBound
-        );
-      }
-    ]);
-  }
+//   private isPinned(
+//     txn: PersistenceTransaction,
+//     key: DocumentKey,
+//     upperBound: ListenSequenceNumber
+//   ): PersistencePromise<boolean> {
+//     return PersistencePromise.or([
+//       () => this.persistence.mutationQueuesContainKey(txn, key),
+//       () => PersistencePromise.resolve(this.inMemoryPins!.containsKey(key)),
+//       () => this.persistence.getQueryCache().containsKey(txn, key),
+//       () => {
+//         const orphanedAt = this.orphanedSequenceNumbers.get(key);
+//         return PersistencePromise.resolve(
+//           orphanedAt !== undefined && orphanedAt > upperBound
+//         );
+//       }
+//     ]);
+//   }
 
-  getCacheSize(txn: PersistenceTransaction): PersistencePromise<number> {
-    return this.persistence.getRemoteDocumentCache().getSize(txn);
-  }
-}
+//   getCacheSize(txn: PersistenceTransaction): PersistencePromise<number> {
+//     return this.persistence.getRemoteDocumentCache().getSize(txn);
+//   }
+// }

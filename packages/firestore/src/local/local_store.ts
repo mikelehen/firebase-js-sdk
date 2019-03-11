@@ -43,7 +43,7 @@ import * as objUtils from '../util/obj';
 import { ObjectValue } from '../model/field_value';
 import { LocalDocumentsView } from './local_documents_view';
 import { LocalViewChanges } from './local_view_changes';
-import { LruGarbageCollector, LruResults } from './lru_garbage_collector';
+import { /*LruGarbageCollector, */LruResults } from './lru_garbage_collector';
 import { MutationQueue } from './mutation_queue';
 import { Persistence, PersistenceTransaction } from './persistence';
 import { PersistencePromise } from './persistence_promise';
@@ -868,13 +868,13 @@ export class LocalStore {
     );
   }
 
-  collectGarbage(garbageCollector: LruGarbageCollector): Promise<LruResults> {
-    return this.persistence.runTransaction(
-      'Collect garbage',
-      'readwrite-primary',
-      txn => garbageCollector.collect(txn, this.queryDataByTarget)
-    );
-  }
+  // collectGarbage(garbageCollector: LruGarbageCollector): Promise<LruResults> {
+  //   return this.persistence.runTransaction(
+  //     'Collect garbage',
+  //     'readwrite-primary',
+  //     txn => garbageCollector.collect(txn, this.queryDataByTarget)
+  //   );
+  // }
 
   // PORTING NOTE: Multi-tab only.
   getQueryForTarget(targetId: TargetId): Promise<Query | null> {

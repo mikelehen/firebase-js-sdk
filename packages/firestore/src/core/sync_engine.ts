@@ -41,8 +41,8 @@ import { Deferred } from '../util/promise';
 import { SortedMap } from '../util/sorted_map';
 import { isNullOrUndefined } from '../util/types';
 
-import { ignoreIfPrimaryLeaseLoss } from '../local/indexeddb_persistence';
-import { isDocumentChangeMissingError } from '../local/indexeddb_remote_document_cache';
+// import { ignoreIfPrimaryLeaseLoss } from '../local/indexeddb_persistence';
+// import { isDocumentChangeMissingError } from '../local/indexeddb_remote_document_cache';
 import { ClientId, SharedClientState } from '../local/shared_client_state';
 import {
   QueryTargetState,
@@ -324,8 +324,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
             this.sharedClientState.clearQueryState(queryView.targetId);
             this.remoteStore.unlisten(queryView.targetId);
             this.removeAndCleanupQuery(queryView);
-          })
-          .catch(ignoreIfPrimaryLeaseLoss);
+          });
+          // .catch(ignoreIfPrimaryLeaseLoss);
       }
     } else {
       this.removeAndCleanupQuery(queryView);
@@ -464,8 +464,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
           }
         );
         return this.emitNewSnapsAndNotifyLocalStore(changes, remoteEvent);
-      })
-      .catch(ignoreIfPrimaryLeaseLoss);
+      });
+      // .catch(ignoreIfPrimaryLeaseLoss);
   }
 
   /**
@@ -547,8 +547,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
       assert(!!queryView, 'Unknown targetId: ' + targetId);
       await this.localStore
         .releaseQuery(queryView.query, /* keepPersistedQueryData */ false)
-        .then(() => this.removeAndCleanupQuery(queryView))
-        .catch(ignoreIfPrimaryLeaseLoss);
+        .then(() => this.removeAndCleanupQuery(queryView));
+        // .catch(ignoreIfPrimaryLeaseLoss);
       this.syncEngineListener!.onWatchError(queryView.query, err);
     }
   }
@@ -609,8 +609,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
       .then(changes => {
         this.sharedClientState.updateMutationState(batchId, 'acknowledged');
         return this.emitNewSnapsAndNotifyLocalStore(changes);
-      })
-      .catch(ignoreIfPrimaryLeaseLoss);
+      });
+      // .catch(ignoreIfPrimaryLeaseLoss);
   }
 
   rejectFailedWrite(batchId: BatchId, error: FirestoreError): Promise<void> {
@@ -627,8 +627,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
       .then(changes => {
         this.sharedClientState.updateMutationState(batchId, 'rejected', error);
         return this.emitNewSnapsAndNotifyLocalStore(changes);
-      })
-      .catch(ignoreIfPrimaryLeaseLoss);
+      });
+      // .catch(ignoreIfPrimaryLeaseLoss);
   }
 
   private addMutationCallback(
@@ -984,21 +984,21 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
                 changes,
                 synthesizedRemoteEvent
               );
-            },
-            async err => {
-              if (isDocumentChangeMissingError(err)) {
-                const activeTargets: TargetId[] = [];
-                objUtils.forEachNumber(this.queryViewsByTarget, target =>
-                  activeTargets.push(target)
-                );
-                await this.synchronizeQueryViewsAndRaiseSnapshots(
-                  activeTargets
-                );
-              } else {
-                throw err;
-              }
-            }
-          );
+            });
+          //   async err => {
+          //     if (isDocumentChangeMissingError(err)) {
+          //       const activeTargets: TargetId[] = [];
+          //       objUtils.forEachNumber(this.queryViewsByTarget, target =>
+          //         activeTargets.push(target)
+          //       );
+          //       await this.synchronizeQueryViewsAndRaiseSnapshots(
+          //         activeTargets
+          //       );
+          //     } else {
+          //       throw err;
+          //     }
+          //   }
+          // );
         }
         case 'rejected': {
           const queryView = this.queryViewsByTarget[targetId];
@@ -1050,8 +1050,8 @@ export class SyncEngine implements RemoteSyncer, SharedClientStateSyncer {
           .then(() => {
             this.remoteStore.unlisten(targetId);
             this.removeAndCleanupQuery(queryView);
-          })
-          .catch(ignoreIfPrimaryLeaseLoss);
+          });
+          // .catch(ignoreIfPrimaryLeaseLoss);
       }
     }
   }

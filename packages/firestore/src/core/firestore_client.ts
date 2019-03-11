@@ -51,11 +51,11 @@ import {
   LruParams,
   LruScheduler
 } from '../local/lru_garbage_collector';
-import {
-  MemorySharedClientState,
-  SharedClientState,
-  WebStorageSharedClientState
-} from '../local/shared_client_state';
+// import {
+//   MemorySharedClientState,
+//   SharedClientState,
+//   // WebStorageSharedClientState
+// } from '../local/shared_client_state';
 import { AutoId } from '../util/misc';
 import { DatabaseId, DatabaseInfo } from './database_info';
 import { Query } from './query';
@@ -110,7 +110,7 @@ export class FirestoreClient {
   private readonly clientId = AutoId.newId();
 
   // PORTING NOTE: SharedClientState is only used for multi-tab web.
-  private sharedClientState: SharedClientState;
+  // private sharedClientState: SharedClientState;
 
   constructor(
     private platform: Platform,
@@ -317,37 +317,37 @@ export class FirestoreClient {
     });
 
     return Promise.resolve().then(async () => {
-      if (
-        settings.experimentalTabSynchronization &&
-        !WebStorageSharedClientState.isAvailable(this.platform)
-      ) {
-        throw new FirestoreError(
-          Code.UNIMPLEMENTED,
-          'IndexedDB persistence is only available on platforms that support LocalStorage.'
-        );
-      }
+      // if (
+      //   settings.experimentalTabSynchronization &&
+      //   !WebStorageSharedClientState.isAvailable(this.platform)
+      // ) {
+      //   throw new FirestoreError(
+      //     Code.UNIMPLEMENTED,
+      //     'IndexedDB persistence is only available on platforms that support LocalStorage.'
+      //   );
+      // }
 
       let persistence: IndexedDbPersistence;
       const lruParams = settings.lruParams();
-      if (settings.experimentalTabSynchronization) {
-        this.sharedClientState = new WebStorageSharedClientState(
-          this.asyncQueue,
-          this.platform,
-          storagePrefix,
-          this.clientId,
-          user
-        );
-        persistence = await IndexedDbPersistence.createMultiClientIndexedDbPersistence(
-          storagePrefix,
-          this.clientId,
-          this.platform,
-          this.asyncQueue,
-          serializer,
-          lruParams,
-          { sequenceNumberSyncer: this.sharedClientState }
-        );
-      } else {
-        this.sharedClientState = new MemorySharedClientState();
+      // if (settings.experimentalTabSynchronization) {
+      //   this.sharedClientState = new WebStorageSharedClientState(
+      //     this.asyncQueue,
+      //     this.platform,
+      //     storagePrefix,
+      //     this.clientId,
+      //     user
+      //   );
+      //   persistence = await IndexedDbPersistence.createMultiClientIndexedDbPersistence(
+      //     storagePrefix,
+      //     this.clientId,
+      //     this.platform,
+      //     this.asyncQueue,
+      //     serializer,
+      //     lruParams,
+      //     { sequenceNumberSyncer: this.sharedClientState }
+      //   );
+      // } else {
+        // this.sharedClientState = new MemorySharedClientState();
         persistence = await IndexedDbPersistence.createIndexedDbPersistence(
           storagePrefix,
           this.clientId,
@@ -356,7 +356,7 @@ export class FirestoreClient {
           serializer,
           lruParams
         );
-      }
+      // }
       this.persistence = persistence;
       return persistence.referenceDelegate.garbageCollector;
     });
@@ -369,7 +369,7 @@ export class FirestoreClient {
    */
   private startMemoryPersistence(): Promise<LruGarbageCollector | null> {
     this.persistence = MemoryPersistence.createEagerPersistence(this.clientId);
-    this.sharedClientState = new MemorySharedClientState();
+    // this.sharedClientState = new MemorySharedClientState();
     return Promise.resolve(null);
   }
 
@@ -410,11 +410,11 @@ export class FirestoreClient {
             onlineState,
             OnlineStateSource.RemoteStore
           );
-        const sharedClientStateOnlineStateChangedHandler = onlineState =>
-          this.syncEngine.applyOnlineStateChange(
-            onlineState,
-            OnlineStateSource.SharedClientState
-          );
+        // const sharedClientStateOnlineStateChangedHandler = onlineState =>
+        //   this.syncEngine.applyOnlineStateChange(
+        //     onlineState,
+        //     OnlineStateSource.SharedClientState
+        //   );
 
         this.remoteStore = new RemoteStore(
           this.localStore,
@@ -426,34 +426,34 @@ export class FirestoreClient {
         this.syncEngine = new SyncEngine(
           this.localStore,
           this.remoteStore,
-          this.sharedClientState,
+          // this.sharedClientState,
           user
         );
 
-        this.sharedClientState.onlineStateHandler = sharedClientStateOnlineStateChangedHandler;
+        // this.sharedClientState.onlineStateHandler = sharedClientStateOnlineStateChangedHandler;
 
         // Set up wiring between sync engine and other components
         this.remoteStore.syncEngine = this.syncEngine;
-        this.sharedClientState.syncEngine = this.syncEngine;
+        // this.sharedClientState.syncEngine = this.syncEngine;
 
         this.eventMgr = new EventManager(this.syncEngine);
 
         // PORTING NOTE: LocalStore doesn't need an explicit start() on the Web.
-        await this.sharedClientState.start();
+        // await this.sharedClientState.start();
         await this.remoteStore.start();
 
         // NOTE: This will immediately call the listener, so we make sure to
         // set it after localStore / remoteStore are started.
-        await this.persistence.setPrimaryStateListener(async isPrimary => {
-          await this.syncEngine.applyPrimaryState(isPrimary);
-          if (this.lruScheduler) {
-            if (isPrimary && !this.lruScheduler.started) {
-              this.lruScheduler.start();
-            } else if (!isPrimary) {
-              this.lruScheduler.stop();
-            }
-          }
-        });
+        // await this.persistence.setPrimaryStateListener(async isPrimary => {
+        //   await this.syncEngine.applyPrimaryState(isPrimary);
+        //   if (this.lruScheduler) {
+        //     if (isPrimary && !this.lruScheduler.started) {
+        //       this.lruScheduler.start();
+        //     } else if (!isPrimary) {
+        //       this.lruScheduler.stop();
+        //     }
+        //   }
+        // });
       });
   }
 
@@ -480,7 +480,7 @@ export class FirestoreClient {
         this.lruScheduler.stop();
       }
       await this.remoteStore.shutdown();
-      await this.sharedClientState.shutdown();
+      // await this.sharedClientState.shutdown();
       await this.persistence.shutdown(
         options && options.purgePersistenceWithDataLoss
       );

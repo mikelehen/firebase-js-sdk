@@ -22,21 +22,21 @@
 goog.provide('firebase.webchannel.wrapper');
 
 // goog.net.WebChannelTransport
-goog.require('goog.net.createWebChannelTransport');
-goog.require('goog.labs.net.webChannel.WebChannelBaseTransport');
+//goog.require('goog.net.createWebChannelTransport');
+//goog.require('goog.labs.net.webChannel.WebChannelBaseTransport');
 /**
  * NOTE: The `createWebChannel` function takes an options object as a second param
  * whose properties are typically mangled. We override these in externs/overrides.js
  * Without those externs, this does not function properly.
  */
-goog.labs.net.webChannel.WebChannelBaseTransport.prototype['createWebChannel'] =
-  goog.labs.net.webChannel.WebChannelBaseTransport.prototype.createWebChannel;
-goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['send'] =
-  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.send;
-goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['open'] =
-  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.open;
-goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['close'] =
-  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.close;
+//goog.labs.net.webChannel.WebChannelBaseTransport.prototype['createWebChannel'] =
+//  goog.labs.net.webChannel.WebChannelBaseTransport.prototype.createWebChannel;
+//goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['send'] =
+//  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.send;
+//goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['open'] =
+//  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.open;
+//goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype['close'] =
+//  goog.labs.net.webChannel.WebChannelBaseTransport.Channel.prototype.close;
 
 // goog.net.ErrorCode
 goog.require('goog.net.ErrorCode');
@@ -49,16 +49,16 @@ goog.require('goog.net.EventType');
 goog.net.EventType['COMPLETE'] = goog.net.EventType.COMPLETE;
 
 // goog.net.WebChannel
-goog.require('goog.net.WebChannel');
-goog.require('goog.events.EventTarget');
-goog.net.WebChannel['EventType'] = goog.net.WebChannel.EventType;
-goog.net.WebChannel.EventType['OPEN'] = goog.net.WebChannel.EventType.OPEN;
-goog.net.WebChannel.EventType['CLOSE'] = goog.net.WebChannel.EventType.CLOSE;
-goog.net.WebChannel.EventType['ERROR'] = goog.net.WebChannel.EventType.ERROR;
-goog.net.WebChannel.EventType['MESSAGE'] =
-  goog.net.WebChannel.EventType.MESSAGE;
-goog.events.EventTarget.prototype['listen'] =
-  goog.events.EventTarget.prototype.listen;
+//goog.require('goog.net.WebChannel');
+//goog.require('goog.events.EventTarget');
+//goog.net.WebChannel['EventType'] = goog.net.WebChannel.EventType;
+//goog.net.WebChannel.EventType['OPEN'] = goog.net.WebChannel.EventType.OPEN;
+//goog.net.WebChannel.EventType['CLOSE'] = goog.net.WebChannel.EventType.CLOSE;
+//goog.net.WebChannel.EventType['ERROR'] = goog.net.WebChannel.EventType.ERROR;
+//goog.net.WebChannel.EventType['MESSAGE'] =
+//  goog.net.WebChannel.EventType.MESSAGE;
+//goog.events.EventTarget.prototype['listen'] =
+//  goog.events.EventTarget.prototype.listen;
 
 // goog.net.XhrIo
 goog.require('goog.net.XhrIo');
@@ -82,9 +82,9 @@ goog.net.XhrIo.prototype['send'] = goog.net.XhrIo.prototype.send;
  */
 // prettier-ignore
 module['exports'] = {
-  'createWebChannelTransport': goog.net.createWebChannelTransport,
+//  'createWebChannelTransport': goog.net.createWebChannelTransport,
   'ErrorCode': goog.net.ErrorCode,
   'EventType': goog.net.EventType,
-  'WebChannel': goog.net.WebChannel,
+//  'WebChannel': goog.net.WebChannel,
   'XhrIo': goog.net.XhrIo
 };

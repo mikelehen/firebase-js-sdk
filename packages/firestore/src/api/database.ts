@@ -358,36 +358,36 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
     }
   }
 
-  enableNetwork(): Promise<void> {
-    this.ensureClientConfigured();
-    return this._firestoreClient!.enableNetwork();
-  }
+  // enableNetwork(): Promise<void> {
+  //   this.ensureClientConfigured();
+  //   return this._firestoreClient!.enableNetwork();
+  // }
 
-  disableNetwork(): Promise<void> {
-    this.ensureClientConfigured();
-    return this._firestoreClient!.disableNetwork();
-  }
+  // disableNetwork(): Promise<void> {
+  //   this.ensureClientConfigured();
+  //   return this._firestoreClient!.disableNetwork();
+  // }
 
-  enablePersistence(settings?: firestore.PersistenceSettings): Promise<void> {
-    if (this._firestoreClient) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'Firestore has already been started and persistence can no longer ' +
-          'be enabled. You can only call enablePersistence() before calling ' +
-          'any other methods on a Firestore object.'
-      );
-    }
-    return this.configureClient(
-      new IndexedDbPersistenceSettings(
-        this._config.settings.cacheSizeBytes,
-        settings !== undefined &&
-          objUtils.defaulted(
-            settings.experimentalTabSynchronization,
-            DEFAULT_SYNCHRONIZE_TABS
-          )
-      )
-    );
-  }
+  // enablePersistence(settings?: firestore.PersistenceSettings): Promise<void> {
+  //   if (this._firestoreClient) {
+  //     throw new FirestoreError(
+  //       Code.FAILED_PRECONDITION,
+  //       'Firestore has already been started and persistence can no longer ' +
+  //         'be enabled. You can only call enablePersistence() before calling ' +
+  //         'any other methods on a Firestore object.'
+  //     );
+  //   }
+  //   return this.configureClient(
+  //     new IndexedDbPersistenceSettings(
+  //       this._config.settings.cacheSizeBytes,
+  //       settings !== undefined &&
+  //         objUtils.defaulted(
+  //           settings.experimentalTabSynchronization,
+  //           DEFAULT_SYNCHRONIZE_TABS
+  //         )
+  //     )
+  //   );
+  // }
 
   ensureClientConfigured(): FirestoreClient {
     if (!this._firestoreClient) {
@@ -498,27 +498,27 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
   }
 
   // TODO(b/116617988): Fix name, uncomment d.ts definitions, and update CHANGELOG.md.
-  _collectionGroup(collectionId: string): firestore.Query {
-    validateExactNumberOfArgs('Firestore.collectionGroup', arguments, 1);
-    validateArgType(
-      'Firestore.collectionGroup',
-      'non-empty string',
-      1,
-      collectionId
-    );
-    if (collectionId.indexOf('/') >= 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid collection ID '${collectionId}' passed to function ` +
-          `Firestore.collectionGroup(). Collection IDs must not contain '/'.`
-      );
-    }
-    this.ensureClientConfigured();
-    return new Query(
-      new InternalQuery(ResourcePath.EMPTY_PATH, collectionId),
-      this
-    );
-  }
+  // _collectionGroup(collectionId: string): firestore.Query {
+  //   validateExactNumberOfArgs('Firestore.collectionGroup', arguments, 1);
+  //   validateArgType(
+  //     'Firestore.collectionGroup',
+  //     'non-empty string',
+  //     1,
+  //     collectionId
+  //   );
+  //   if (collectionId.indexOf('/') >= 0) {
+  //     throw new FirestoreError(
+  //       Code.INVALID_ARGUMENT,
+  //       `Invalid collection ID '${collectionId}' passed to function ` +
+  //         `Firestore.collectionGroup(). Collection IDs must not contain '/'.`
+  //     );
+  //   }
+  //   this.ensureClientConfigured();
+  //   return new Query(
+  //     new InternalQuery(ResourcePath.EMPTY_PATH, collectionId),
+  //     this
+  //   );
+  // }
 
   runTransaction<T>(
     updateFunction: (transaction: firestore.Transaction) => Promise<T>
@@ -532,11 +532,11 @@ export class Firestore implements firestore.FirebaseFirestore, FirebaseService {
     );
   }
 
-  batch(): firestore.WriteBatch {
-    this.ensureClientConfigured();
+  // batch(): firestore.WriteBatch {
+  //   this.ensureClientConfigured();
 
-    return new WriteBatch(this);
-  }
+  //   return new WriteBatch(this);
+  // }
 
   static get logLevel(): firestore.LogLevel {
     switch (log.getLogLevel()) {
@@ -718,127 +718,127 @@ export class Transaction implements firestore.Transaction {
   }
 }
 
-export class WriteBatch implements firestore.WriteBatch {
-  private _mutations = [] as Mutation[];
-  private _committed = false;
+// export class WriteBatch implements firestore.WriteBatch {
+//   private _mutations = [] as Mutation[];
+//   private _committed = false;
 
-  constructor(private _firestore: Firestore) {}
+//   constructor(private _firestore: Firestore) {}
 
-  set(
-    documentRef: firestore.DocumentReference,
-    value: firestore.DocumentData,
-    options?: firestore.SetOptions
-  ): WriteBatch {
-    validateBetweenNumberOfArgs('WriteBatch.set', arguments, 2, 3);
-    this.verifyNotCommitted();
-    const ref = validateReference(
-      'WriteBatch.set',
-      documentRef,
-      this._firestore
-    );
-    options = validateSetOptions('WriteBatch.set', options);
-    const parsed =
-      options.merge || options.mergeFields
-        ? this._firestore._dataConverter.parseMergeData(
-            'WriteBatch.set',
-            value,
-            options.mergeFields
-          )
-        : this._firestore._dataConverter.parseSetData('WriteBatch.set', value);
-    this._mutations = this._mutations.concat(
-      parsed.toMutations(ref._key, Precondition.NONE)
-    );
-    return this;
-  }
+//   set(
+//     documentRef: firestore.DocumentReference,
+//     value: firestore.DocumentData,
+//     options?: firestore.SetOptions
+//   ): WriteBatch {
+//     validateBetweenNumberOfArgs('WriteBatch.set', arguments, 2, 3);
+//     this.verifyNotCommitted();
+//     const ref = validateReference(
+//       'WriteBatch.set',
+//       documentRef,
+//       this._firestore
+//     );
+//     options = validateSetOptions('WriteBatch.set', options);
+//     const parsed =
+//       options.merge || options.mergeFields
+//         ? this._firestore._dataConverter.parseMergeData(
+//             'WriteBatch.set',
+//             value,
+//             options.mergeFields
+//           )
+//         : this._firestore._dataConverter.parseSetData('WriteBatch.set', value);
+//     this._mutations = this._mutations.concat(
+//       parsed.toMutations(ref._key, Precondition.NONE)
+//     );
+//     return this;
+//   }
 
-  update(
-    documentRef: firestore.DocumentReference,
-    value: firestore.UpdateData
-  ): WriteBatch;
-  update(
-    documentRef: firestore.DocumentReference,
-    field: string | ExternalFieldPath,
-    value: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): WriteBatch;
-  update(
-    documentRef: firestore.DocumentReference,
-    fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
-    value?: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): WriteBatch {
-    this.verifyNotCommitted();
+//   update(
+//     documentRef: firestore.DocumentReference,
+//     value: firestore.UpdateData
+//   ): WriteBatch;
+//   update(
+//     documentRef: firestore.DocumentReference,
+//     field: string | ExternalFieldPath,
+//     value: unknown,
+//     ...moreFieldsAndValues: unknown[]
+//   ): WriteBatch;
+//   update(
+//     documentRef: firestore.DocumentReference,
+//     fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
+//     value?: unknown,
+//     ...moreFieldsAndValues: unknown[]
+//   ): WriteBatch {
+//     this.verifyNotCommitted();
 
-    let ref;
-    let parsed;
+//     let ref;
+//     let parsed;
 
-    if (
-      typeof fieldOrUpdateData === 'string' ||
-      fieldOrUpdateData instanceof ExternalFieldPath
-    ) {
-      validateAtLeastNumberOfArgs('WriteBatch.update', arguments, 3);
-      ref = validateReference(
-        'WriteBatch.update',
-        documentRef,
-        this._firestore
-      );
-      parsed = this._firestore._dataConverter.parseUpdateVarargs(
-        'WriteBatch.update',
-        fieldOrUpdateData,
-        value,
-        moreFieldsAndValues
-      );
-    } else {
-      validateExactNumberOfArgs('WriteBatch.update', arguments, 2);
-      ref = validateReference(
-        'WriteBatch.update',
-        documentRef,
-        this._firestore
-      );
-      parsed = this._firestore._dataConverter.parseUpdateData(
-        'WriteBatch.update',
-        fieldOrUpdateData
-      );
-    }
+//     if (
+//       typeof fieldOrUpdateData === 'string' ||
+//       fieldOrUpdateData instanceof ExternalFieldPath
+//     ) {
+//       validateAtLeastNumberOfArgs('WriteBatch.update', arguments, 3);
+//       ref = validateReference(
+//         'WriteBatch.update',
+//         documentRef,
+//         this._firestore
+//       );
+//       parsed = this._firestore._dataConverter.parseUpdateVarargs(
+//         'WriteBatch.update',
+//         fieldOrUpdateData,
+//         value,
+//         moreFieldsAndValues
+//       );
+//     } else {
+//       validateExactNumberOfArgs('WriteBatch.update', arguments, 2);
+//       ref = validateReference(
+//         'WriteBatch.update',
+//         documentRef,
+//         this._firestore
+//       );
+//       parsed = this._firestore._dataConverter.parseUpdateData(
+//         'WriteBatch.update',
+//         fieldOrUpdateData
+//       );
+//     }
 
-    this._mutations = this._mutations.concat(
-      parsed.toMutations(ref._key, Precondition.exists(true))
-    );
-    return this;
-  }
+//     this._mutations = this._mutations.concat(
+//       parsed.toMutations(ref._key, Precondition.exists(true))
+//     );
+//     return this;
+//   }
 
-  delete(documentRef: firestore.DocumentReference): WriteBatch {
-    validateExactNumberOfArgs('WriteBatch.delete', arguments, 1);
-    this.verifyNotCommitted();
-    const ref = validateReference(
-      'WriteBatch.delete',
-      documentRef,
-      this._firestore
-    );
-    this._mutations = this._mutations.concat(
-      new DeleteMutation(ref._key, Precondition.NONE)
-    );
-    return this;
-  }
+//   delete(documentRef: firestore.DocumentReference): WriteBatch {
+//     validateExactNumberOfArgs('WriteBatch.delete', arguments, 1);
+//     this.verifyNotCommitted();
+//     const ref = validateReference(
+//       'WriteBatch.delete',
+//       documentRef,
+//       this._firestore
+//     );
+//     this._mutations = this._mutations.concat(
+//       new DeleteMutation(ref._key, Precondition.NONE)
+//     );
+//     return this;
+//   }
 
-  async commit(): Promise<void> {
-    this.verifyNotCommitted();
-    this._committed = true;
-    if (this._mutations.length > 0) {
-      return this._firestore.ensureClientConfigured().write(this._mutations);
-    }
-  }
+//   async commit(): Promise<void> {
+//     this.verifyNotCommitted();
+//     this._committed = true;
+//     if (this._mutations.length > 0) {
+//       // return this._firestore.ensureClientConfigured().write(this._mutations);
+//     }
+//   }
 
-  private verifyNotCommitted(): void {
-    if (this._committed) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'A write batch can no longer be used after commit() ' +
-          'has been called.'
-      );
-    }
-  }
-}
+//   private verifyNotCommitted(): void {
+//     if (this._committed) {
+//       throw new FirestoreError(
+//         Code.FAILED_PRECONDITION,
+//         'A write batch can no longer be used after commit() ' +
+//           'has been called.'
+//       );
+//     }
+//   }
+// }
 
 /**
  * A reference to a particular document in a collection in the database.
@@ -899,280 +899,283 @@ export class DocumentReference implements firestore.DocumentReference {
     return this.firestore === other.firestore && this._key.isEqual(other._key);
   }
 
-  set(
-    value: firestore.DocumentData,
-    options?: firestore.SetOptions
-  ): Promise<void> {
-    validateBetweenNumberOfArgs('DocumentReference.set', arguments, 1, 2);
-    options = validateSetOptions('DocumentReference.set', options);
+  // set(
+  //   value: firestore.DocumentData,
+  //   options?: firestore.SetOptions
+  // ): Promise<void> {
+  //   validateBetweenNumberOfArgs('DocumentReference.set', arguments, 1, 2);
+  //   options = validateSetOptions('DocumentReference.set', options);
 
-    const parsed =
-      options.merge || options.mergeFields
-        ? this.firestore._dataConverter.parseMergeData(
-            'DocumentReference.set',
-            value,
-            options.mergeFields
-          )
-        : this.firestore._dataConverter.parseSetData(
-            'DocumentReference.set',
-            value
-          );
-    return this._firestoreClient.write(
-      parsed.toMutations(this._key, Precondition.NONE)
-    );
-  }
+  //   const parsed =
+  //     options.merge || options.mergeFields
+  //       ? this.firestore._dataConverter.parseMergeData(
+  //           'DocumentReference.set',
+  //           value,
+  //           options.mergeFields
+  //         )
+  //       : this.firestore._dataConverter.parseSetData(
+  //           'DocumentReference.set',
+  //           value
+  //         );
+  //   // return this._firestoreClient.write(
+  //   //   parsed.toMutations(this._key, Precondition.NONE)
+  //   // );
+  //   return Promise.resolve();
+  // }
 
-  update(value: firestore.UpdateData): Promise<void>;
-  update(
-    field: string | ExternalFieldPath,
-    value: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): Promise<void>;
-  update(
-    fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
-    value?: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): Promise<void> {
-    let parsed;
+  // update(value: firestore.UpdateData): Promise<void>;
+  // update(
+  //   field: string | ExternalFieldPath,
+  //   value: unknown,
+  //   ...moreFieldsAndValues: unknown[]
+  // ): Promise<void>;
+  // update(
+  //   fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
+  //   value?: unknown,
+  //   ...moreFieldsAndValues: unknown[]
+  // ): Promise<void> {
+  //   let parsed;
 
-    if (
-      typeof fieldOrUpdateData === 'string' ||
-      fieldOrUpdateData instanceof ExternalFieldPath
-    ) {
-      validateAtLeastNumberOfArgs('DocumentReference.update', arguments, 2);
-      parsed = this.firestore._dataConverter.parseUpdateVarargs(
-        'DocumentReference.update',
-        fieldOrUpdateData,
-        value,
-        moreFieldsAndValues
-      );
-    } else {
-      validateExactNumberOfArgs('DocumentReference.update', arguments, 1);
-      parsed = this.firestore._dataConverter.parseUpdateData(
-        'DocumentReference.update',
-        fieldOrUpdateData
-      );
-    }
+  //   if (
+  //     typeof fieldOrUpdateData === 'string' ||
+  //     fieldOrUpdateData instanceof ExternalFieldPath
+  //   ) {
+  //     validateAtLeastNumberOfArgs('DocumentReference.update', arguments, 2);
+  //     parsed = this.firestore._dataConverter.parseUpdateVarargs(
+  //       'DocumentReference.update',
+  //       fieldOrUpdateData,
+  //       value,
+  //       moreFieldsAndValues
+  //     );
+  //   } else {
+  //     validateExactNumberOfArgs('DocumentReference.update', arguments, 1);
+  //     parsed = this.firestore._dataConverter.parseUpdateData(
+  //       'DocumentReference.update',
+  //       fieldOrUpdateData
+  //     );
+  //   }
 
-    return this._firestoreClient.write(
-      parsed.toMutations(this._key, Precondition.exists(true))
-    );
-  }
+  //   // return this._firestoreClient.write(
+  //   //   parsed.toMutations(this._key, Precondition.exists(true))
+  //   // );
+  //   return Promise.resolve();
+  // }
 
-  delete(): Promise<void> {
-    validateExactNumberOfArgs('DocumentReference.delete', arguments, 0);
-    return this._firestoreClient.write([
-      new DeleteMutation(this._key, Precondition.NONE)
-    ]);
-  }
+  // delete(): Promise<void> {
+  //   validateExactNumberOfArgs('DocumentReference.delete', arguments, 0);
+  //   // return this._firestoreClient.write([
+  //   //   new DeleteMutation(this._key, Precondition.NONE)
+  //   // ]);
+  //   return Promise.resolve();
+  // }
 
-  onSnapshot(
-    observer: PartialObserver<firestore.DocumentSnapshot>
-  ): Unsubscribe;
-  onSnapshot(
-    options: firestore.SnapshotListenOptions,
-    observer: PartialObserver<firestore.DocumentSnapshot>
-  ): Unsubscribe;
-  onSnapshot(
-    onNext: NextFn<firestore.DocumentSnapshot>,
-    onError?: ErrorFn,
-    onCompletion?: CompleteFn
-  ): Unsubscribe;
-  onSnapshot(
-    options: firestore.SnapshotListenOptions,
-    onNext: NextFn<firestore.DocumentSnapshot>,
-    onError?: ErrorFn,
-    onCompletion?: CompleteFn
-  ): Unsubscribe;
+  // onSnapshot(
+  //   observer: PartialObserver<firestore.DocumentSnapshot>
+  // ): Unsubscribe;
+  // onSnapshot(
+  //   options: firestore.SnapshotListenOptions,
+  //   observer: PartialObserver<firestore.DocumentSnapshot>
+  // ): Unsubscribe;
+  // onSnapshot(
+  //   onNext: NextFn<firestore.DocumentSnapshot>,
+  //   onError?: ErrorFn,
+  //   onCompletion?: CompleteFn
+  // ): Unsubscribe;
+  // onSnapshot(
+  //   options: firestore.SnapshotListenOptions,
+  //   onNext: NextFn<firestore.DocumentSnapshot>,
+  //   onError?: ErrorFn,
+  //   onCompletion?: CompleteFn
+  // ): Unsubscribe;
 
-  onSnapshot(...args: unknown[]): Unsubscribe {
-    validateBetweenNumberOfArgs(
-      'DocumentReference.onSnapshot',
-      arguments,
-      1,
-      4
-    );
-    let options: firestore.SnapshotListenOptions = {
-      includeMetadataChanges: false
-    };
-    let observer: PartialObserver<firestore.DocumentSnapshot>;
-    let currArg = 0;
-    if (
-      typeof args[currArg] === 'object' &&
-      !isPartialObserver(args[currArg])
-    ) {
-      options = args[currArg] as firestore.SnapshotListenOptions;
-      validateOptionNames('DocumentReference.onSnapshot', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'DocumentReference.onSnapshot',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
-      currArg++;
-    }
+  // onSnapshot(...args: unknown[]): Unsubscribe {
+  //   validateBetweenNumberOfArgs(
+  //     'DocumentReference.onSnapshot',
+  //     arguments,
+  //     1,
+  //     4
+  //   );
+  //   let options: firestore.SnapshotListenOptions = {
+  //     includeMetadataChanges: false
+  //   };
+  //   let observer: PartialObserver<firestore.DocumentSnapshot>;
+  //   let currArg = 0;
+  //   if (
+  //     typeof args[currArg] === 'object' &&
+  //     !isPartialObserver(args[currArg])
+  //   ) {
+  //     options = args[currArg] as firestore.SnapshotListenOptions;
+  //     validateOptionNames('DocumentReference.onSnapshot', options, [
+  //       'includeMetadataChanges'
+  //     ]);
+  //     validateNamedOptionalType(
+  //       'DocumentReference.onSnapshot',
+  //       'boolean',
+  //       'includeMetadataChanges',
+  //       options.includeMetadataChanges
+  //     );
+  //     currArg++;
+  //   }
 
-    const internalOptions = {
-      includeMetadataChanges: options.includeMetadataChanges
-    };
+  //   const internalOptions = {
+  //     includeMetadataChanges: options.includeMetadataChanges
+  //   };
 
-    if (isPartialObserver(args[currArg])) {
-      observer = args[currArg] as PartialObserver<firestore.DocumentSnapshot>;
-    } else {
-      validateArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg,
-        args[currArg]
-      );
-      validateOptionalArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg + 1,
-        args[currArg + 1]
-      );
-      validateOptionalArgType(
-        'DocumentReference.onSnapshot',
-        'function',
-        currArg + 2,
-        args[currArg + 2]
-      );
-      observer = {
-        next: args[currArg] as NextFn<firestore.DocumentSnapshot>,
-        error: args[currArg + 1] as ErrorFn,
-        complete: args[currArg + 2] as CompleteFn
-      };
-    }
-    return this.onSnapshotInternal(internalOptions, observer);
-  }
+  //   if (isPartialObserver(args[currArg])) {
+  //     observer = args[currArg] as PartialObserver<firestore.DocumentSnapshot>;
+  //   } else {
+  //     validateArgType(
+  //       'DocumentReference.onSnapshot',
+  //       'function',
+  //       currArg,
+  //       args[currArg]
+  //     );
+  //     validateOptionalArgType(
+  //       'DocumentReference.onSnapshot',
+  //       'function',
+  //       currArg + 1,
+  //       args[currArg + 1]
+  //     );
+  //     validateOptionalArgType(
+  //       'DocumentReference.onSnapshot',
+  //       'function',
+  //       currArg + 2,
+  //       args[currArg + 2]
+  //     );
+  //     observer = {
+  //       next: args[currArg] as NextFn<firestore.DocumentSnapshot>,
+  //       error: args[currArg + 1] as ErrorFn,
+  //       complete: args[currArg + 2] as CompleteFn
+  //     };
+  //   }
+  //   return this.onSnapshotInternal(internalOptions, observer);
+  // }
 
-  private onSnapshotInternal(
-    options: ListenOptions,
-    observer: PartialObserver<firestore.DocumentSnapshot>
-  ): Unsubscribe {
-    let errHandler = (err: Error) => {
-      console.error('Uncaught Error in onSnapshot:', err);
-    };
-    if (observer.error) {
-      errHandler = observer.error.bind(observer);
-    }
+  // private onSnapshotInternal(
+  //   options: ListenOptions,
+  //   observer: PartialObserver<firestore.DocumentSnapshot>
+  // ): Unsubscribe {
+  //   let errHandler = (err: Error) => {
+  //     console.error('Uncaught Error in onSnapshot:', err);
+  //   };
+  //   if (observer.error) {
+  //     errHandler = observer.error.bind(observer);
+  //   }
 
-    const asyncObserver = new AsyncObserver<ViewSnapshot>({
-      next: snapshot => {
-        if (observer.next) {
-          assert(
-            snapshot.docs.size <= 1,
-            'Too many documents returned on a document query'
-          );
-          const doc = snapshot.docs.get(this._key);
+  //   const asyncObserver = new AsyncObserver<ViewSnapshot>({
+  //     next: snapshot => {
+  //       if (observer.next) {
+  //         assert(
+  //           snapshot.docs.size <= 1,
+  //           'Too many documents returned on a document query'
+  //         );
+  //         const doc = snapshot.docs.get(this._key);
 
-          observer.next(
-            new DocumentSnapshot(
-              this.firestore,
-              this._key,
-              doc,
-              snapshot.fromCache,
-              snapshot.hasPendingWrites
-            )
-          );
-        }
-      },
-      error: errHandler
-    });
-    const internalListener = this._firestoreClient.listen(
-      InternalQuery.atPath(this._key.path),
-      asyncObserver,
-      options
-    );
+  //         observer.next(
+  //           new DocumentSnapshot(
+  //             this.firestore,
+  //             this._key,
+  //             doc,
+  //             snapshot.fromCache,
+  //             snapshot.hasPendingWrites
+  //           )
+  //         );
+  //       }
+  //     },
+  //     error: errHandler
+  //   });
+  //   // const internalListener = this._firestoreClient.listen(
+  //   //   InternalQuery.atPath(this._key.path),
+  //   //   asyncObserver,
+  //   //   options
+  //   // );
 
-    return () => {
-      asyncObserver.mute();
-      this._firestoreClient.unlisten(internalListener);
-    };
-  }
+  //   return () => {
+  //     asyncObserver.mute();
+  //     // this._firestoreClient.unlisten(internalListener);
+  //   };
+  // }
 
-  get(options?: firestore.GetOptions): Promise<firestore.DocumentSnapshot> {
-    validateBetweenNumberOfArgs('DocumentReference.get', arguments, 0, 1);
-    validateGetOptions('DocumentReference.get', options);
-    return new Promise(
-      (resolve: Resolver<firestore.DocumentSnapshot>, reject: Rejecter) => {
-        if (options && options.source === 'cache') {
-          this.firestore
-            .ensureClientConfigured()
-            .getDocumentFromLocalCache(this._key)
-            .then(doc => {
-              resolve(
-                new DocumentSnapshot(
-                  this.firestore,
-                  this._key,
-                  doc,
-                  /*fromCache=*/ true,
-                  doc instanceof Document ? doc.hasLocalMutations : false
-                )
-              );
-            }, reject);
-        } else {
-          this.getViaSnapshotListener(resolve, reject, options);
-        }
-      }
-    );
-  }
+  // get(options?: firestore.GetOptions): Promise<firestore.DocumentSnapshot> {
+  //   validateBetweenNumberOfArgs('DocumentReference.get', arguments, 0, 1);
+  //   validateGetOptions('DocumentReference.get', options);
+  //   return new Promise(
+  //     (resolve: Resolver<firestore.DocumentSnapshot>, reject: Rejecter) => {
+  //       // if (options && options.source === 'cache') {
+  //       //   this.firestore
+  //       //     .ensureClientConfigured()
+  //       //     .getDocumentFromLocalCache(this._key)
+  //       //     .then(doc => {
+  //       //       resolve(
+  //       //         new DocumentSnapshot(
+  //       //           this.firestore,
+  //       //           this._key,
+  //       //           doc,
+  //       //           /*fromCache=*/ true,
+  //       //           doc instanceof Document ? doc.hasLocalMutations : false
+  //       //         )
+  //       //       );
+  //       //     }, reject);
+  //       // } else {
+  //       //   this.getViaSnapshotListener(resolve, reject, options);
+  //       // }
+  //     }
+  //   );
+  // }
 
-  private getViaSnapshotListener(
-    resolve: Resolver<firestore.DocumentSnapshot>,
-    reject: Rejecter,
-    options?: firestore.GetOptions
-  ): void {
-    const unlisten = this.onSnapshotInternal(
-      {
-        includeMetadataChanges: true,
-        waitForSyncWhenOnline: true
-      },
-      {
-        next: (snap: firestore.DocumentSnapshot) => {
-          // Remove query first before passing event to user to avoid
-          // user actions affecting the now stale query.
-          unlisten();
+  // private getViaSnapshotListener(
+  //   resolve: Resolver<firestore.DocumentSnapshot>,
+  //   reject: Rejecter,
+  //   options?: firestore.GetOptions
+  // ): void {
+  //   const unlisten = this.onSnapshotInternal(
+  //     {
+  //       includeMetadataChanges: true,
+  //       waitForSyncWhenOnline: true
+  //     },
+  //     {
+  //       next: (snap: firestore.DocumentSnapshot) => {
+  //         // Remove query first before passing event to user to avoid
+  //         // user actions affecting the now stale query.
+  //         unlisten();
 
-          if (!snap.exists && snap.metadata.fromCache) {
-            // TODO(dimond): If we're online and the document doesn't
-            // exist then we resolve with a doc.exists set to false. If
-            // we're offline however, we reject the Promise in this
-            // case. Two options: 1) Cache the negative response from
-            // the server so we can deliver that even when you're
-            // offline 2) Actually reject the Promise in the online case
-            // if the document doesn't exist.
-            reject(
-              new FirestoreError(
-                Code.UNAVAILABLE,
-                'Failed to get document because the client is ' + 'offline.'
-              )
-            );
-          } else if (
-            snap.exists &&
-            snap.metadata.fromCache &&
-            options &&
-            options.source === 'server'
-          ) {
-            reject(
-              new FirestoreError(
-                Code.UNAVAILABLE,
-                'Failed to get document from server. (However, this ' +
-                  'document does exist in the local cache. Run again ' +
-                  'without setting source to "server" to ' +
-                  'retrieve the cached document.)'
-              )
-            );
-          } else {
-            resolve(snap);
-          }
-        },
-        error: reject
-      }
-    );
-  }
+  //         if (!snap.exists && snap.metadata.fromCache) {
+  //           // TODO(dimond): If we're online and the document doesn't
+  //           // exist then we resolve with a doc.exists set to false. If
+  //           // we're offline however, we reject the Promise in this
+  //           // case. Two options: 1) Cache the negative response from
+  //           // the server so we can deliver that even when you're
+  //           // offline 2) Actually reject the Promise in the online case
+  //           // if the document doesn't exist.
+  //           reject(
+  //             new FirestoreError(
+  //               Code.UNAVAILABLE,
+  //               'Failed to get document because the client is ' + 'offline.'
+  //             )
+  //           );
+  //         } else if (
+  //           snap.exists &&
+  //           snap.metadata.fromCache &&
+  //           options &&
+  //           options.source === 'server'
+  //         ) {
+  //           reject(
+  //             new FirestoreError(
+  //               Code.UNAVAILABLE,
+  //               'Failed to get document from server. (However, this ' +
+  //                 'document does exist in the local cache. Run again ' +
+  //                 'without setting source to "server" to ' +
+  //                 'retrieve the cached document.)'
+  //             )
+  //           );
+  //         } else {
+  //           resolve(snap);
+  //         }
+  //       },
+  //       error: reject
+  //     }
+  //   );
+  // }
 }
 
 class SnapshotMetadata implements firestore.SnapshotMetadata {
@@ -1780,14 +1783,14 @@ export class Query implements firestore.Query {
     });
 
     const firestoreClient = this.firestore.ensureClientConfigured();
-    const internalListener = firestoreClient.listen(
-      this._query,
-      asyncObserver,
-      options
-    );
+    // const internalListener = firestoreClient.listen(
+    //   this._query,
+    //   asyncObserver,
+    //   options
+    // );
     return () => {
       asyncObserver.mute();
-      firestoreClient.unlisten(internalListener);
+      // firestoreClient.unlisten(internalListener);
     };
   }
 
@@ -1796,16 +1799,16 @@ export class Query implements firestore.Query {
     validateGetOptions('Query.get', options);
     return new Promise(
       (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
-        if (options && options.source === 'cache') {
-          this.firestore
-            .ensureClientConfigured()
-            .getDocumentsFromLocalCache(this._query)
-            .then((viewSnap: ViewSnapshot) => {
-              resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
-            }, reject);
-        } else {
-          this.getViaSnapshotListener(resolve, reject, options);
-        }
+        // if (options && options.source === 'cache') {
+        //   this.firestore
+        //     .ensureClientConfigured()
+        //     .getDocumentsFromLocalCache(this._query)
+        //     .then((viewSnap: ViewSnapshot) => {
+        //       resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
+        //     }, reject);
+        // } else {
+        //   this.getViaSnapshotListener(resolve, reject, options);
+        // }
       }
     );
   }
@@ -2114,12 +2117,12 @@ export class CollectionReference extends Query
     );
   }
 
-  add(value: firestore.DocumentData): Promise<firestore.DocumentReference> {
-    validateExactNumberOfArgs('CollectionReference.add', arguments, 1);
-    validateArgType('CollectionReference.add', 'object', 1, value);
-    const docRef = this.doc();
-    return docRef.set(value).then(() => docRef);
-  }
+  // add(value: firestore.DocumentData): Promise<firestore.DocumentReference> {
+  //   validateExactNumberOfArgs('CollectionReference.add', arguments, 1);
+  //   validateArgType('CollectionReference.add', 'object', 1, value);
+  //   const docRef = this.doc();
+  //   return docRef.set(value).then(() => docRef);
+  // }
 }
 
 function validateSetOptions(
@@ -2306,10 +2309,10 @@ export const PublicTransaction = makeConstructorPrivate(
   Transaction,
   'Use firebase.firestore().runTransaction() instead.'
 );
-export const PublicWriteBatch = makeConstructorPrivate(
-  WriteBatch,
-  'Use firebase.firestore().batch() instead.'
-);
+// export const PublicWriteBatch = makeConstructorPrivate(
+//   WriteBatch,
+//   'Use firebase.firestore().batch() instead.'
+// );
 export const PublicDocumentReference = makeConstructorPrivate(
   DocumentReference,
   'Use firebase.firestore().doc() instead.'

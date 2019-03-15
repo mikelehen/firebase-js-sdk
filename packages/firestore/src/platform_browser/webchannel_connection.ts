@@ -16,10 +16,10 @@
  */
 
 import {
-  createWebChannelTransport,
+  //createWebChannelTransport,
   ErrorCode,
   EventType,
-  WebChannel,
+  //WebChannel,
   XhrIo
 } from '@firebase/webchannel-wrapper';
 
@@ -189,176 +189,176 @@ export class WebChannelConnection implements Connection {
       rpcName,
       '/channel'
     ];
-    const webchannelTransport = createWebChannelTransport();
-    const request = {
-      // Background channel test avoids the initial two test calls and decreases
-      // initial cold start time.
-      // TODO(dimond): wenboz@ mentioned this might affect use with proxies and
-      // we should monitor closely for any reports.
-      backgroundChannelTest: true,
-      // Required for backend stickiness, routing behavior is based on this
-      // parameter.
-      httpSessionIdParam: 'gsessionid',
-      initMessageHeaders: {},
-      messageUrlParams: {
-        // This param is used to improve routing and project isolation by the
-        // backend and must be included in every request.
-        database: `projects/${this.databaseId.projectId}/databases/${
-          this.databaseId.database
-        }`
-      },
-      sendRawJson: true,
-      supportsCrossDomainXhr: true
-    };
+    // const webchannelTransport = createWebChannelTransport();
+    // const request = {
+    //   // Background channel test avoids the initial two test calls and decreases
+    //   // initial cold start time.
+    //   // TODO(dimond): wenboz@ mentioned this might affect use with proxies and
+    //   // we should monitor closely for any reports.
+    //   backgroundChannelTest: true,
+    //   // Required for backend stickiness, routing behavior is based on this
+    //   // parameter.
+    //   httpSessionIdParam: 'gsessionid',
+    //   initMessageHeaders: {},
+    //   messageUrlParams: {
+    //     // This param is used to improve routing and project isolation by the
+    //     // backend and must be included in every request.
+    //     database: `projects/${this.databaseId.projectId}/databases/${
+    //       this.databaseId.database
+    //     }`
+    //   },
+    //   sendRawJson: true,
+    //   supportsCrossDomainXhr: true
+    // };
 
-    this.modifyHeadersForRequest(request.initMessageHeaders, token);
+    // this.modifyHeadersForRequest(request.initMessageHeaders, token);
 
-    // Sending the custom headers we just added to request.initMessageHeaders
-    // (Authorization, etc.) will trigger the browser to make a CORS preflight
-    // request because the XHR will no longer meet the criteria for a "simple"
-    // CORS request:
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Simple_requests
-    //
-    // Therefore to avoid the CORS preflight request (an extra network
-    // roundtrip), we use the httpHeadersOverwriteParam option to specify that
-    // the headers should instead be encoded into a special "$httpHeaders" query
-    // parameter, which is recognized by the webchannel backend. This is
-    // formally defined here:
-    // https://github.com/google/closure-library/blob/b0e1815b13fb92a46d7c9b3c30de5d6a396a3245/closure/goog/net/rpc/httpcors.js#L32
-    //
-    // But for some unclear reason (see
-    // https://github.com/firebase/firebase-js-sdk/issues/703), this breaks
-    // ReactNative and so we exclude it, which just means ReactNative may be
-    // subject to the extra network roundtrip for CORS preflight.
-    if (!isReactNative()) {
-      request['httpHeadersOverwriteParam'] = '$httpHeaders';
-    }
+    // // Sending the custom headers we just added to request.initMessageHeaders
+    // // (Authorization, etc.) will trigger the browser to make a CORS preflight
+    // // request because the XHR will no longer meet the criteria for a "simple"
+    // // CORS request:
+    // // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Simple_requests
+    // //
+    // // Therefore to avoid the CORS preflight request (an extra network
+    // // roundtrip), we use the httpHeadersOverwriteParam option to specify that
+    // // the headers should instead be encoded into a special "$httpHeaders" query
+    // // parameter, which is recognized by the webchannel backend. This is
+    // // formally defined here:
+    // // https://github.com/google/closure-library/blob/b0e1815b13fb92a46d7c9b3c30de5d6a396a3245/closure/goog/net/rpc/httpcors.js#L32
+    // //
+    // // But for some unclear reason (see
+    // // https://github.com/firebase/firebase-js-sdk/issues/703), this breaks
+    // // ReactNative and so we exclude it, which just means ReactNative may be
+    // // subject to the extra network roundtrip for CORS preflight.
+    // if (!isReactNative()) {
+    //   request['httpHeadersOverwriteParam'] = '$httpHeaders';
+    // }
 
-    const url = urlParts.join('');
-    log.debug(LOG_TAG, 'Creating WebChannel: ' + url + ' ' + request);
-    // tslint:disable-next-line:no-any Because listen isn't defined on it.
-    const channel = webchannelTransport.createWebChannel(url, request) as any;
+    // const url = urlParts.join('');
+    // log.debug(LOG_TAG, 'Creating WebChannel: ' + url + ' ' + request);
+    // // tslint:disable-next-line:no-any Because listen isn't defined on it.
+    // const channel = webchannelTransport.createWebChannel(url, request) as any;
 
-    // WebChannel supports sending the first message with the handshake - saving
-    // a network round trip. However, it will have to call send in the same
-    // JS event loop as open. In order to enforce this, we delay actually
-    // opening the WebChannel until send is called. Whether we have called
-    // open is tracked with this variable.
-    let opened = false;
+    // // WebChannel supports sending the first message with the handshake - saving
+    // // a network round trip. However, it will have to call send in the same
+    // // JS event loop as open. In order to enforce this, we delay actually
+    // // opening the WebChannel until send is called. Whether we have called
+    // // open is tracked with this variable.
+    // let opened = false;
 
-    // A flag to determine whether the stream was closed (by us or through an
-    // error/close event) to avoid delivering multiple close events or sending
-    // on a closed stream
-    let closed = false;
+    // // A flag to determine whether the stream was closed (by us or through an
+    // // error/close event) to avoid delivering multiple close events or sending
+    // // on a closed stream
+    // let closed = false;
 
     const streamBridge = new StreamBridge<Req, Resp>({
       sendFn: (msg: Req) => {
-        if (!closed) {
-          if (!opened) {
-            log.debug(LOG_TAG, 'Opening WebChannel transport.');
-            channel.open();
-            opened = true;
-          }
-          log.debug(LOG_TAG, 'WebChannel sending:', msg);
-          channel.send(msg);
-        } else {
-          log.debug(LOG_TAG, 'Not sending because WebChannel is closed:', msg);
-        }
+        // if (!closed) {
+        //   if (!opened) {
+        //     log.debug(LOG_TAG, 'Opening WebChannel transport.');
+        //     channel.open();
+        //     opened = true;
+        //   }
+        //   log.debug(LOG_TAG, 'WebChannel sending:', msg);
+        //   channel.send(msg);
+        // } else {
+        //   log.debug(LOG_TAG, 'Not sending because WebChannel is closed:', msg);
+        // }
       },
-      closeFn: () => channel.close()
+      closeFn: () => {}/*channel.close()*/
     });
 
     // Closure events are guarded and exceptions are swallowed, so catch any
     // exception and rethrow using a setTimeout so they become visible again.
     // Note that eventually this function could go away if we are confident
     // enough the code is exception free.
-    const unguardedEventListen = <T>(
-      type: WebChannel.EventType,
-      fn: (param?: T) => void
-    ) => {
-      // TODO(dimond): closure typing seems broken because WebChannel does
-      // not implement goog.events.Listenable
-      channel.listen(type, (param?: T) => {
-        try {
-          fn(param);
-        } catch (e) {
-          setTimeout(() => {
-            throw e;
-          }, 0);
-        }
-      });
-    };
+    // const unguardedEventListen = <T>(
+    //   type: WebChannel.EventType,
+    //   fn: (param?: T) => void
+    // ) => {
+    //   // TODO(dimond): closure typing seems broken because WebChannel does
+    //   // not implement goog.events.Listenable
+    //   channel.listen(type, (param?: T) => {
+    //     try {
+    //       fn(param);
+    //     } catch (e) {
+    //       setTimeout(() => {
+    //         throw e;
+    //       }, 0);
+    //     }
+    //   });
+    // };
 
-    unguardedEventListen(WebChannel.EventType.OPEN, () => {
-      if (!closed) {
-        log.debug(LOG_TAG, 'WebChannel transport opened.');
-      }
-    });
+    // unguardedEventListen(WebChannel.EventType.OPEN, () => {
+    //   if (!closed) {
+    //     log.debug(LOG_TAG, 'WebChannel transport opened.');
+    //   }
+    // });
 
-    unguardedEventListen(WebChannel.EventType.CLOSE, () => {
-      if (!closed) {
-        closed = true;
-        log.debug(LOG_TAG, 'WebChannel transport closed');
-        streamBridge.callOnClose();
-      }
-    });
+    // unguardedEventListen(WebChannel.EventType.CLOSE, () => {
+    //   if (!closed) {
+    //     closed = true;
+    //     log.debug(LOG_TAG, 'WebChannel transport closed');
+    //     streamBridge.callOnClose();
+    //   }
+    // });
 
-    unguardedEventListen<Error>(WebChannel.EventType.ERROR, err => {
-      if (!closed) {
-        closed = true;
-        log.debug(LOG_TAG, 'WebChannel transport errored:', err);
-        streamBridge.callOnClose(
-          new FirestoreError(
-            Code.UNAVAILABLE,
-            'The operation could not be completed'
-          )
-        );
-      }
-    });
+    // unguardedEventListen<Error>(WebChannel.EventType.ERROR, err => {
+    //   if (!closed) {
+    //     closed = true;
+    //     log.debug(LOG_TAG, 'WebChannel transport errored:', err);
+    //     streamBridge.callOnClose(
+    //       new FirestoreError(
+    //         Code.UNAVAILABLE,
+    //         'The operation could not be completed'
+    //       )
+    //     );
+    //   }
+    // });
 
-    // WebChannel delivers message events as array. If batching is not enabled
-    // (it's off by default) each message will be delivered alone, resulting in
-    // a single element array.
-    type WebChannelResponse = { data: Resp[] };
+    // // WebChannel delivers message events as array. If batching is not enabled
+    // // (it's off by default) each message will be delivered alone, resulting in
+    // // a single element array.
+    // type WebChannelResponse = { data: Resp[] };
 
-    unguardedEventListen<WebChannelResponse>(
-      WebChannel.EventType.MESSAGE,
-      msg => {
-        if (!closed) {
-          const msgData = msg!.data[0];
-          assert(!!msgData, 'Got a webchannel message without data.');
-          // TODO(b/35143891): There is a bug in One Platform that caused errors
-          // (and only errors) to be wrapped in an extra array. To be forward
-          // compatible with the bug we need to check either condition. The latter
-          // can be removed once the fix has been rolled out.
-          const error =
-            // tslint:disable-next-line:no-any msgData.error is not typed.
-            (msgData as any).error || (msgData[0] && msgData[0].error);
-          if (error) {
-            log.debug(LOG_TAG, 'WebChannel received error:', error);
-            // error.status will be a string like 'OK' or 'NOT_FOUND'.
-            const status: string = error.status;
-            let code = mapCodeFromRpcStatus(status);
-            let message = error.message;
-            if (code === undefined) {
-              code = Code.INTERNAL;
-              message =
-                'Unknown error status: ' +
-                status +
-                ' with message ' +
-                error.message;
-            }
-            // Mark closed so no further events are propagated
-            closed = true;
-            streamBridge.callOnClose(new FirestoreError(code, message));
-            channel.close();
-          } else {
-            log.debug(LOG_TAG, 'WebChannel received:', msgData);
-            streamBridge.callOnMessage(msgData);
-          }
-        }
-      }
-    );
+    // unguardedEventListen<WebChannelResponse>(
+    //   WebChannel.EventType.MESSAGE,
+    //   msg => {
+    //     if (!closed) {
+    //       const msgData = msg!.data[0];
+    //       assert(!!msgData, 'Got a webchannel message without data.');
+    //       // TODO(b/35143891): There is a bug in One Platform that caused errors
+    //       // (and only errors) to be wrapped in an extra array. To be forward
+    //       // compatible with the bug we need to check either condition. The latter
+    //       // can be removed once the fix has been rolled out.
+    //       const error =
+    //         // tslint:disable-next-line:no-any msgData.error is not typed.
+    //         (msgData as any).error || (msgData[0] && msgData[0].error);
+    //       if (error) {
+    //         log.debug(LOG_TAG, 'WebChannel received error:', error);
+    //         // error.status will be a string like 'OK' or 'NOT_FOUND'.
+    //         const status: string = error.status;
+    //         let code = mapCodeFromRpcStatus(status);
+    //         let message = error.message;
+    //         if (code === undefined) {
+    //           code = Code.INTERNAL;
+    //           message =
+    //             'Unknown error status: ' +
+    //             status +
+    //             ' with message ' +
+    //             error.message;
+    //         }
+    //         // Mark closed so no further events are propagated
+    //         closed = true;
+    //         streamBridge.callOnClose(new FirestoreError(code, message));
+    //         channel.close();
+    //       } else {
+    //         log.debug(LOG_TAG, 'WebChannel received:', msgData);
+    //         streamBridge.callOnMessage(msgData);
+    //       }
+    //     }
+    //   }
+    // );
 
     setTimeout(() => {
       // Technically we could/should wait for the WebChannel opened event,

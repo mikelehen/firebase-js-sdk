@@ -25,11 +25,11 @@ import { assert } from '../util/assert';
 import { AsyncQueue } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
 import { Connection } from './connection';
-import { WatchStreamListener, WriteStreamListener } from './persistent_stream';
-import {
-  PersistentListenStream,
-  PersistentWriteStream
-} from './persistent_stream';
+// import { WatchStreamListener, WriteStreamListener } from './persistent_stream';
+// import {
+//   PersistentListenStream,
+//   PersistentWriteStream
+// } from './persistent_stream';
 import { JsonProtoSerializer } from './serializer';
 
 // The generated proto interfaces for these class are missing the database
@@ -55,29 +55,29 @@ export class Datastore {
     private serializer: JsonProtoSerializer
   ) {}
 
-  newPersistentWriteStream(
-    listener: WriteStreamListener
-  ): PersistentWriteStream {
-    return new PersistentWriteStream(
-      this.queue,
-      this.connection,
-      this.credentials,
-      this.serializer,
-      listener
-    );
-  }
+  // newPersistentWriteStream(
+  //   listener: WriteStreamListener
+  // ): PersistentWriteStream {
+  //   return new PersistentWriteStream(
+  //     this.queue,
+  //     this.connection,
+  //     this.credentials,
+  //     this.serializer,
+  //     listener
+  //   );
+  // }
 
-  newPersistentWatchStream(
-    listener: WatchStreamListener
-  ): PersistentListenStream {
-    return new PersistentListenStream(
-      this.queue,
-      this.connection,
-      this.credentials,
-      this.serializer,
-      listener
-    );
-  }
+  // newPersistentWatchStream(
+  //   listener: WatchStreamListener
+  // ): PersistentListenStream {
+  //   return new PersistentListenStream(
+  //     this.queue,
+  //     this.connection,
+  //     this.credentials,
+  //     this.serializer,
+  //     listener
+  //   );
+  // }
 
   commit(mutations: Mutation[]): Promise<MutationResult[]> {
     const params: CommitRequest = {

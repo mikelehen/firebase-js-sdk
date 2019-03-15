@@ -22,43 +22,43 @@
  */
 
 /** @record @suppress {duplicate} */
-goog.net.WebChannel.Options = {};
+//goog.net.WebChannel.Options = {};
 
 /** @type {Object<string, string>|undefined} */
-goog.net.WebChannel.Options.messageHeaders;
+//goog.net.WebChannel.Options.messageHeaders;
 
 /** @type {Object<string, string>|undefined} */
-goog.net.WebChannel.Options.initMessageHeaders;
+//goog.net.WebChannel.Options.initMessageHeaders;
 
 /** @type {stringboolean|undefined} */
-goog.net.WebChannel.Options.messageContentType;
+//goog.net.WebChannel.Options.messageContentType;
 
 /** @type {Object<string, string>|undefined|undefined} */
-goog.net.WebChannel.Options.messageUrlParams;
+//goog.net.WebChannel.Options.messageUrlParams;
 
 /** @type {boolean|undefined} */
-goog.net.WebChannel.Options.clientProtocolHeaderRequired;
+//goog.net.WebChannel.Options.clientProtocolHeaderRequired;
 
 /** @type {number|undefined} */
-goog.net.WebChannel.Options.concurrentRequestLimit;
+//goog.net.WebChannel.Options.concurrentRequestLimit;
 
 /** @type {boolean|undefined} */
-goog.net.WebChannel.Options.supportsCrossDomainXhr;
+//goog.net.WebChannel.Options.supportsCrossDomainXhr;
 
 /** @type {string|undefined} */
-goog.net.WebChannel.Options.testUrl;
+//goog.net.WebChannel.Options.testUrl;
 
 /** @type {boolean|undefined} */
-goog.net.WebChannel.Options.sendRawJson;
+//goog.net.WebChannel.Options.sendRawJson;
 
 /** @type {string|undefined} */
-goog.net.WebChannel.Options.httpSessionIdParam;
+//goog.net.WebChannel.Options.httpSessionIdParam;
 
 /** @type {string|undefined} */
-goog.net.WebChannel.Options.httpHeadersOverwriteParam;
+//goog.net.WebChannel.Options.httpHeadersOverwriteParam;
 
 /** @type {boolean|undefined} */
-goog.net.WebChannel.Options.backgroundChannelTest;
+//goog.net.WebChannel.Options.backgroundChannelTest;
 
 /** @type {boolean|undefined} */
-goog.net.WebChannel.Options.fastHandshake;
+//goog.net.WebChannel.Options.fastHandshake;

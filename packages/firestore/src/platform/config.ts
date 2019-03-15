@@ -29,7 +29,7 @@ import {
   PublicQueryDocumentSnapshot,
   PublicQuerySnapshot,
   PublicTransaction,
-  PublicWriteBatch
+  // PublicWriteBatch
 } from '../api/database';
 import { FieldPath } from '../api/field_path';
 import { PublicFieldValue } from '../api/field_value';
@@ -43,7 +43,7 @@ const firestoreNamespace = {
   Timestamp,
   Blob: PublicBlob,
   Transaction: PublicTransaction,
-  WriteBatch: PublicWriteBatch,
+  // WriteBatch: PublicWriteBatch,
   DocumentReference: PublicDocumentReference,
   DocumentSnapshot: PublicDocumentSnapshot,
   Query: PublicQuery,

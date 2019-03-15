@@ -40,6 +40,7 @@ export class BrowserPlatform implements Platform {
   }
 
   loadConnection(databaseInfo: DatabaseInfo): Promise<Connection> {
+    //tslint:disable-next-line:no-any
     return Promise.resolve(new WebChannelConnection(databaseInfo));
   }
 

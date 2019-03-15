@@ -19,8 +19,8 @@ import { CredentialsProvider } from '../api/credentials';
 import { User } from '../auth/user';
 // import { IndexedDbPersistence } from '../local/indexeddb_persistence';
 import { LocalStore } from '../local/local_store';
-import { MemoryPersistence } from '../local/memory_persistence';
-import { Persistence } from '../local/persistence';
+// import { MemoryPersistence } from '../local/memory_persistence';
+// import { Persistence } from '../local/persistence';
 import {
   DocumentKeySet,
   documentKeySet,
@@ -31,7 +31,7 @@ import { DocumentKey } from '../model/document_key';
 import { Mutation } from '../model/mutation';
 import { Platform } from '../platform/platform';
 import { Datastore } from '../remote/datastore';
-import { RemoteStore } from '../remote/remote_store';
+// import { RemoteStore } from '../remote/remote_store';
 import { JsonProtoSerializer } from '../remote/serializer';
 import { AsyncQueue } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
@@ -56,7 +56,9 @@ import {
   SharedClientState,
   // WebStorageSharedClientState
 } from '../local/shared_client_state';
+import { assert } from '../util/assert';
 import { AutoId } from '../util/misc';
+import { isNullOrUndefined } from '../util/types';
 import { DatabaseId, DatabaseInfo } from './database_info';
 import { Query } from './query';
 import { Transaction } from './transaction';
@@ -101,9 +103,10 @@ export class FirestoreClient {
   // with the types rather than littering the code with '!' or unnecessary
   // undefined checks.
   //private eventMgr: EventManager;
-  private persistence: Persistence;
+  // private persistence: Persistence;
   //private localStore: LocalStore;
-  private remoteStore: RemoteStore;
+  // private remoteStore: RemoteStore;
+  private datastore: Datastore;
   //private syncEngine: SyncEngine;
   //private lruScheduler: undefined = undefined;
 
@@ -185,9 +188,9 @@ export class FirestoreClient {
       if (!initialized) {
         initialized = true;
 
-        this.initializePersistence(persistenceSettings, persistenceResult, user)
-          .then(maybeLruGc => this.initializeRest(user, maybeLruGc))
-          .then(initializationDone.resolve, initializationDone.reject);
+        // this.initializePersistence(persistenceSettings, persistenceResult, user)
+        //   .then(maybeLruGc => this.initializeRest(user, maybeLruGc))
+        //   .then(initializationDone.resolve, initializationDone.reject);
       } else {
         this.asyncQueue.enqueueAndForget(() => {
           return this.handleCredentialChange(user);
@@ -230,43 +233,43 @@ export class FirestoreClient {
    *     continue, i.e. that one of the persistence implementations actually
    *     succeeded.
    */
-  private initializePersistence(
-    persistenceSettings: InternalPersistenceSettings,
-    persistenceResult: Deferred<void>,
-    user: User
-  ): Promise<null> {
-    // if (persistenceSettings instanceof IndexedDbPersistenceSettings) {
-    //   return this.startIndexedDbPersistence(user, persistenceSettings)
-    //     .then(maybeLruGc => {
-    //       persistenceResult.resolve();
-    //       return maybeLruGc;
-    //     })
-    //     .catch(error => {
-    //       // Regardless of whether or not the retry succeeds, from an user
-    //       // perspective, offline persistence has failed.
-    //       persistenceResult.reject(error);
+  // private initializePersistence(
+  //   persistenceSettings: InternalPersistenceSettings,
+  //   persistenceResult: Deferred<void>,
+  //   user: User
+  // ): Promise<null> {
+  //   // if (persistenceSettings instanceof IndexedDbPersistenceSettings) {
+  //   //   return this.startIndexedDbPersistence(user, persistenceSettings)
+  //   //     .then(maybeLruGc => {
+  //   //       persistenceResult.resolve();
+  //   //       return maybeLruGc;
+  //   //     })
+  //   //     .catch(error => {
+  //   //       // Regardless of whether or not the retry succeeds, from an user
+  //   //       // perspective, offline persistence has failed.
+  //   //       persistenceResult.reject(error);
 
-    //       // An unknown failure on the first stage shuts everything down.
-    //       if (!this.canFallback(error)) {
-    //         throw error;
-    //       }
+  //   //       // An unknown failure on the first stage shuts everything down.
+  //   //       if (!this.canFallback(error)) {
+  //   //         throw error;
+  //   //       }
 
-    //       console.warn(
-    //         'Error enabling offline storage. Falling back to' +
-    //           ' storage disabled: ' +
-    //           error
-    //       );
-    //       return this.startMemoryPersistence();
-    //     });
-    // } else {
-      // When usePersistence == false, enabling offline persistence is defined
-      // to unconditionally succeed. This allows start() to have the same
-      // signature for both cases, despite the fact that the returned promise
-      // is only used in the enablePersistence call.
-      persistenceResult.resolve();
-      return this.startMemoryPersistence();
-    // }
-  }
+  //   //       console.warn(
+  //   //         'Error enabling offline storage. Falling back to' +
+  //   //           ' storage disabled: ' +
+  //   //           error
+  //   //       );
+  //   //       return this.startMemoryPersistence();
+  //   //     });
+  //   // } else {
+  //     // When usePersistence == false, enabling offline persistence is defined
+  //     // to unconditionally succeed. This allows start() to have the same
+  //     // signature for both cases, despite the fact that the returned promise
+  //     // is only used in the enablePersistence call.
+  //     persistenceResult.resolve();
+  //     return this.startMemoryPersistence();
+  //   // }
+  // }
 
   /**
    * Decides whether the provided error allows us to gracefully disable
@@ -367,11 +370,11 @@ export class FirestoreClient {
    *
    * @returns A promise that will successfully resolve.
    */
-  private startMemoryPersistence(): Promise<null> {
-    this.persistence = MemoryPersistence.createEagerPersistence(this.clientId);
-    this.sharedClientState = new MemorySharedClientState();
-    return Promise.resolve(null);
-  }
+  // private startMemoryPersistence(): Promise<null> {
+  //   this.persistence = MemoryPersistence.createEagerPersistence(this.clientId);
+  //   this.sharedClientState = new MemorySharedClientState();
+  //   return Promise.resolve(null);
+  // }
 
   /**
    * Initializes the rest of the FirestoreClient, assuming the initial user
@@ -398,7 +401,7 @@ export class FirestoreClient {
         const serializer = this.platform.newSerializer(
           this.databaseInfo.databaseId
         );
-        const datastore = new Datastore(
+        this.datastore = new Datastore(
           this.asyncQueue,
           connection,
           this.credentials,
@@ -457,7 +460,7 @@ export class FirestoreClient {
       });
   }
 
-  private handleCredentialChange(user: User): Promise<void> {
+  private async handleCredentialChange(user: User): Promise<void> {
     this.asyncQueue.verifyOperationInProgress();
 
     debug(LOG_TAG, 'Credential Changed. Current user: ' + user.uid);
@@ -565,11 +568,52 @@ export class FirestoreClient {
   }
 
   transaction<T>(
-    updateFunction: (transaction: Transaction) => Promise<T>
+    updateFunction: (transaction: Transaction) => Promise<T>, retries = 5
   ): Promise<T> {
     // We have to wait for the async queue to be sure syncEngine is initialized.
     return this.asyncQueue
       .enqueue(async () => {})
-      .then(() => this.syncEngine.runTransaction(updateFunction));
+      .then(() => {
+        assert(retries >= 0, 'Got negative number of retries for transaction.');
+        const transaction = new Transaction(this.datastore);
+        const wrappedUpdateFunction = () => {
+          try {
+            const userPromise = updateFunction(transaction);
+            if (
+              isNullOrUndefined(userPromise) ||
+              !userPromise.catch ||
+              !userPromise.then
+            ) {
+              return Promise.reject<T>(
+                Error('Transaction callback must return a Promise')
+              );
+            }
+            return userPromise.catch(e => {
+              return Promise.reject<T>(this.wrapUpdateFunctionError(e));
+            });
+          } catch (e) {
+            return Promise.reject<T>(this.wrapUpdateFunctionError(e));
+          }
+        };
+        return wrappedUpdateFunction().then(result => {
+          return transaction
+            .commit()
+            .then(() => {
+              return result;
+            })
+            .catch(error => {
+              if (retries === 0) {
+                return Promise.reject<T>(error);
+              }
+              // TODO(klimt): Put in a retry delay?
+              return this.transaction(updateFunction, retries - 1);
+            });
+        });
+      });
+  }
+
+  // TODO(klimt): Wrap the given error in a standard Firestore error object.
+  private wrapUpdateFunctionError(error: unknown): unknown {
+    return error;
   }
 }

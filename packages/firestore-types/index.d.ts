@@ -136,7 +136,7 @@ export class FirebaseFirestore {
    * @return A promise that represents successfully enabling persistent
    * storage.
    */
-  enablePersistence(settings?: PersistenceSettings): Promise<void>;
+  // enablePersistence(settings?: PersistenceSettings): Promise<void>;
 
   /**
    * Gets a `CollectionReference` instance that refers to the collection at
@@ -192,30 +192,30 @@ export class FirebaseFirestore {
    * Creates a write batch, used for performing multiple writes as a single
    * atomic operation.
    */
-  batch(): WriteBatch;
+  // batch(): WriteBatch;
 
   /**
    * The `FirebaseApp` associated with this `Firestore` instance.
    */
   app: any;
 
-  /**
-   * Re-enables use of the network for this Firestore instance after a prior
-   * call to disableNetwork().
-   *
-   * @return A promise that is resolved once the network has been enabled.
-   */
-  enableNetwork(): Promise<void>;
+  // /**
+  //  * Re-enables use of the network for this Firestore instance after a prior
+  //  * call to disableNetwork().
+  //  *
+  //  * @return A promise that is resolved once the network has been enabled.
+  //  */
+  // enableNetwork(): Promise<void>;
 
-  /**
-   * Disables network usage for this instance. It can be re-enabled via
-   * enableNetwork(). While the network is disabled, any snapshot listeners or
-   * get() calls will return results from cache, and any write operations will
-   * be queued until the network is restored.
-   *
-   * @return A promise that is resolved once the network has been disabled.
-   */
-  disableNetwork(): Promise<void>;
+  // /**
+  //  * Disables network usage for this instance. It can be re-enabled via
+  //  * enableNetwork(). While the network is disabled, any snapshot listeners or
+  //  * get() calls will return results from cache, and any write operations will
+  //  * be queued until the network is restored.
+  //  *
+  //  * @return A promise that is resolved once the network has been disabled.
+  //  */
+  // disableNetwork(): Promise<void>;
 
   INTERNAL: { delete: () => Promise<void> };
 }
@@ -441,87 +441,87 @@ export class Transaction {
   delete(documentRef: DocumentReference): Transaction;
 }
 
-/**
- * A write batch, used to perform multiple writes as a single atomic unit.
- *
- * A `WriteBatch` object can be acquired by calling `Firestore.batch()`. It
- * provides methods for adding writes to the write batch. None of the
- * writes will be committed (or visible locally) until `WriteBatch.commit()`
- * is called.
- *
- * Unlike transactions, write batches are persisted offline and therefore are
- * preferable when you don't need to condition your writes on read data.
- */
-export class WriteBatch {
-  private constructor();
+// /**
+//  * A write batch, used to perform multiple writes as a single atomic unit.
+//  *
+//  * A `WriteBatch` object can be acquired by calling `Firestore.batch()`. It
+//  * provides methods for adding writes to the write batch. None of the
+//  * writes will be committed (or visible locally) until `WriteBatch.commit()`
+//  * is called.
+//  *
+//  * Unlike transactions, write batches are persisted offline and therefore are
+//  * preferable when you don't need to condition your writes on read data.
+//  */
+// export class WriteBatch {
+//   private constructor();
 
-  /**
-   * Writes to the document referred to by the provided `DocumentReference`.
-   * If the document does not exist yet, it will be created. If you pass
-   * `SetOptions`, the provided data can be merged into the existing document.
-   *
-   * @param documentRef A reference to the document to be set.
-   * @param data An object of the fields and values for the document.
-   * @param options An object to configure the set behavior.
-   * @return This `WriteBatch` instance. Used for chaining method calls.
-   */
-  set(
-    documentRef: DocumentReference,
-    data: DocumentData,
-    options?: SetOptions
-  ): WriteBatch;
+//   /**
+//    * Writes to the document referred to by the provided `DocumentReference`.
+//    * If the document does not exist yet, it will be created. If you pass
+//    * `SetOptions`, the provided data can be merged into the existing document.
+//    *
+//    * @param documentRef A reference to the document to be set.
+//    * @param data An object of the fields and values for the document.
+//    * @param options An object to configure the set behavior.
+//    * @return This `WriteBatch` instance. Used for chaining method calls.
+//    */
+//   set(
+//     documentRef: DocumentReference,
+//     data: DocumentData,
+//     options?: SetOptions
+//   ): WriteBatch;
 
-  /**
-   * Updates fields in the document referred to by the provided
-   * `DocumentReference`. The update will fail if applied to a document that
-   * does not exist.
-   *
-   * @param documentRef A reference to the document to be updated.
-   * @param data An object containing the fields and values with which to
-   * update the document. Fields can contain dots to reference nested fields
-   * within the document.
-   * @return This `WriteBatch` instance. Used for chaining method calls.
-   */
-  update(documentRef: DocumentReference, data: UpdateData): WriteBatch;
+//   /**
+//    * Updates fields in the document referred to by the provided
+//    * `DocumentReference`. The update will fail if applied to a document that
+//    * does not exist.
+//    *
+//    * @param documentRef A reference to the document to be updated.
+//    * @param data An object containing the fields and values with which to
+//    * update the document. Fields can contain dots to reference nested fields
+//    * within the document.
+//    * @return This `WriteBatch` instance. Used for chaining method calls.
+//    */
+//   update(documentRef: DocumentReference, data: UpdateData): WriteBatch;
 
-  /**
-   * Updates fields in the document referred to by this `DocumentReference`.
-   * The update will fail if applied to a document that does not exist.
-   *
-   * Nested fields can be update by providing dot-separated field path strings
-   * or by providing FieldPath objects.
-   *
-   * @param documentRef A reference to the document to be updated.
-   * @param field The first field to update.
-   * @param value The first value.
-   * @param moreFieldsAndValues Additional key value pairs.
-   * @return A Promise resolved once the data has been successfully written
-   * to the backend (Note that it won't resolve while you're offline).
-   */
-  update(
-    documentRef: DocumentReference,
-    field: string | FieldPath,
-    value: any,
-    ...moreFieldsAndValues: any[]
-  ): WriteBatch;
+//   /**
+//    * Updates fields in the document referred to by this `DocumentReference`.
+//    * The update will fail if applied to a document that does not exist.
+//    *
+//    * Nested fields can be update by providing dot-separated field path strings
+//    * or by providing FieldPath objects.
+//    *
+//    * @param documentRef A reference to the document to be updated.
+//    * @param field The first field to update.
+//    * @param value The first value.
+//    * @param moreFieldsAndValues Additional key value pairs.
+//    * @return A Promise resolved once the data has been successfully written
+//    * to the backend (Note that it won't resolve while you're offline).
+//    */
+//   update(
+//     documentRef: DocumentReference,
+//     field: string | FieldPath,
+//     value: any,
+//     ...moreFieldsAndValues: any[]
+//   ): WriteBatch;
 
-  /**
-   * Deletes the document referred to by the provided `DocumentReference`.
-   *
-   * @param documentRef A reference to the document to be deleted.
-   * @return This `WriteBatch` instance. Used for chaining method calls.
-   */
-  delete(documentRef: DocumentReference): WriteBatch;
+//   /**
+//    * Deletes the document referred to by the provided `DocumentReference`.
+//    *
+//    * @param documentRef A reference to the document to be deleted.
+//    * @return This `WriteBatch` instance. Used for chaining method calls.
+//    */
+//   delete(documentRef: DocumentReference): WriteBatch;
 
-  /**
-   * Commits all of the writes in this write batch as a single atomic unit.
-   *
-   * @return A Promise resolved once all of the writes in the batch have been
-   * successfully written to the backend as an atomic unit. Note that it won't
-   * resolve while you're offline.
-   */
-  commit(): Promise<void>;
-}
+//   /**
+//    * Commits all of the writes in this write batch as a single atomic unit.
+//    *
+//    * @return A Promise resolved once all of the writes in the batch have been
+//    * successfully written to the backend as an atomic unit. Note that it won't
+//    * resolve while you're offline.
+//    */
+//   commit(): Promise<void>;
+// }
 
 /**
  * An options object that can be passed to `DocumentReference.onSnapshot()`,
@@ -635,113 +635,113 @@ export class DocumentReference {
    */
   isEqual(other: DocumentReference): boolean;
 
-  /**
-   * Writes to the document referred to by this `DocumentReference`. If the
-   * document does not yet exist, it will be created. If you pass
-   * `SetOptions`, the provided data can be merged into an existing document.
-   *
-   * @param data A map of the fields and values for the document.
-   * @param options An object to configure the set behavior.
-   * @return A Promise resolved once the data has been successfully written
-   * to the backend (Note that it won't resolve while you're offline).
-   */
-  set(data: DocumentData, options?: SetOptions): Promise<void>;
+  // /**
+  //  * Writes to the document referred to by this `DocumentReference`. If the
+  //  * document does not yet exist, it will be created. If you pass
+  //  * `SetOptions`, the provided data can be merged into an existing document.
+  //  *
+  //  * @param data A map of the fields and values for the document.
+  //  * @param options An object to configure the set behavior.
+  //  * @return A Promise resolved once the data has been successfully written
+  //  * to the backend (Note that it won't resolve while you're offline).
+  //  */
+  // set(data: DocumentData, options?: SetOptions): Promise<void>;
 
-  /**
-   * Updates fields in the document referred to by this `DocumentReference`.
-   * The update will fail if applied to a document that does not exist.
-   *
-   * @param data An object containing the fields and values with which to
-   * update the document. Fields can contain dots to reference nested fields
-   * within the document.
-   * @return A Promise resolved once the data has been successfully written
-   * to the backend (Note that it won't resolve while you're offline).
-   */
-  update(data: UpdateData): Promise<void>;
+  // /**
+  //  * Updates fields in the document referred to by this `DocumentReference`.
+  //  * The update will fail if applied to a document that does not exist.
+  //  *
+  //  * @param data An object containing the fields and values with which to
+  //  * update the document. Fields can contain dots to reference nested fields
+  //  * within the document.
+  //  * @return A Promise resolved once the data has been successfully written
+  //  * to the backend (Note that it won't resolve while you're offline).
+  //  */
+  // update(data: UpdateData): Promise<void>;
 
-  /**
-   * Updates fields in the document referred to by this `DocumentReference`.
-   * The update will fail if applied to a document that does not exist.
-   *
-   * Nested fields can be updated by providing dot-separated field path
-   * strings or by providing FieldPath objects.
-   *
-   * @param field The first field to update.
-   * @param value The first value.
-   * @param moreFieldsAndValues Additional key value pairs.
-   * @return A Promise resolved once the data has been successfully written
-   * to the backend (Note that it won't resolve while you're offline).
-   */
-  update(
-    field: string | FieldPath,
-    value: any,
-    ...moreFieldsAndValues: any[]
-  ): Promise<void>;
+  // /**
+  //  * Updates fields in the document referred to by this `DocumentReference`.
+  //  * The update will fail if applied to a document that does not exist.
+  //  *
+  //  * Nested fields can be updated by providing dot-separated field path
+  //  * strings or by providing FieldPath objects.
+  //  *
+  //  * @param field The first field to update.
+  //  * @param value The first value.
+  //  * @param moreFieldsAndValues Additional key value pairs.
+  //  * @return A Promise resolved once the data has been successfully written
+  //  * to the backend (Note that it won't resolve while you're offline).
+  //  */
+  // update(
+  //   field: string | FieldPath,
+  //   value: any,
+  //   ...moreFieldsAndValues: any[]
+  // ): Promise<void>;
 
-  /**
-   * Deletes the document referred to by this `DocumentReference`.
-   *
-   * @return A Promise resolved once the document has been successfully
-   * deleted from the backend (Note that it won't resolve while you're
-   * offline).
-   */
-  delete(): Promise<void>;
+  // /**
+  //  * Deletes the document referred to by this `DocumentReference`.
+  //  *
+  //  * @return A Promise resolved once the document has been successfully
+  //  * deleted from the backend (Note that it won't resolve while you're
+  //  * offline).
+  //  */
+  // delete(): Promise<void>;
 
-  /**
-   * Reads the document referred to by this `DocumentReference`.
-   *
-   * Note: By default, get() attempts to provide up-to-date data when possible
-   * by waiting for data from the server, but it may return cached data or fail
-   * if you are offline and the server cannot be reached. This behavior can be
-   * altered via the `GetOptions` parameter.
-   *
-   * @param options An object to configure the get behavior.
-   * @return A Promise resolved with a DocumentSnapshot containing the
-   * current document contents.
-   */
-  get(options?: GetOptions): Promise<DocumentSnapshot>;
+  // /**
+  //  * Reads the document referred to by this `DocumentReference`.
+  //  *
+  //  * Note: By default, get() attempts to provide up-to-date data when possible
+  //  * by waiting for data from the server, but it may return cached data or fail
+  //  * if you are offline and the server cannot be reached. This behavior can be
+  //  * altered via the `GetOptions` parameter.
+  //  *
+  //  * @param options An object to configure the get behavior.
+  //  * @return A Promise resolved with a DocumentSnapshot containing the
+  //  * current document contents.
+  //  */
+  // get(options?: GetOptions): Promise<DocumentSnapshot>;
 
-  /**
-   * Attaches a listener for DocumentSnapshot events. You may either pass
-   * individual `onNext` and `onError` callbacks or pass a single observer
-   * object with `next` and `error` callbacks.
-   *
-   * NOTE: Although an `onCompletion` callback can be provided, it will
-   * never be called because the snapshot stream is never-ending.
-   *
-   * @param options Options controlling the listen behavior.
-   * @param onNext A callback to be called every time a new `DocumentSnapshot`
-   * is available.
-   * @param onError A callback to be called if the listen fails or is
-   * cancelled. No further callbacks will occur.
-   * @param observer A single object containing `next` and `error` callbacks.
-   * @return An unsubscribe function that can be called to cancel
-   * the snapshot listener.
-   */
-  onSnapshot(observer: {
-    next?: (snapshot: DocumentSnapshot) => void;
-    error?: (error: FirestoreError) => void;
-    complete?: () => void;
-  }): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    observer: {
-      next?: (snapshot: DocumentSnapshot) => void;
-      error?: (error: Error) => void;
-      complete?: () => void;
-    }
-  ): () => void;
-  onSnapshot(
-    onNext: (snapshot: DocumentSnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    onNext: (snapshot: DocumentSnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
+  // /**
+  //  * Attaches a listener for DocumentSnapshot events. You may either pass
+  //  * individual `onNext` and `onError` callbacks or pass a single observer
+  //  * object with `next` and `error` callbacks.
+  //  *
+  //  * NOTE: Although an `onCompletion` callback can be provided, it will
+  //  * never be called because the snapshot stream is never-ending.
+  //  *
+  //  * @param options Options controlling the listen behavior.
+  //  * @param onNext A callback to be called every time a new `DocumentSnapshot`
+  //  * is available.
+  //  * @param onError A callback to be called if the listen fails or is
+  //  * cancelled. No further callbacks will occur.
+  //  * @param observer A single object containing `next` and `error` callbacks.
+  //  * @return An unsubscribe function that can be called to cancel
+  //  * the snapshot listener.
+  //  */
+  // onSnapshot(observer: {
+  //   next?: (snapshot: DocumentSnapshot) => void;
+  //   error?: (error: FirestoreError) => void;
+  //   complete?: () => void;
+  // }): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   observer: {
+  //     next?: (snapshot: DocumentSnapshot) => void;
+  //     error?: (error: Error) => void;
+  //     complete?: () => void;
+  //   }
+  // ): () => void;
+  // onSnapshot(
+  //   onNext: (snapshot: DocumentSnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   onNext: (snapshot: DocumentSnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
 }
 
 /**
@@ -1241,7 +1241,7 @@ export class CollectionReference extends Query {
    * @return A Promise resolved with a `DocumentReference` pointing to the
    * newly created document after it has been written to the backend.
    */
-  add(data: DocumentData): Promise<DocumentReference>;
+  // add(data: DocumentData): Promise<DocumentReference>;
 
   /**
    * Returns true if this `CollectionReference` is equal to the provided one.

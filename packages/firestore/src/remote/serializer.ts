@@ -65,13 +65,13 @@ import {
 import { ApiClientObjectMap } from '../protos/firestore_proto_api';
 import { ExistenceFilter } from './existence_filter';
 import { mapCodeFromRpcCode, mapRpcCodeFromCode } from './rpc_error';
-import {
-  DocumentWatchChange,
-  ExistenceFilterChange,
-  WatchChange,
-  WatchTargetChange,
-  WatchTargetChangeState
-} from './watch_change';
+// import {
+//   DocumentWatchChange,
+//   ExistenceFilterChange,
+//   WatchChange,
+//   WatchTargetChange,
+//   WatchTargetChangeState
+// } from './watch_change';
 
 const DIRECTIONS = (() => {
   const dirs: { [dir: string]: api.OrderDirection } = {};
@@ -178,25 +178,25 @@ export class JsonProtoSerializer {
     }
   }
 
-  /**
-   * Returns a number (or null) from a google.protobuf.Int32Value proto.
-   * DO NOT USE THIS FOR ANYTHING ELSE.
-   * This method cheats. It's typed as accepting "number" because that's what
-   * our generated proto interfaces say Int32Value must be, but it actually
-   * accepts { value: number } to match our serialization in toInt32Value().
-   */
-  private fromInt32Value(val: number | undefined): number | null {
-    let result;
-    if (typeof val === 'object') {
-      // tslint:disable-next-line:no-any We need to match generated Proto types.
-      result = (val as any).value;
-    } else {
-      // We accept raw numbers (without the {value: ... } wrapper) for
-      // compatibility with legacy persisted data.
-      result = val;
-    }
-    return typeUtils.isNullOrUndefined(result) ? null : result;
-  }
+  // /**
+  //  * Returns a number (or null) from a google.protobuf.Int32Value proto.
+  //  * DO NOT USE THIS FOR ANYTHING ELSE.
+  //  * This method cheats. It's typed as accepting "number" because that's what
+  //  * our generated proto interfaces say Int32Value must be, but it actually
+  //  * accepts { value: number } to match our serialization in toInt32Value().
+  //  */
+  // private fromInt32Value(val: number | undefined): number | null {
+  //   let result;
+  //   if (typeof val === 'object') {
+  //     // tslint:disable-next-line:no-any We need to match generated Proto types.
+  //     result = (val as any).value;
+  //   } else {
+  //     // We accept raw numbers (without the {value: ... } wrapper) for
+  //     // compatibility with legacy persisted data.
+  //     result = val;
+  //   }
+  //   return typeUtils.isNullOrUndefined(result) ? null : result;
+  // }
 
   /**
    * Returns a value for a Date that's appropriate to put into a proto.
@@ -345,17 +345,17 @@ export class JsonProtoSerializer {
     return this.toResourceName(this.databaseId, path);
   }
 
-  fromQueryPath(name: string): ResourcePath {
-    const resourceName = this.fromResourceName(name);
-    // In v1beta1 queries for collections at the root did not have a trailing
-    // "/documents". In v1 all resource paths contain "/documents". Preserve the
-    // ability to read the v1beta1 form for compatibility with queries persisted
-    // in the local query cache.
-    if (resourceName.length === 4) {
-      return ResourcePath.EMPTY_PATH;
-    }
-    return this.extractLocalPathFromResourceName(resourceName);
-  }
+  // fromQueryPath(name: string): ResourcePath {
+  //   const resourceName = this.fromResourceName(name);
+  //   // In v1beta1 queries for collections at the root did not have a trailing
+  //   // "/documents". In v1 all resource paths contain "/documents". Preserve the
+  //   // ability to read the v1beta1 form for compatibility with queries persisted
+  //   // in the local query cache.
+  //   if (resourceName.length === 4) {
+  //     return ResourcePath.EMPTY_PATH;
+  //   }
+  //   return this.extractLocalPathFromResourceName(resourceName);
+  // }
 
   get encodedDatabaseId(): string {
     const path = new ResourcePath([
@@ -610,209 +610,209 @@ export class JsonProtoSerializer {
     return fail('invalid batch get response: ' + JSON.stringify(result));
   }
 
-  private toWatchTargetChangeState(
-    state: WatchTargetChangeState
-  ): api.TargetChangeTargetChangeType {
-    switch (state) {
-      case WatchTargetChangeState.Added:
-        return 'ADD';
-      case WatchTargetChangeState.Current:
-        return 'CURRENT';
-      case WatchTargetChangeState.NoChange:
-        return 'NO_CHANGE';
-      case WatchTargetChangeState.Removed:
-        return 'REMOVE';
-      case WatchTargetChangeState.Reset:
-        return 'RESET';
-      default:
-        return fail('Unknown WatchTargetChangeState: ' + state);
-    }
-  }
+  // private toWatchTargetChangeState(
+  //   state: WatchTargetChangeState
+  // ): api.TargetChangeTargetChangeType {
+  //   switch (state) {
+  //     case WatchTargetChangeState.Added:
+  //       return 'ADD';
+  //     case WatchTargetChangeState.Current:
+  //       return 'CURRENT';
+  //     case WatchTargetChangeState.NoChange:
+  //       return 'NO_CHANGE';
+  //     case WatchTargetChangeState.Removed:
+  //       return 'REMOVE';
+  //     case WatchTargetChangeState.Reset:
+  //       return 'RESET';
+  //     default:
+  //       return fail('Unknown WatchTargetChangeState: ' + state);
+  //   }
+  // }
 
-  toTestWatchChange(watchChange: WatchChange): api.ListenResponse {
-    if (watchChange instanceof ExistenceFilterChange) {
-      return {
-        filter: {
-          count: watchChange.existenceFilter.count,
-          targetId: watchChange.targetId
-        }
-      };
-    }
-    if (watchChange instanceof DocumentWatchChange) {
-      if (watchChange.newDoc instanceof Document) {
-        const doc = watchChange.newDoc;
-        return {
-          documentChange: {
-            document: {
-              name: this.toName(doc.key),
-              fields: this.toFields(doc.data),
-              updateTime: this.toVersion(doc.version)
-            },
-            targetIds: watchChange.updatedTargetIds,
-            removedTargetIds: watchChange.removedTargetIds
-          }
-        };
-      } else if (watchChange.newDoc instanceof NoDocument) {
-        const doc = watchChange.newDoc;
-        return {
-          documentDelete: {
-            document: this.toName(doc.key),
-            readTime: this.toVersion(doc.version),
-            removedTargetIds: watchChange.removedTargetIds
-          }
-        };
-      } else if (watchChange.newDoc === null) {
-        return {
-          documentRemove: {
-            document: this.toName(watchChange.key),
-            removedTargetIds: watchChange.removedTargetIds
-          }
-        };
-      }
-    }
-    if (watchChange instanceof WatchTargetChange) {
-      let cause: api.Status | undefined = undefined;
-      if (watchChange.cause) {
-        cause = {
-          code: mapRpcCodeFromCode(watchChange.cause.code),
-          message: watchChange.cause.message
-        };
-      }
-      return {
-        targetChange: {
-          targetChangeType: this.toWatchTargetChangeState(watchChange.state),
-          targetIds: watchChange.targetIds,
-          resumeToken: this.unsafeCastProtoByteString(watchChange.resumeToken),
-          cause
-        }
-      };
-    }
-    return fail('Unrecognized watch change: ' + JSON.stringify(watchChange));
-  }
+  // toTestWatchChange(watchChange: WatchChange): api.ListenResponse {
+  //   if (watchChange instanceof ExistenceFilterChange) {
+  //     return {
+  //       filter: {
+  //         count: watchChange.existenceFilter.count,
+  //         targetId: watchChange.targetId
+  //       }
+  //     };
+  //   }
+  //   if (watchChange instanceof DocumentWatchChange) {
+  //     if (watchChange.newDoc instanceof Document) {
+  //       const doc = watchChange.newDoc;
+  //       return {
+  //         documentChange: {
+  //           document: {
+  //             name: this.toName(doc.key),
+  //             fields: this.toFields(doc.data),
+  //             updateTime: this.toVersion(doc.version)
+  //           },
+  //           targetIds: watchChange.updatedTargetIds,
+  //           removedTargetIds: watchChange.removedTargetIds
+  //         }
+  //       };
+  //     } else if (watchChange.newDoc instanceof NoDocument) {
+  //       const doc = watchChange.newDoc;
+  //       return {
+  //         documentDelete: {
+  //           document: this.toName(doc.key),
+  //           readTime: this.toVersion(doc.version),
+  //           removedTargetIds: watchChange.removedTargetIds
+  //         }
+  //       };
+  //     } else if (watchChange.newDoc === null) {
+  //       return {
+  //         documentRemove: {
+  //           document: this.toName(watchChange.key),
+  //           removedTargetIds: watchChange.removedTargetIds
+  //         }
+  //       };
+  //     }
+  //   }
+  //   if (watchChange instanceof WatchTargetChange) {
+  //     let cause: api.Status | undefined = undefined;
+  //     if (watchChange.cause) {
+  //       cause = {
+  //         code: mapRpcCodeFromCode(watchChange.cause.code),
+  //         message: watchChange.cause.message
+  //       };
+  //     }
+  //     return {
+  //       targetChange: {
+  //         targetChangeType: this.toWatchTargetChangeState(watchChange.state),
+  //         targetIds: watchChange.targetIds,
+  //         resumeToken: this.unsafeCastProtoByteString(watchChange.resumeToken),
+  //         cause
+  //       }
+  //     };
+  //   }
+  //   return fail('Unrecognized watch change: ' + JSON.stringify(watchChange));
+  // }
 
-  fromWatchChange(change: api.ListenResponse): WatchChange {
-    // tslint:disable-next-line:no-any
-    const type = (change as any)['response_type'];
-    let watchChange: WatchChange;
-    if (hasTag(change, type, 'targetChange')) {
-      assertPresent(change.targetChange, 'targetChange');
-      // proto3 default value is unset in JSON (undefined), so use 'NO_CHANGE'
-      // if unset
-      const state = this.fromWatchTargetChangeState(
-        change.targetChange!.targetChangeType || 'NO_CHANGE'
-      );
-      const targetIds: TargetId[] = change.targetChange!.targetIds || [];
-      const resumeToken =
-        change.targetChange!.resumeToken || this.emptyByteString();
-      const causeProto = change.targetChange!.cause;
-      const cause = causeProto && this.fromRpcStatus(causeProto);
-      watchChange = new WatchTargetChange(
-        state,
-        targetIds,
-        resumeToken,
-        cause || null
-      );
-    } else if (hasTag(change, type, 'documentChange')) {
-      assertPresent(change.documentChange, 'documentChange');
-      assertPresent(change.documentChange!.document, 'documentChange.name');
-      assertPresent(
-        change.documentChange!.document!.name,
-        'documentChange.document.name'
-      );
-      assertPresent(
-        change.documentChange!.document!.updateTime,
-        'documentChange.document.updateTime'
-      );
-      const entityChange = change.documentChange!;
-      const key = this.fromName(entityChange.document!.name!);
-      const version = this.fromVersion(entityChange.document!.updateTime!);
-      const fields = this.fromFields(entityChange.document!.fields || {});
-      // The document may soon be re-serialized back to protos in order to store it in local
-      // persistence. Memoize the encoded form to avoid encoding it again.
-      const doc = new Document(
-        key,
-        version,
-        fields,
-        {},
-        entityChange.document!
-      );
-      const updatedTargetIds = entityChange.targetIds || [];
-      const removedTargetIds = entityChange.removedTargetIds || [];
-      watchChange = new DocumentWatchChange(
-        updatedTargetIds,
-        removedTargetIds,
-        doc.key,
-        doc
-      );
-    } else if (hasTag(change, type, 'documentDelete')) {
-      assertPresent(change.documentDelete, 'documentDelete');
-      assertPresent(change.documentDelete!.document, 'documentDelete.document');
-      const docDelete = change.documentDelete!;
-      const key = this.fromName(docDelete.document!);
-      const version = docDelete.readTime
-        ? this.fromVersion(docDelete.readTime)
-        : SnapshotVersion.forDeletedDoc();
-      const doc = new NoDocument(key, version);
-      const removedTargetIds = docDelete.removedTargetIds || [];
-      watchChange = new DocumentWatchChange([], removedTargetIds, doc.key, doc);
-    } else if (hasTag(change, type, 'documentRemove')) {
-      assertPresent(change.documentRemove, 'documentRemove');
-      assertPresent(change.documentRemove!.document, 'documentRemove');
-      const docRemove = change.documentRemove!;
-      const key = this.fromName(docRemove.document!);
-      const removedTargetIds = docRemove.removedTargetIds || [];
-      watchChange = new DocumentWatchChange([], removedTargetIds, key, null);
-    } else if (hasTag(change, type, 'filter')) {
-      // TODO(dimond): implement existence filter parsing with strategy.
-      assertPresent(change.filter, 'filter');
-      assertPresent(change.filter!.targetId, 'filter.targetId');
-      const filter = change.filter;
-      const count = filter!.count || 0;
-      const existenceFilter = new ExistenceFilter(count);
-      const targetId = filter!.targetId!;
-      watchChange = new ExistenceFilterChange(targetId, existenceFilter);
-    } else {
-      return fail('Unknown change type ' + JSON.stringify(change));
-    }
-    return watchChange;
-  }
+  // fromWatchChange(change: api.ListenResponse): WatchChange {
+  //   // tslint:disable-next-line:no-any
+  //   const type = (change as any)['response_type'];
+  //   let watchChange: WatchChange;
+  //   if (hasTag(change, type, 'targetChange')) {
+  //     assertPresent(change.targetChange, 'targetChange');
+  //     // proto3 default value is unset in JSON (undefined), so use 'NO_CHANGE'
+  //     // if unset
+  //     const state = this.fromWatchTargetChangeState(
+  //       change.targetChange!.targetChangeType || 'NO_CHANGE'
+  //     );
+  //     const targetIds: TargetId[] = change.targetChange!.targetIds || [];
+  //     const resumeToken =
+  //       change.targetChange!.resumeToken || this.emptyByteString();
+  //     const causeProto = change.targetChange!.cause;
+  //     const cause = causeProto && this.fromRpcStatus(causeProto);
+  //     watchChange = new WatchTargetChange(
+  //       state,
+  //       targetIds,
+  //       resumeToken,
+  //       cause || null
+  //     );
+  //   } else if (hasTag(change, type, 'documentChange')) {
+  //     assertPresent(change.documentChange, 'documentChange');
+  //     assertPresent(change.documentChange!.document, 'documentChange.name');
+  //     assertPresent(
+  //       change.documentChange!.document!.name,
+  //       'documentChange.document.name'
+  //     );
+  //     assertPresent(
+  //       change.documentChange!.document!.updateTime,
+  //       'documentChange.document.updateTime'
+  //     );
+  //     const entityChange = change.documentChange!;
+  //     const key = this.fromName(entityChange.document!.name!);
+  //     const version = this.fromVersion(entityChange.document!.updateTime!);
+  //     const fields = this.fromFields(entityChange.document!.fields || {});
+  //     // The document may soon be re-serialized back to protos in order to store it in local
+  //     // persistence. Memoize the encoded form to avoid encoding it again.
+  //     const doc = new Document(
+  //       key,
+  //       version,
+  //       fields,
+  //       {},
+  //       entityChange.document!
+  //     );
+  //     const updatedTargetIds = entityChange.targetIds || [];
+  //     const removedTargetIds = entityChange.removedTargetIds || [];
+  //     watchChange = new DocumentWatchChange(
+  //       updatedTargetIds,
+  //       removedTargetIds,
+  //       doc.key,
+  //       doc
+  //     );
+  //   } else if (hasTag(change, type, 'documentDelete')) {
+  //     assertPresent(change.documentDelete, 'documentDelete');
+  //     assertPresent(change.documentDelete!.document, 'documentDelete.document');
+  //     const docDelete = change.documentDelete!;
+  //     const key = this.fromName(docDelete.document!);
+  //     const version = docDelete.readTime
+  //       ? this.fromVersion(docDelete.readTime)
+  //       : SnapshotVersion.forDeletedDoc();
+  //     const doc = new NoDocument(key, version);
+  //     const removedTargetIds = docDelete.removedTargetIds || [];
+  //     watchChange = new DocumentWatchChange([], removedTargetIds, doc.key, doc);
+  //   } else if (hasTag(change, type, 'documentRemove')) {
+  //     assertPresent(change.documentRemove, 'documentRemove');
+  //     assertPresent(change.documentRemove!.document, 'documentRemove');
+  //     const docRemove = change.documentRemove!;
+  //     const key = this.fromName(docRemove.document!);
+  //     const removedTargetIds = docRemove.removedTargetIds || [];
+  //     watchChange = new DocumentWatchChange([], removedTargetIds, key, null);
+  //   } else if (hasTag(change, type, 'filter')) {
+  //     // TODO(dimond): implement existence filter parsing with strategy.
+  //     assertPresent(change.filter, 'filter');
+  //     assertPresent(change.filter!.targetId, 'filter.targetId');
+  //     const filter = change.filter;
+  //     const count = filter!.count || 0;
+  //     const existenceFilter = new ExistenceFilter(count);
+  //     const targetId = filter!.targetId!;
+  //     watchChange = new ExistenceFilterChange(targetId, existenceFilter);
+  //   } else {
+  //     return fail('Unknown change type ' + JSON.stringify(change));
+  //   }
+  //   return watchChange;
+  // }
 
-  fromWatchTargetChangeState(
-    state: api.TargetChangeTargetChangeType
-  ): WatchTargetChangeState {
-    if (state === 'NO_CHANGE') {
-      return WatchTargetChangeState.NoChange;
-    } else if (state === 'ADD') {
-      return WatchTargetChangeState.Added;
-    } else if (state === 'REMOVE') {
-      return WatchTargetChangeState.Removed;
-    } else if (state === 'CURRENT') {
-      return WatchTargetChangeState.Current;
-    } else if (state === 'RESET') {
-      return WatchTargetChangeState.Reset;
-    } else {
-      return fail('Got unexpected TargetChange.state: ' + state);
-    }
-  }
+  // fromWatchTargetChangeState(
+  //   state: api.TargetChangeTargetChangeType
+  // ): WatchTargetChangeState {
+  //   if (state === 'NO_CHANGE') {
+  //     return WatchTargetChangeState.NoChange;
+  //   } else if (state === 'ADD') {
+  //     return WatchTargetChangeState.Added;
+  //   } else if (state === 'REMOVE') {
+  //     return WatchTargetChangeState.Removed;
+  //   } else if (state === 'CURRENT') {
+  //     return WatchTargetChangeState.Current;
+  //   } else if (state === 'RESET') {
+  //     return WatchTargetChangeState.Reset;
+  //   } else {
+  //     return fail('Got unexpected TargetChange.state: ' + state);
+  //   }
+  // }
 
-  versionFromListenResponse(change: api.ListenResponse): SnapshotVersion {
-    // We have only reached a consistent snapshot for the entire stream if there
-    // is a read_time set and it applies to all targets (i.e. the list of
-    // targets is empty). The backend is guaranteed to send such responses.
-    // tslint:disable-next-line:no-any
-    const type = (change as any)['response_type'];
-    if (!hasTag(change, type, 'targetChange')) {
-      return SnapshotVersion.MIN;
-    }
-    const targetChange = change.targetChange!;
-    if (targetChange.targetIds && targetChange.targetIds.length) {
-      return SnapshotVersion.MIN;
-    }
-    if (!targetChange.readTime) {
-      return SnapshotVersion.MIN;
-    }
-    return this.fromVersion(targetChange.readTime);
-  }
+  // versionFromListenResponse(change: api.ListenResponse): SnapshotVersion {
+  //   // We have only reached a consistent snapshot for the entire stream if there
+  //   // is a read_time set and it applies to all targets (i.e. the list of
+  //   // targets is empty). The backend is guaranteed to send such responses.
+  //   // tslint:disable-next-line:no-any
+  //   const type = (change as any)['response_type'];
+  //   if (!hasTag(change, type, 'targetChange')) {
+  //     return SnapshotVersion.MIN;
+  //   }
+  //   const targetChange = change.targetChange!;
+  //   if (targetChange.targetIds && targetChange.targetIds.length) {
+  //     return SnapshotVersion.MIN;
+  //   }
+  //   if (!targetChange.readTime) {
+  //     return SnapshotVersion.MIN;
+  //   }
+  //   return this.fromVersion(targetChange.readTime);
+  // }
 
   toMutation(mutation: Mutation): api.Write {
     let result: api.Write;
@@ -847,38 +847,38 @@ export class JsonProtoSerializer {
     return result;
   }
 
-  fromMutation(proto: api.Write): Mutation {
-    const precondition = proto.currentDocument
-      ? this.fromPrecondition(proto.currentDocument)
-      : Precondition.NONE;
+  // fromMutation(proto: api.Write): Mutation {
+  //   const precondition = proto.currentDocument
+  //     ? this.fromPrecondition(proto.currentDocument)
+  //     : Precondition.NONE;
 
-    if (proto.update) {
-      assertPresent(proto.update.name, 'name');
-      const key = this.fromName(proto.update.name!);
-      const value = this.fromFields(proto.update.fields || {});
-      if (proto.updateMask) {
-        const fieldMask = this.fromDocumentMask(proto.updateMask);
-        return new PatchMutation(key, value, fieldMask, precondition);
-      } else {
-        return new SetMutation(key, value, precondition);
-      }
-    } else if (proto.delete) {
-      const key = this.fromName(proto.delete);
-      return new DeleteMutation(key, precondition);
-    } else if (proto.transform) {
-      const key = this.fromName(proto.transform.document!);
-      const fieldTransforms = proto.transform.fieldTransforms!.map(transform =>
-        this.fromFieldTransform(transform)
-      );
-      assert(
-        precondition.exists === true,
-        'Transforms only support precondition "exists == true"'
-      );
-      return new TransformMutation(key, fieldTransforms);
-    } else {
-      return fail('unknown mutation proto: ' + JSON.stringify(proto));
-    }
-  }
+  //   if (proto.update) {
+  //     assertPresent(proto.update.name, 'name');
+  //     const key = this.fromName(proto.update.name!);
+  //     const value = this.fromFields(proto.update.fields || {});
+  //     if (proto.updateMask) {
+  //       const fieldMask = this.fromDocumentMask(proto.updateMask);
+  //       return new PatchMutation(key, value, fieldMask, precondition);
+  //     } else {
+  //       return new SetMutation(key, value, precondition);
+  //     }
+  //   } else if (proto.delete) {
+  //     const key = this.fromName(proto.delete);
+  //     return new DeleteMutation(key, precondition);
+  //   } else if (proto.transform) {
+  //     const key = this.fromName(proto.transform.document!);
+  //     const fieldTransforms = proto.transform.fieldTransforms!.map(transform =>
+  //       this.fromFieldTransform(transform)
+  //     );
+  //     assert(
+  //       precondition.exists === true,
+  //       'Transforms only support precondition "exists == true"'
+  //     );
+  //     return new TransformMutation(key, fieldTransforms);
+  //   } else {
+  //     return fail('unknown mutation proto: ' + JSON.stringify(proto));
+  //   }
+  // }
 
   private toPrecondition(precondition: Precondition): api.Precondition {
     assert(!precondition.isNone, "Can't serialize an empty precondition");
@@ -893,15 +893,15 @@ export class JsonProtoSerializer {
     }
   }
 
-  private fromPrecondition(precondition: api.Precondition): Precondition {
-    if (precondition.updateTime !== undefined) {
-      return Precondition.updateTime(this.fromVersion(precondition.updateTime));
-    } else if (precondition.exists !== undefined) {
-      return Precondition.exists(precondition.exists);
-    } else {
-      return Precondition.NONE;
-    }
-  }
+  // private fromPrecondition(precondition: api.Precondition): Precondition {
+  //   if (precondition.updateTime !== undefined) {
+  //     return Precondition.updateTime(this.fromVersion(precondition.updateTime));
+  //   } else if (precondition.exists !== undefined) {
+  //     return Precondition.exists(precondition.exists);
+  //   } else {
+  //     return Precondition.NONE;
+  //   }
+  // }
 
   private fromWriteResult(
     proto: api.WriteResult,
@@ -1006,15 +1006,15 @@ export class JsonProtoSerializer {
     return { documents: [this.toQueryPath(query.path)] };
   }
 
-  fromDocumentsTarget(documentsTarget: api.DocumentsTarget): Query {
-    const count = documentsTarget.documents!.length;
-    assert(
-      count === 1,
-      'DocumentsTarget contained other than 1 document: ' + count
-    );
-    const name = documentsTarget.documents![0];
-    return Query.atPath(this.fromQueryPath(name));
-  }
+  // fromDocumentsTarget(documentsTarget: api.DocumentsTarget): Query {
+  //   const count = documentsTarget.documents!.length;
+  //   assert(
+  //     count === 1,
+  //     'DocumentsTarget contained other than 1 document: ' + count
+  //   );
+  //   const name = documentsTarget.documents![0];
+  //   return Query.atPath(this.fromQueryPath(name));
+  // }
 
   toQueryTarget(query: Query): api.QueryTarget {
     // Dissect the path into parent, collectionId, and optional key filter.
@@ -1066,60 +1066,60 @@ export class JsonProtoSerializer {
     return result;
   }
 
-  fromQueryTarget(target: api.QueryTarget): Query {
-    let path = this.fromQueryPath(target.parent!);
+  // fromQueryTarget(target: api.QueryTarget): Query {
+  //   let path = this.fromQueryPath(target.parent!);
 
-    const query = target.structuredQuery!;
-    const fromCount = query.from ? query.from.length : 0;
-    let collectionGroup: string | null = null;
-    if (fromCount > 0) {
-      assert(
-        fromCount === 1,
-        'StructuredQuery.from with more than one collection is not supported.'
-      );
-      const from = query.from![0];
-      if (from.allDescendants) {
-        collectionGroup = from.collectionId!;
-      } else {
-        path = path.child(from.collectionId!);
-      }
-    }
+  //   const query = target.structuredQuery!;
+  //   const fromCount = query.from ? query.from.length : 0;
+  //   let collectionGroup: string | null = null;
+  //   if (fromCount > 0) {
+  //     assert(
+  //       fromCount === 1,
+  //       'StructuredQuery.from with more than one collection is not supported.'
+  //     );
+  //     const from = query.from![0];
+  //     if (from.allDescendants) {
+  //       collectionGroup = from.collectionId!;
+  //     } else {
+  //       path = path.child(from.collectionId!);
+  //     }
+  //   }
 
-    let filterBy: Filter[] = [];
-    if (query.where) {
-      filterBy = this.fromFilter(query.where);
-    }
+  //   let filterBy: Filter[] = [];
+  //   if (query.where) {
+  //     filterBy = this.fromFilter(query.where);
+  //   }
 
-    let orderBy: OrderBy[] = [];
-    if (query.orderBy) {
-      orderBy = this.fromOrder(query.orderBy);
-    }
+  //   let orderBy: OrderBy[] = [];
+  //   if (query.orderBy) {
+  //     orderBy = this.fromOrder(query.orderBy);
+  //   }
 
-    let limit: number | null = null;
-    if (query.limit) {
-      limit = this.fromInt32Value(query.limit);
-    }
+  //   let limit: number | null = null;
+  //   if (query.limit) {
+  //     limit = this.fromInt32Value(query.limit);
+  //   }
 
-    let startAt: Bound | null = null;
-    if (query.startAt) {
-      startAt = this.fromCursor(query.startAt);
-    }
+  //   let startAt: Bound | null = null;
+  //   if (query.startAt) {
+  //     startAt = this.fromCursor(query.startAt);
+  //   }
 
-    let endAt: Bound | null = null;
-    if (query.endAt) {
-      endAt = this.fromCursor(query.endAt);
-    }
+  //   let endAt: Bound | null = null;
+  //   if (query.endAt) {
+  //     endAt = this.fromCursor(query.endAt);
+  //   }
 
-    return new Query(
-      path,
-      collectionGroup,
-      orderBy,
-      filterBy,
-      limit,
-      startAt,
-      endAt
-    );
-  }
+  //   return new Query(
+  //     path,
+  //     collectionGroup,
+  //     orderBy,
+  //     filterBy,
+  //     limit,
+  //     startAt,
+  //     endAt
+  //   );
+  // }
 
   toListenRequestLabels(
     queryData: QueryData

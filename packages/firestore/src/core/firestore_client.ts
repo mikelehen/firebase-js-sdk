@@ -100,12 +100,12 @@ export class FirestoreClient {
   // initialization completes before any other work is queued, we're cheating
   // with the types rather than littering the code with '!' or unnecessary
   // undefined checks.
-  private eventMgr: EventManager;
+  //private eventMgr: EventManager;
   private persistence: Persistence;
-  private localStore: LocalStore;
+  //private localStore: LocalStore;
   private remoteStore: RemoteStore;
-  private syncEngine: SyncEngine;
-  private lruScheduler: undefined = undefined;
+  //private syncEngine: SyncEngine;
+  //private lruScheduler: undefined = undefined;
 
   private readonly clientId = AutoId.newId();
 
@@ -207,10 +207,10 @@ export class FirestoreClient {
   }
 
   /** Enables the network connection and requeues all pending operations. */
-  enableNetwork(): Promise<void> {
-    return this.asyncQueue.enqueue(() => {
-      return this.syncEngine.enableNetwork();
-    });
+  async enableNetwork(): Promise<void> {
+    // return this.asyncQueue.enqueue(() => {
+    //   return this.syncEngine.enableNetwork();
+    // });
   }
 
   /**
@@ -272,30 +272,30 @@ export class FirestoreClient {
    * Decides whether the provided error allows us to gracefully disable
    * persistence (as opposed to crashing the client).
    */
-  private canFallback(error: FirestoreError | DOMException): boolean {
-    if (error instanceof FirestoreError) {
-      return (
-        error.code === Code.FAILED_PRECONDITION ||
-        error.code === Code.UNIMPLEMENTED
-      );
-    } else if (
-      typeof DOMException !== 'undefined' &&
-      error instanceof DOMException
-    ) {
-      // We fall back to memory persistence if we cannot write the primary
-      // lease. This can happen can during a schema migration, or if we run out
-      // of quota when we try to write the primary lease.
-      // For both the `QuotaExceededError` and the  `AbortError`, it is safe to
-      // fall back to memory persistence since all modifications to IndexedDb
-      // failed to commit.
-      return (
-        error.code === DOM_EXCEPTION_QUOTA_EXCEEDED ||
-        error.code === DOM_EXCEPTION_ABORTED
-      );
-    }
+  // private canFallback(error: FirestoreError | DOMException): boolean {
+  //   if (error instanceof FirestoreError) {
+  //     return (
+  //       error.code === Code.FAILED_PRECONDITION ||
+  //       error.code === Code.UNIMPLEMENTED
+  //     );
+  //   } else if (
+  //     typeof DOMException !== 'undefined' &&
+  //     error instanceof DOMException
+  //   ) {
+  //     // We fall back to memory persistence if we cannot write the primary
+  //     // lease. This can happen can during a schema migration, or if we run out
+  //     // of quota when we try to write the primary lease.
+  //     // For both the `QuotaExceededError` and the  `AbortError`, it is safe to
+  //     // fall back to memory persistence since all modifications to IndexedDb
+  //     // failed to commit.
+  //     return (
+  //       error.code === DOM_EXCEPTION_QUOTA_EXCEEDED ||
+  //       error.code === DOM_EXCEPTION_ABORTED
+  //     );
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   /**
    * Starts IndexedDB-based persistence.
@@ -386,7 +386,7 @@ export class FirestoreClient {
     return this.platform
       .loadConnection(this.databaseInfo)
       .then(async connection => {
-        this.localStore = new LocalStore(this.persistence, user);
+        // this.localStore = new LocalStore(this.persistence, user);
         // if (maybeLruGc) {
         //   // We're running LRU Garbage collection. Set up the scheduler.
         //   this.lruScheduler = new LruScheduler(
@@ -405,55 +405,55 @@ export class FirestoreClient {
           serializer
         );
 
-        const remoteStoreOnlineStateChangedHandler = onlineState =>
-          this.syncEngine.applyOnlineStateChange(
-            onlineState,
-            OnlineStateSource.RemoteStore
-          );
-        const sharedClientStateOnlineStateChangedHandler = onlineState =>
-          this.syncEngine.applyOnlineStateChange(
-            onlineState,
-            OnlineStateSource.SharedClientState
-          );
+        // const remoteStoreOnlineStateChangedHandler = onlineState =>
+        //   this.syncEngine.applyOnlineStateChange(
+        //     onlineState,
+        //     OnlineStateSource.RemoteStore
+        //   );
+        // const sharedClientStateOnlineStateChangedHandler = onlineState =>
+        //   this.syncEngine.applyOnlineStateChange(
+        //     onlineState,
+        //     OnlineStateSource.SharedClientState
+        //   );
 
-        this.remoteStore = new RemoteStore(
-          this.localStore,
-          datastore,
-          this.asyncQueue,
-          remoteStoreOnlineStateChangedHandler
-        );
+        // this.remoteStore = new RemoteStore(
+        //   this.localStore,
+        //   datastore,
+        //   this.asyncQueue,
+        //   remoteStoreOnlineStateChangedHandler
+        // );
 
-        this.syncEngine = new SyncEngine(
-          this.localStore,
-          this.remoteStore,
-          this.sharedClientState,
-          user
-        );
+        // this.syncEngine = new SyncEngine(
+        //   this.localStore,
+        //   this.remoteStore,
+        //   this.sharedClientState,
+        //   user
+        // );
 
-        this.sharedClientState.onlineStateHandler = sharedClientStateOnlineStateChangedHandler;
+        // this.sharedClientState.onlineStateHandler = sharedClientStateOnlineStateChangedHandler;
 
-        // Set up wiring between sync engine and other components
-        this.remoteStore.syncEngine = this.syncEngine;
-        this.sharedClientState.syncEngine = this.syncEngine;
+        // // Set up wiring between sync engine and other components
+        // this.remoteStore.syncEngine = this.syncEngine;
+        // this.sharedClientState.syncEngine = this.syncEngine;
 
-        this.eventMgr = new EventManager(this.syncEngine);
+        // this.eventMgr = new EventManager(this.syncEngine);
 
         // PORTING NOTE: LocalStore doesn't need an explicit start() on the Web.
-        await this.sharedClientState.start();
-        await this.remoteStore.start();
+        // await this.sharedClientState.start();
+        // await this.remoteStore.start();
 
         // NOTE: This will immediately call the listener, so we make sure to
         // set it after localStore / remoteStore are started.
-        await this.persistence.setPrimaryStateListener(async isPrimary => {
-          await this.syncEngine.applyPrimaryState(isPrimary);
-          // if (this.lruScheduler) {
-          //   if (isPrimary && !this.lruScheduler.started) {
-          //     this.lruScheduler.start();
-          //   } else if (!isPrimary) {
-          //     this.lruScheduler.stop();
-          //   }
-          // }
-        });
+        // await this.persistence.setPrimaryStateListener(async isPrimary => {
+        //   await this.syncEngine.applyPrimaryState(isPrimary);
+        //   // if (this.lruScheduler) {
+        //   //   if (isPrimary && !this.lruScheduler.started) {
+        //   //     this.lruScheduler.start();
+        //   //   } else if (!isPrimary) {
+        //   //     this.lruScheduler.stop();
+        //   //   }
+        //   // }
+        // });
       });
   }
 
@@ -461,14 +461,14 @@ export class FirestoreClient {
     this.asyncQueue.verifyOperationInProgress();
 
     debug(LOG_TAG, 'Credential Changed. Current user: ' + user.uid);
-    return this.syncEngine.handleCredentialChange(user);
+    // return this.syncEngine.handleCredentialChange(user);
   }
 
   /** Disables the network connection. Pending operations will not complete. */
-  disableNetwork(): Promise<void> {
-    return this.asyncQueue.enqueue(() => {
-      return this.syncEngine.disableNetwork();
-    });
+  async disableNetwork(): Promise<void> {
+    // return this.asyncQueue.enqueue(() => {
+    //   return this.syncEngine.disableNetwork();
+    // });
   }
 
   shutdown(options?: {
@@ -479,11 +479,11 @@ export class FirestoreClient {
       // if (this.lruScheduler) {
       //   this.lruScheduler.stop();
       // }
-      await this.remoteStore.shutdown();
-      await this.sharedClientState.shutdown();
-      await this.persistence.shutdown(
-        options && options.purgePersistenceWithDataLoss
-      );
+      // await this.remoteStore.shutdown();
+      // await this.sharedClientState.shutdown();
+      // await this.persistence.shutdown(
+      //   options && options.purgePersistenceWithDataLoss
+      // );
 
       // `removeChangeListener` must be called after shutting down the
       // RemoteStore as it will prevent the RemoteStore from retrieving
@@ -492,72 +492,73 @@ export class FirestoreClient {
     });
   }
 
-  listen(
-    query: Query,
-    observer: Observer<ViewSnapshot>,
-    options: ListenOptions
-  ): QueryListener {
-    const listener = new QueryListener(query, observer, options);
-    this.asyncQueue.enqueueAndForget(() => {
-      return this.eventMgr.listen(listener);
-    });
-    return listener;
-  }
+  // listen(
+  //   query: Query,
+  //   observer: Observer<ViewSnapshot>,
+  //   options: ListenOptions
+  // ): QueryListener {
+  //   const listener = new QueryListener(query, observer, options);
+  //   this.asyncQueue.enqueueAndForget(() => {
+  //     // return this.eventMgr.listen(listener);
+  //     return null;
+  //   });
+  //   return listener;
+  // }
 
-  unlisten(listener: QueryListener): void {
-    this.asyncQueue.enqueueAndForget(() => {
-      return this.eventMgr.unlisten(listener);
-    });
-  }
+  // unlisten(listener: QueryListener): void {
+  //   this.asyncQueue.enqueueAndForget(() => {
+  //     return this.eventMgr.unlisten(listener);
+  //   });
+  // }
 
-  getDocumentFromLocalCache(docKey: DocumentKey): Promise<Document | null> {
-    return this.asyncQueue
-      .enqueue(() => {
-        return this.localStore.readDocument(docKey);
-      })
-      .then((maybeDoc: MaybeDocument | null) => {
-        if (maybeDoc instanceof Document) {
-          return maybeDoc;
-        } else if (maybeDoc instanceof NoDocument) {
-          return null;
-        } else {
-          throw new FirestoreError(
-            Code.UNAVAILABLE,
-            'Failed to get document from cache. (However, this document may ' +
-              "exist on the server. Run again without setting 'source' in " +
-              'the GetOptions to attempt to retrieve the document from the ' +
-              'server.)'
-          );
-        }
-      });
-  }
+  // getDocumentFromLocalCache(docKey: DocumentKey): Promise<Document | null> {
+  //   return this.asyncQueue
+  //     .enqueue(() => {
+  //       return this.localStore.readDocument(docKey);
+  //     })
+  //     .then((maybeDoc: MaybeDocument | null) => {
+  //       if (maybeDoc instanceof Document) {
+  //         return maybeDoc;
+  //       } else if (maybeDoc instanceof NoDocument) {
+  //         return null;
+  //       } else {
+  //         throw new FirestoreError(
+  //           Code.UNAVAILABLE,
+  //           'Failed to get document from cache. (However, this document may ' +
+  //             "exist on the server. Run again without setting 'source' in " +
+  //             'the GetOptions to attempt to retrieve the document from the ' +
+  //             'server.)'
+  //         );
+  //       }
+  //     });
+  // }
 
-  getDocumentsFromLocalCache(query: Query): Promise<ViewSnapshot> {
-    return this.asyncQueue
-      .enqueue(() => {
-        return this.localStore.executeQuery(query);
-      })
-      .then((docs: DocumentMap) => {
-        const remoteKeys: DocumentKeySet = documentKeySet();
+  // getDocumentsFromLocalCache(query: Query): Promise<ViewSnapshot> {
+  //   return this.asyncQueue
+  //     .enqueue(() => {
+  //       return this.localStore.executeQuery(query);
+  //     })
+  //     .then((docs: DocumentMap) => {
+  //       const remoteKeys: DocumentKeySet = documentKeySet();
 
-        const view = new View(query, remoteKeys);
-        const viewDocChanges: ViewDocumentChanges = view.computeDocChanges(
-          docs
-        );
-        return view.applyChanges(
-          viewDocChanges,
-          /* updateLimboDocuments= */ false
-        ).snapshot!;
-      });
-  }
+  //       const view = new View(query, remoteKeys);
+  //       const viewDocChanges: ViewDocumentChanges = view.computeDocChanges(
+  //         docs
+  //       );
+  //       return view.applyChanges(
+  //         viewDocChanges,
+  //         /* updateLimboDocuments= */ false
+  //       ).snapshot!;
+  //     });
+  // }
 
-  write(mutations: Mutation[]): Promise<void> {
-    const deferred = new Deferred<void>();
-    this.asyncQueue.enqueueAndForget(() =>
-      this.syncEngine.write(mutations, deferred)
-    );
-    return deferred.promise;
-  }
+  // write(mutations: Mutation[]): Promise<void> {
+  //   const deferred = new Deferred<void>();
+  //   this.asyncQueue.enqueueAndForget(() =>
+  //     this.syncEngine.write(mutations, deferred)
+  //   );
+  //   return deferred.promise;
+  // }
 
   databaseId(): DatabaseId {
     return this.databaseInfo.databaseId;

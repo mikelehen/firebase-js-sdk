@@ -38,7 +38,7 @@ import {
 } from '../core/query';
 import { Transaction as InternalTransaction } from '../core/transaction';
 import { ChangeType, ViewSnapshot } from '../core/view_snapshot';
-import { LruParams } from '../local/lru_garbage_collector';
+// import { LruParams } from '../local/lru_garbage_collector';
 import { Document, MaybeDocument, NoDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
 import {
@@ -115,7 +115,7 @@ const DEFAULT_TIMESTAMPS_IN_SNAPSHOTS = true;
  * Set this value as the `cacheSizeBytes` on the settings passed to the
  * `Firestore` instance.
  */
-export const CACHE_SIZE_UNLIMITED = LruParams.COLLECTION_DISABLED;
+export const CACHE_SIZE_UNLIMITED = 1;//LruParams.COLLECTION_DISABLED;
 
 // enablePersistence() defaults:
 const DEFAULT_SYNCHRONIZE_TABS = false;
@@ -237,16 +237,16 @@ class FirestoreSettings {
       settings.cacheSizeBytes
     );
     if (settings.cacheSizeBytes === undefined) {
-      this.cacheSizeBytes = LruParams.DEFAULT_CACHE_SIZE_BYTES;
+      this.cacheSizeBytes = 1;//LruParams.DEFAULT_CACHE_SIZE_BYTES;
     } else {
       if (
         settings.cacheSizeBytes !== CACHE_SIZE_UNLIMITED &&
-        settings.cacheSizeBytes < LruParams.MINIMUM_CACHE_SIZE_BYTES
+        settings.cacheSizeBytes < 1 /*LruParams.MINIMUM_CACHE_SIZE_BYTES*/
       ) {
         throw new FirestoreError(
           Code.INVALID_ARGUMENT,
           `cacheSizeBytes must be at least ${
-            LruParams.MINIMUM_CACHE_SIZE_BYTES
+            1//LruParams.MINIMUM_CACHE_SIZE_BYTES
           }`
         );
       } else {

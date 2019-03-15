@@ -20,7 +20,7 @@ import { Platform } from '../platform/platform';
 import { Connection } from '../remote/connection';
 import { JsonProtoSerializer } from '../remote/serializer';
 
-import { WebChannelConnection } from './webchannel_connection';
+// import { WebChannelConnection } from './webchannel_connection';
 
 export class BrowserPlatform implements Platform {
   readonly base64Available: boolean;
@@ -40,11 +40,13 @@ export class BrowserPlatform implements Platform {
   }
 
   loadConnection(databaseInfo: DatabaseInfo): Promise<Connection> {
-    return Promise.resolve(new WebChannelConnection(databaseInfo));
+    //tslint:disable
+    return Promise.resolve(null as any/*new WebChannelConnection(databaseInfo)*/);
   }
 
   newSerializer(databaseId: DatabaseId): JsonProtoSerializer {
-    return new JsonProtoSerializer(databaseId, { useProto3Json: true });
+    // return new JsonProtoSerializer(databaseId, { useProto3Json: true });
+    return null as any;
   }
 
   formatJSON(value: unknown): string {

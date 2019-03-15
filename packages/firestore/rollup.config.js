@@ -35,7 +35,7 @@ export default [
   /**
    * Node.js Build
    */
-  {
+  /*{
     input: 'index.node.ts',
     output: [{ file: pkg.main, format: 'cjs', sourcemap: true }],
     plugins: [
@@ -52,14 +52,14 @@ export default [
       [...deps, 'util', 'path'].some(
         dep => id === dep || id.startsWith(`${dep}/`)
       )
-  },
+  },*/
   /**
    * Browser Builds
    */
   {
     input: 'index.ts',
     output: [
-      { file: pkg.browser, format: 'cjs', sourcemap: true },
+     // { file: pkg.browser, format: 'cjs', sourcemap: true },
       { file: pkg.module, format: 'es', sourcemap: true }
     ],
     plugins,

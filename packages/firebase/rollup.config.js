@@ -32,13 +32,17 @@ import messagingPkg from './messaging/package.json';
 import storagePkg from './storage/package.json';
 
 const pkgsByName = {
+  /*
   app: appPkg,
   auth: authPkg,
   database: databasePkg,
+  */
   firestore: firestorePkg,
+  /*
   functions: functionsPkg,
   messaging: messagingPkg,
   storage: storagePkg
+  */
 };
 
 const plugins = [
@@ -89,18 +93,21 @@ const appBuilds = [
 ];
 
 const components = [
+/*
   'auth',
   'database',
+  */
   'firestore',
+  /*
   'functions',
   'messaging',
-  'storage'
+  'storage'*/
 ];
 const componentBuilds = components
   .map(component => {
     const pkg = pkgsByName[component];
     return [
-      {
+      /*{
         input: `${component}/index.ts`,
         output: [
           {
@@ -116,7 +123,7 @@ const componentBuilds = components
         ],
         plugins,
         external
-      },
+      },*/
       {
         input: `${component}/index.ts`,
         output: {
@@ -202,4 +209,4 @@ const completeBuilds = [
   }
 ];
 
-export default [...appBuilds, ...componentBuilds, ...completeBuilds];
+export default [/*...appBuilds,*/ ...componentBuilds/*, ...completeBuilds*/];

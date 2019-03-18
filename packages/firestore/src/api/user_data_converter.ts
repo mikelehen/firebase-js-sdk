@@ -33,15 +33,15 @@ import {
   StringValue,
   TimestampValue
 } from '../model/field_value';
-import {
-  FieldMask,
-  FieldTransform,
-  Mutation,
-  PatchMutation,
-  Precondition,
-  SetMutation,
-  TransformMutation
-} from '../model/mutation';
+// import {
+//   FieldMask,
+//   FieldTransform,
+//   Mutation,
+//   PatchMutation,
+//   Precondition,
+//   SetMutation,
+//   TransformMutation
+// } from '../model/mutation';
 import { FieldPath } from '../model/path';
 import { assert, fail } from '../util/assert';
 import { Code, FirestoreError } from '../util/error';
@@ -77,47 +77,47 @@ import { GeoPoint } from './geo_point';
 const RESERVED_FIELD_REGEX = /^__.*__$/;
 
 /** The result of parsing document data (e.g. for a setData call). */
-export class ParsedSetData {
-  constructor(
-    readonly data: ObjectValue,
-    readonly fieldMask: FieldMask | null,
-    readonly fieldTransforms: FieldTransform[]
-  ) {}
+// export class ParsedSetData {
+//   constructor(
+//     readonly data: ObjectValue,
+//     readonly fieldMask: FieldMask | null,
+//     readonly fieldTransforms: FieldTransform[]
+//   ) {}
 
-  toMutations(key: DocumentKey, precondition: Precondition): Mutation[] {
-    const mutations = [] as Mutation[];
-    if (this.fieldMask !== null) {
-      mutations.push(
-        new PatchMutation(key, this.data, this.fieldMask, precondition)
-      );
-    } else {
-      mutations.push(new SetMutation(key, this.data, precondition));
-    }
-    if (this.fieldTransforms.length > 0) {
-      mutations.push(new TransformMutation(key, this.fieldTransforms));
-    }
-    return mutations;
-  }
-}
+//   toMutations(key: DocumentKey, precondition: Precondition): Mutation[] {
+//     const mutations = [] as Mutation[];
+//     if (this.fieldMask !== null) {
+//       mutations.push(
+//         new PatchMutation(key, this.data, this.fieldMask, precondition)
+//       );
+//     } else {
+//       mutations.push(new SetMutation(key, this.data, precondition));
+//     }
+//     if (this.fieldTransforms.length > 0) {
+//       mutations.push(new TransformMutation(key, this.fieldTransforms));
+//     }
+//     return mutations;
+//   }
+// }
 
-/** The result of parsing "update" data (i.e. for an updateData call). */
-export class ParsedUpdateData {
-  constructor(
-    readonly data: ObjectValue,
-    readonly fieldMask: FieldMask,
-    readonly fieldTransforms: FieldTransform[]
-  ) {}
+// /** The result of parsing "update" data (i.e. for an updateData call). */
+// export class ParsedUpdateData {
+//   constructor(
+//     readonly data: ObjectValue,
+//     readonly fieldMask: FieldMask,
+//     readonly fieldTransforms: FieldTransform[]
+//   ) {}
 
-  toMutations(key: DocumentKey, precondition: Precondition): Mutation[] {
-    const mutations = [
-      new PatchMutation(key, this.data, this.fieldMask, precondition)
-    ] as Mutation[];
-    if (this.fieldTransforms.length > 0) {
-      mutations.push(new TransformMutation(key, this.fieldTransforms));
-    }
-    return mutations;
-  }
-}
+//   toMutations(key: DocumentKey, precondition: Precondition): Mutation[] {
+//     const mutations = [
+//       new PatchMutation(key, this.data, this.fieldMask, precondition)
+//     ] as Mutation[];
+//     if (this.fieldTransforms.length > 0) {
+//       mutations.push(new TransformMutation(key, this.fieldTransforms));
+//     }
+//     return mutations;
+//   }
+// }
 
 /*
  * Represents what type of API method provided the data being parsed; useful
@@ -150,7 +150,7 @@ function isWrite(dataSource: UserDataSource): boolean {
 
 /** A "context" object passed around while parsing user data. */
 class ParseContext {
-  readonly fieldTransforms: FieldTransform[];
+  // readonly fieldTransforms: FieldTransform[];
   readonly fieldMask: FieldPath[];
   /**
    * Initializes a ParseContext with the given source and path.
@@ -179,16 +179,16 @@ class ParseContext {
     readonly methodName: string,
     readonly path: FieldPath | null,
     readonly arrayElement?: boolean,
-    fieldTransforms?: FieldTransform[],
+    // fieldTransforms?: FieldTransform[],
     fieldMask?: FieldPath[]
   ) {
     // Minor hack: If fieldTransforms is undefined, we assume this is an
     // external call and we need to validate the entire path.
-    if (fieldTransforms === undefined) {
-      this.validatePath();
-    }
+    // if (fieldTransforms === undefined) {
+    //   this.validatePath();
+    // }
     this.arrayElement = arrayElement !== undefined ? arrayElement : false;
-    this.fieldTransforms = fieldTransforms || [];
+    // this.fieldTransforms = fieldTransforms || [];
     this.fieldMask = fieldMask || [];
   }
 
@@ -199,7 +199,7 @@ class ParseContext {
       this.methodName,
       childPath,
       /*arrayElement=*/ false,
-      this.fieldTransforms,
+      // this.fieldTransforms,
       this.fieldMask
     );
     context.validatePathSegment(field);
@@ -213,7 +213,7 @@ class ParseContext {
       this.methodName,
       childPath,
       /*arrayElement=*/ false,
-      this.fieldTransforms,
+      // this.fieldTransforms,
       this.fieldMask
     );
     context.validatePath();
@@ -228,7 +228,7 @@ class ParseContext {
       this.methodName,
       /*path=*/ null,
       /*arrayElement=*/ true,
-      this.fieldTransforms,
+      // this.fieldTransforms,
       this.fieldMask
     );
   }
@@ -249,10 +249,10 @@ class ParseContext {
   /** Returns 'true' if 'fieldPath' was traversed when creating this context. */
   contains(fieldPath: FieldPath): boolean {
     return (
-      this.fieldMask.find(field => fieldPath.isPrefixOf(field)) !== undefined ||
-      this.fieldTransforms.find(transform =>
-        fieldPath.isPrefixOf(transform.field)
-      ) !== undefined
+      this.fieldMask.find(field => fieldPath.isPrefixOf(field)) !== undefined //||
+      // this.fieldTransforms.find(transform =>
+      //   fieldPath.isPrefixOf(transform.field)
+      // ) !== undefined
     );
   }
 
@@ -305,170 +305,170 @@ export class UserDataConverter {
   constructor(private preConverter: DataPreConverter) {}
 
   /** Parse document data from a non-merge set() call. */
-  parseSetData(methodName: string, input: unknown): ParsedSetData {
-    const context = new ParseContext(
-      UserDataSource.Set,
-      methodName,
-      FieldPath.EMPTY_PATH
-    );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+  // parseSetData(methodName: string, input: unknown): ParsedSetData {
+  //   const context = new ParseContext(
+  //     UserDataSource.Set,
+  //     methodName,
+  //     FieldPath.EMPTY_PATH
+  //   );
+  //   validatePlainObject('Data must be an object, but it was:', context, input);
 
-    const updateData = this.parseData(input, context);
+  //   const updateData = this.parseData(input, context);
 
-    return new ParsedSetData(
-      updateData as ObjectValue,
-      /* fieldMask= */ null,
-      context.fieldTransforms
-    );
-  }
+  //   return new ParsedSetData(
+  //     updateData as ObjectValue,
+  //     /* fieldMask= */ null,
+  //     context.fieldTransforms
+  //   );
+  // }
 
-  /** Parse document data from a set() call with '{merge:true}'. */
-  parseMergeData(
-    methodName: string,
-    input: unknown,
-    fieldPaths?: Array<string | firestore.FieldPath>
-  ): ParsedSetData {
-    const context = new ParseContext(
-      UserDataSource.MergeSet,
-      methodName,
-      FieldPath.EMPTY_PATH
-    );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+  // /** Parse document data from a set() call with '{merge:true}'. */
+  // parseMergeData(
+  //   methodName: string,
+  //   input: unknown,
+  //   fieldPaths?: Array<string | firestore.FieldPath>
+  // ): ParsedSetData {
+  //   const context = new ParseContext(
+  //     UserDataSource.MergeSet,
+  //     methodName,
+  //     FieldPath.EMPTY_PATH
+  //   );
+  //   validatePlainObject('Data must be an object, but it was:', context, input);
 
-    const updateData = this.parseData(input, context) as ObjectValue;
-    let fieldMask: FieldMask;
-    let fieldTransforms: FieldTransform[];
+  //   const updateData = this.parseData(input, context) as ObjectValue;
+  //   let fieldMask: FieldMask;
+  //   let fieldTransforms: FieldTransform[];
 
-    if (!fieldPaths) {
-      fieldMask = FieldMask.fromArray(context.fieldMask);
-      fieldTransforms = context.fieldTransforms;
-    } else {
-      let validatedFieldPaths = new SortedSet<FieldPath>(FieldPath.comparator);
+  //   if (!fieldPaths) {
+  //     fieldMask = FieldMask.fromArray(context.fieldMask);
+  //     fieldTransforms = context.fieldTransforms;
+  //   } else {
+  //     let validatedFieldPaths = new SortedSet<FieldPath>(FieldPath.comparator);
 
-      for (const stringOrFieldPath of fieldPaths) {
-        let fieldPath: FieldPath;
+  //     for (const stringOrFieldPath of fieldPaths) {
+  //       let fieldPath: FieldPath;
 
-        if (stringOrFieldPath instanceof ExternalFieldPath) {
-          fieldPath = stringOrFieldPath._internalPath;
-        } else if (typeof stringOrFieldPath === 'string') {
-          fieldPath = fieldPathFromDotSeparatedString(
-            methodName,
-            stringOrFieldPath
-          );
-        } else {
-          throw fail(
-            'Expected stringOrFieldPath to be a string or a FieldPath'
-          );
-        }
+  //       if (stringOrFieldPath instanceof ExternalFieldPath) {
+  //         fieldPath = stringOrFieldPath._internalPath;
+  //       } else if (typeof stringOrFieldPath === 'string') {
+  //         fieldPath = fieldPathFromDotSeparatedString(
+  //           methodName,
+  //           stringOrFieldPath
+  //         );
+  //       } else {
+  //         throw fail(
+  //           'Expected stringOrFieldPath to be a string or a FieldPath'
+  //         );
+  //       }
 
-        if (!context.contains(fieldPath)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Field '${fieldPath}' is specified in your field mask but missing from your input data.`
-          );
-        }
+  //       if (!context.contains(fieldPath)) {
+  //         throw new FirestoreError(
+  //           Code.INVALID_ARGUMENT,
+  //           `Field '${fieldPath}' is specified in your field mask but missing from your input data.`
+  //         );
+  //       }
 
-        validatedFieldPaths = validatedFieldPaths.add(fieldPath);
-      }
+  //       validatedFieldPaths = validatedFieldPaths.add(fieldPath);
+  //     }
 
-      fieldMask = FieldMask.fromSet(validatedFieldPaths);
-      fieldTransforms = context.fieldTransforms.filter(transform =>
-        fieldMask.covers(transform.field)
-      );
-    }
-    return new ParsedSetData(
-      updateData as ObjectValue,
-      fieldMask,
-      fieldTransforms
-    );
-  }
+  //     fieldMask = FieldMask.fromSet(validatedFieldPaths);
+  //     fieldTransforms = context.fieldTransforms.filter(transform =>
+  //       fieldMask.covers(transform.field)
+  //     );
+  //   }
+  //   return new ParsedSetData(
+  //     updateData as ObjectValue,
+  //     fieldMask,
+  //     fieldTransforms
+  //   );
+  // }
 
-  /** Parse update data from an update() call. */
-  parseUpdateData(methodName: string, input: unknown): ParsedUpdateData {
-    const context = new ParseContext(
-      UserDataSource.Update,
-      methodName,
-      FieldPath.EMPTY_PATH
-    );
-    validatePlainObject('Data must be an object, but it was:', context, input);
+  // /** Parse update data from an update() call. */
+  // parseUpdateData(methodName: string, input: unknown): ParsedUpdateData {
+  //   const context = new ParseContext(
+  //     UserDataSource.Update,
+  //     methodName,
+  //     FieldPath.EMPTY_PATH
+  //   );
+  //   validatePlainObject('Data must be an object, but it was:', context, input);
 
-    let fieldMaskPaths = new SortedSet<FieldPath>(FieldPath.comparator);
-    let updateData = ObjectValue.EMPTY;
-    objUtils.forEach(input as Dict<unknown>, (key, value) => {
-      const path = fieldPathFromDotSeparatedString(methodName, key);
+  //   let fieldMaskPaths = new SortedSet<FieldPath>(FieldPath.comparator);
+  //   let updateData = ObjectValue.EMPTY;
+  //   objUtils.forEach(input as Dict<unknown>, (key, value) => {
+  //     const path = fieldPathFromDotSeparatedString(methodName, key);
 
-      const childContext = context.childContextForFieldPath(path);
-      value = this.runPreConverter(value, childContext);
-      if (value instanceof DeleteFieldValueImpl) {
-        // Add it to the field mask, but don't add anything to updateData.
-        fieldMaskPaths = fieldMaskPaths.add(path);
-      } else {
-        const parsedValue = this.parseData(value, childContext);
-        if (parsedValue != null) {
-          fieldMaskPaths = fieldMaskPaths.add(path);
-          updateData = updateData.set(path, parsedValue);
-        }
-      }
-    });
+  //     const childContext = context.childContextForFieldPath(path);
+  //     value = this.runPreConverter(value, childContext);
+  //     if (value instanceof DeleteFieldValueImpl) {
+  //       // Add it to the field mask, but don't add anything to updateData.
+  //       fieldMaskPaths = fieldMaskPaths.add(path);
+  //     } else {
+  //       const parsedValue = this.parseData(value, childContext);
+  //       if (parsedValue != null) {
+  //         fieldMaskPaths = fieldMaskPaths.add(path);
+  //         updateData = updateData.set(path, parsedValue);
+  //       }
+  //     }
+  //   });
 
-    const mask = FieldMask.fromSet(fieldMaskPaths);
-    return new ParsedUpdateData(updateData, mask, context.fieldTransforms);
-  }
+  //   const mask = FieldMask.fromSet(fieldMaskPaths);
+  //   return new ParsedUpdateData(updateData, mask, context.fieldTransforms);
+  // }
 
-  /** Parse update data from a list of field/value arguments. */
-  parseUpdateVarargs(
-    methodName: string,
-    field: string | ExternalFieldPath,
-    value: unknown,
-    moreFieldsAndValues: unknown[]
-  ): ParsedUpdateData {
-    const context = new ParseContext(
-      UserDataSource.Update,
-      methodName,
-      FieldPath.EMPTY_PATH
-    );
-    const keys = [fieldPathFromArgument(methodName, field)];
-    const values = [value];
+  // /** Parse update data from a list of field/value arguments. */
+  // parseUpdateVarargs(
+  //   methodName: string,
+  //   field: string | ExternalFieldPath,
+  //   value: unknown,
+  //   moreFieldsAndValues: unknown[]
+  // ): ParsedUpdateData {
+  //   const context = new ParseContext(
+  //     UserDataSource.Update,
+  //     methodName,
+  //     FieldPath.EMPTY_PATH
+  //   );
+  //   const keys = [fieldPathFromArgument(methodName, field)];
+  //   const values = [value];
 
-    if (moreFieldsAndValues.length % 2 !== 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Function ${methodName}() needs to be called with an even number ` +
-          'of arguments that alternate between field names and values.'
-      );
-    }
+  //   if (moreFieldsAndValues.length % 2 !== 0) {
+  //     throw new FirestoreError(
+  //       Code.INVALID_ARGUMENT,
+  //       `Function ${methodName}() needs to be called with an even number ` +
+  //         'of arguments that alternate between field names and values.'
+  //     );
+  //   }
 
-    for (let i = 0; i < moreFieldsAndValues.length; i += 2) {
-      keys.push(
-        fieldPathFromArgument(methodName, moreFieldsAndValues[i] as
-          | string
-          | ExternalFieldPath)
-      );
-      values.push(moreFieldsAndValues[i + 1]);
-    }
+  //   for (let i = 0; i < moreFieldsAndValues.length; i += 2) {
+  //     keys.push(
+  //       fieldPathFromArgument(methodName, moreFieldsAndValues[i] as
+  //         | string
+  //         | ExternalFieldPath)
+  //     );
+  //     values.push(moreFieldsAndValues[i + 1]);
+  //   }
 
-    let fieldMaskPaths = new SortedSet<FieldPath>(FieldPath.comparator);
-    let updateData = ObjectValue.EMPTY;
+  //   let fieldMaskPaths = new SortedSet<FieldPath>(FieldPath.comparator);
+  //   let updateData = ObjectValue.EMPTY;
 
-    for (let i = 0; i < keys.length; ++i) {
-      const path = keys[i];
-      const childContext = context.childContextForFieldPath(path);
-      const value = this.runPreConverter(values[i], childContext);
-      if (value instanceof DeleteFieldValueImpl) {
-        // Add it to the field mask, but don't add anything to updateData.
-        fieldMaskPaths = fieldMaskPaths.add(path);
-      } else {
-        const parsedValue = this.parseData(value, childContext);
-        if (parsedValue != null) {
-          fieldMaskPaths = fieldMaskPaths.add(path);
-          updateData = updateData.set(path, parsedValue);
-        }
-      }
-    }
+  //   for (let i = 0; i < keys.length; ++i) {
+  //     const path = keys[i];
+  //     const childContext = context.childContextForFieldPath(path);
+  //     const value = this.runPreConverter(values[i], childContext);
+  //     if (value instanceof DeleteFieldValueImpl) {
+  //       // Add it to the field mask, but don't add anything to updateData.
+  //       fieldMaskPaths = fieldMaskPaths.add(path);
+  //     } else {
+  //       const parsedValue = this.parseData(value, childContext);
+  //       if (parsedValue != null) {
+  //         fieldMaskPaths = fieldMaskPaths.add(path);
+  //         updateData = updateData.set(path, parsedValue);
+  //       }
+  //     }
+  //   }
 
-    const mask = FieldMask.fromSet(fieldMaskPaths);
-    return new ParsedUpdateData(updateData, mask, context.fieldTransforms);
-  }
+  //   const mask = FieldMask.fromSet(fieldMaskPaths);
+  //   return new ParsedUpdateData(updateData, mask, context.fieldTransforms);
+  // }
 
   /**
    * Parse a "query value" (e.g. value in a where filter or a value in a cursor
@@ -482,10 +482,10 @@ export class UserDataConverter {
     );
     const parsed = this.parseData(input, context);
     assert(parsed != null, 'Parsed data should not be null.');
-    assert(
-      context.fieldTransforms.length === 0,
-      'Field transforms should have been disallowed.'
-    );
+    // assert(
+    //   context.fieldTransforms.length === 0,
+    //   'Field transforms should have been disallowed.'
+    // );
     return parsed!;
   }
 
@@ -626,37 +626,37 @@ export class UserDataConverter {
             '{merge:true}'
         );
       }
-    } else if (value instanceof ServerTimestampFieldValueImpl) {
-      context.fieldTransforms.push(
-        new FieldTransform(context.path, ServerTimestampTransform.instance)
-      );
-    } else if (value instanceof ArrayUnionFieldValueImpl) {
-      const parsedElements = this.parseArrayTransformElements(
-        value._methodName,
-        value._elements
-      );
-      const arrayUnion = new ArrayUnionTransformOperation(parsedElements);
-      context.fieldTransforms.push(
-        new FieldTransform(context.path, arrayUnion)
-      );
-    } else if (value instanceof ArrayRemoveFieldValueImpl) {
-      const parsedElements = this.parseArrayTransformElements(
-        value._methodName,
-        value._elements
-      );
-      const arrayRemove = new ArrayRemoveTransformOperation(parsedElements);
-      context.fieldTransforms.push(
-        new FieldTransform(context.path, arrayRemove)
-      );
-    } else if (value instanceof NumericIncrementFieldValueImpl) {
-      const operand = this.parseQueryValue(
-        'FieldValue.increment',
-        value._operand
-      ) as NumberValue;
-      const numericIncrement = new NumericIncrementTransformOperation(operand);
-      context.fieldTransforms.push(
-        new FieldTransform(context.path, numericIncrement)
-      );
+    // } else if (value instanceof ServerTimestampFieldValueImpl) {
+    //   context.fieldTransforms.push(
+    //     new FieldTransform(context.path, ServerTimestampTransform.instance)
+    //   );
+    // } else if (value instanceof ArrayUnionFieldValueImpl) {
+    //   const parsedElements = this.parseArrayTransformElements(
+    //     value._methodName,
+    //     value._elements
+    //   );
+    //   const arrayUnion = new ArrayUnionTransformOperation(parsedElements);
+    //   context.fieldTransforms.push(
+    //     new FieldTransform(context.path, arrayUnion)
+    //   );
+    // } else if (value instanceof ArrayRemoveFieldValueImpl) {
+    //   const parsedElements = this.parseArrayTransformElements(
+    //     value._methodName,
+    //     value._elements
+    //   );
+    //   const arrayRemove = new ArrayRemoveTransformOperation(parsedElements);
+    //   context.fieldTransforms.push(
+    //     new FieldTransform(context.path, arrayRemove)
+    //   );
+    // } else if (value instanceof NumericIncrementFieldValueImpl) {
+    //   const operand = this.parseQueryValue(
+    //     'FieldValue.increment',
+    //     value._operand
+    //   ) as NumberValue;
+    //   const numericIncrement = new NumericIncrementTransformOperation(operand);
+    //   context.fieldTransforms.push(
+    //     new FieldTransform(context.path, numericIncrement)
+    //   );
     } else {
       fail('Unknown FieldValue type: ' + value);
     }
@@ -705,22 +705,22 @@ export class UserDataConverter {
     }
   }
 
-  private parseArrayTransformElements(
-    methodName: string,
-    elements: unknown[]
-  ): FieldValue[] {
-    return elements.map((element, i) => {
-      // Although array transforms are used with writes, the actual elements
-      // being unioned or removed are not considered writes since they cannot
-      // contain any FieldValue sentinels, etc.
-      const context = new ParseContext(
-        UserDataSource.Argument,
-        methodName,
-        FieldPath.EMPTY_PATH
-      );
-      return this.parseData(element, context.childContextForArray(i))!;
-    });
-  }
+//   private parseArrayTransformElements(
+//     methodName: string,
+//     elements: unknown[]
+//   ): FieldValue[] {
+//     return elements.map((element, i) => {
+//       // Although array transforms are used with writes, the actual elements
+//       // being unioned or removed are not considered writes since they cannot
+//       // contain any FieldValue sentinels, etc.
+//       const context = new ParseContext(
+//         UserDataSource.Argument,
+//         methodName,
+//         FieldPath.EMPTY_PATH
+//       );
+//       return this.parseData(element, context.childContextForArray(i))!;
+//     });
+//   }
 }
 
 /**

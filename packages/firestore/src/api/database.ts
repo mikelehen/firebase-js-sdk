@@ -49,7 +49,7 @@ import {
   RefValue,
   ServerTimestampValue
 } from '../model/field_value';
-import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
+// import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
 import { FieldPath, ResourcePath } from '../model/path';
 import { PlatformSupport } from '../platform/platform';
 import { makeConstructorPrivate } from '../util/api';
@@ -630,92 +630,92 @@ export class Transaction implements firestore.Transaction {
       });
   }
 
-  set(
-    documentRef: firestore.DocumentReference,
-    value: firestore.DocumentData,
-    options?: firestore.SetOptions
-  ): Transaction {
-    validateBetweenNumberOfArgs('Transaction.set', arguments, 2, 3);
-    const ref = validateReference(
-      'Transaction.set',
-      documentRef,
-      this._firestore
-    );
-    options = validateSetOptions('Transaction.set', options);
-    const parsed =
-      options.merge || options.mergeFields
-        ? this._firestore._dataConverter.parseMergeData(
-            'Transaction.set',
-            value,
-            options.mergeFields
-          )
-        : this._firestore._dataConverter.parseSetData('Transaction.set', value);
-    this._transaction.set(ref._key, parsed);
-    return this;
-  }
+  // set(
+  //   documentRef: firestore.DocumentReference,
+  //   value: firestore.DocumentData,
+  //   options?: firestore.SetOptions
+  // ): Transaction {
+  //   validateBetweenNumberOfArgs('Transaction.set', arguments, 2, 3);
+  //   const ref = validateReference(
+  //     'Transaction.set',
+  //     documentRef,
+  //     this._firestore
+  //   );
+  //   options = validateSetOptions('Transaction.set', options);
+  //   const parsed =
+  //     options.merge || options.mergeFields
+  //       ? this._firestore._dataConverter.parseMergeData(
+  //           'Transaction.set',
+  //           value,
+  //           options.mergeFields
+  //         )
+  //       : this._firestore._dataConverter.parseSetData('Transaction.set', value);
+  //   this._transaction.set(ref._key, parsed);
+  //   return this;
+  // }
 
-  update(
-    documentRef: firestore.DocumentReference,
-    value: firestore.UpdateData
-  ): Transaction;
-  update(
-    documentRef: firestore.DocumentReference,
-    field: string | ExternalFieldPath,
-    value: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): Transaction;
-  update(
-    documentRef: firestore.DocumentReference,
-    fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
-    value?: unknown,
-    ...moreFieldsAndValues: unknown[]
-  ): Transaction {
-    let ref;
-    let parsed;
+  // update(
+  //   documentRef: firestore.DocumentReference,
+  //   value: firestore.UpdateData
+  // ): Transaction;
+  // update(
+  //   documentRef: firestore.DocumentReference,
+  //   field: string | ExternalFieldPath,
+  //   value: unknown,
+  //   ...moreFieldsAndValues: unknown[]
+  // ): Transaction;
+  // update(
+  //   documentRef: firestore.DocumentReference,
+  //   fieldOrUpdateData: string | ExternalFieldPath | firestore.UpdateData,
+  //   value?: unknown,
+  //   ...moreFieldsAndValues: unknown[]
+  // ): Transaction {
+  //   let ref;
+  //   let parsed;
 
-    if (
-      typeof fieldOrUpdateData === 'string' ||
-      fieldOrUpdateData instanceof ExternalFieldPath
-    ) {
-      validateAtLeastNumberOfArgs('Transaction.update', arguments, 3);
-      ref = validateReference(
-        'Transaction.update',
-        documentRef,
-        this._firestore
-      );
-      parsed = this._firestore._dataConverter.parseUpdateVarargs(
-        'Transaction.update',
-        fieldOrUpdateData,
-        value,
-        moreFieldsAndValues
-      );
-    } else {
-      validateExactNumberOfArgs('Transaction.update', arguments, 2);
-      ref = validateReference(
-        'Transaction.update',
-        documentRef,
-        this._firestore
-      );
-      parsed = this._firestore._dataConverter.parseUpdateData(
-        'Transaction.update',
-        fieldOrUpdateData
-      );
-    }
+  //   if (
+  //     typeof fieldOrUpdateData === 'string' ||
+  //     fieldOrUpdateData instanceof ExternalFieldPath
+  //   ) {
+  //     validateAtLeastNumberOfArgs('Transaction.update', arguments, 3);
+  //     ref = validateReference(
+  //       'Transaction.update',
+  //       documentRef,
+  //       this._firestore
+  //     );
+  //     parsed = this._firestore._dataConverter.parseUpdateVarargs(
+  //       'Transaction.update',
+  //       fieldOrUpdateData,
+  //       value,
+  //       moreFieldsAndValues
+  //     );
+  //   } else {
+  //     validateExactNumberOfArgs('Transaction.update', arguments, 2);
+  //     ref = validateReference(
+  //       'Transaction.update',
+  //       documentRef,
+  //       this._firestore
+  //     );
+  //     parsed = this._firestore._dataConverter.parseUpdateData(
+  //       'Transaction.update',
+  //       fieldOrUpdateData
+  //     );
+  //   }
 
-    this._transaction.update(ref._key, parsed);
-    return this;
-  }
+  //   this._transaction.update(ref._key, parsed);
+  //   return this;
+  // }
 
-  delete(documentRef: firestore.DocumentReference): Transaction {
-    validateExactNumberOfArgs('Transaction.delete', arguments, 1);
-    const ref = validateReference(
-      'Transaction.delete',
-      documentRef,
-      this._firestore
-    );
-    this._transaction.delete(ref._key);
-    return this;
-  }
+  // delete(documentRef: firestore.DocumentReference): Transaction {
+  //   validateExactNumberOfArgs('Transaction.delete', arguments, 1);
+  //   const ref = validateReference(
+  //     'Transaction.delete',
+  //     documentRef,
+  //     this._firestore
+  //   );
+  //   this._transaction.delete(ref._key);
+  //   return this;
+  // }
 }
 
 // export class WriteBatch implements firestore.WriteBatch {
@@ -2125,37 +2125,37 @@ export class CollectionReference extends Query
   // }
 }
 
-function validateSetOptions(
-  methodName: string,
-  options: firestore.SetOptions | undefined
-): firestore.SetOptions {
-  if (options === undefined) {
-    return {
-      merge: false
-    };
-  }
+// function validateSetOptions(
+//   methodName: string,
+//   options: firestore.SetOptions | undefined
+// ): firestore.SetOptions {
+//   if (options === undefined) {
+//     return {
+//       merge: false
+//     };
+//   }
 
-  validateOptionNames(methodName, options, ['merge', 'mergeFields']);
-  validateNamedOptionalType(methodName, 'boolean', 'merge', options.merge);
-  validateOptionalArrayElements(
-    methodName,
-    'mergeFields',
-    'a string or a FieldPath',
-    options.mergeFields,
-    element =>
-      typeof element === 'string' || element instanceof ExternalFieldPath
-  );
+//   validateOptionNames(methodName, options, ['merge', 'mergeFields']);
+//   validateNamedOptionalType(methodName, 'boolean', 'merge', options.merge);
+//   validateOptionalArrayElements(
+//     methodName,
+//     'mergeFields',
+//     'a string or a FieldPath',
+//     options.mergeFields,
+//     element =>
+//       typeof element === 'string' || element instanceof ExternalFieldPath
+//   );
 
-  if (options.mergeFields !== undefined && options.merge !== undefined) {
-    throw new FirestoreError(
-      Code.INVALID_ARGUMENT,
-      `Invalid options passed to function ${methodName}(): You cannot specify both "merge" ` +
-        `and "mergeFields".`
-    );
-  }
+//   if (options.mergeFields !== undefined && options.merge !== undefined) {
+//     throw new FirestoreError(
+//       Code.INVALID_ARGUMENT,
+//       `Invalid options passed to function ${methodName}(): You cannot specify both "merge" ` +
+//         `and "mergeFields".`
+//     );
+//   }
 
-  return options;
-}
+//   return options;
+// }
 
 function validateSnapshotOptions(
   methodName: string,

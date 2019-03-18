@@ -32,7 +32,7 @@ import {
   // PublicWriteBatch
 } from '../api/database';
 import { FieldPath } from '../api/field_path';
-import { PublicFieldValue } from '../api/field_value';
+// import { PublicFieldValue } from '../api/field_value';
 import { GeoPoint } from '../api/geo_point';
 import { Timestamp } from '../api/timestamp';
 import { shallowCopy } from '../util/obj';
@@ -51,7 +51,7 @@ const firestoreNamespace = {
   QuerySnapshot: PublicQuerySnapshot,
   CollectionReference: PublicCollectionReference,
   FieldPath,
-  FieldValue: PublicFieldValue,
+  // FieldValue: PublicFieldValue,
   setLogLevel: Firestore.setLogLevel,
   CACHE_SIZE_UNLIMITED
 };

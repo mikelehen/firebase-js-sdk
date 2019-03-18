@@ -380,65 +380,6 @@ export class Transaction {
    * @return A DocumentSnapshot for the read data.
    */
   get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
-
-  /**
-   * Writes to the document referred to by the provided `DocumentReference`.
-   * If the document does not exist yet, it will be created. If you pass
-   * `SetOptions`, the provided data can be merged into the existing document.
-   *
-   * @param documentRef A reference to the document to be set.
-   * @param data An object of the fields and values for the document.
-   * @param options An object to configure the set behavior.
-   * @return This `Transaction` instance. Used for chaining method calls.
-   */
-  set(
-    documentRef: DocumentReference,
-    data: DocumentData,
-    options?: SetOptions
-  ): Transaction;
-
-  /**
-   * Updates fields in the document referred to by the provided
-   * `DocumentReference`. The update will fail if applied to a document that
-   * does not exist.
-   *
-   * @param documentRef A reference to the document to be updated.
-   * @param data An object containing the fields and values with which to
-   * update the document. Fields can contain dots to reference nested fields
-   * within the document.
-   * @return This `Transaction` instance. Used for chaining method calls.
-   */
-  update(documentRef: DocumentReference, data: UpdateData): Transaction;
-
-  /**
-   * Updates fields in the document referred to by the provided
-   * `DocumentReference`. The update will fail if applied to a document that
-   * does not exist.
-   *
-   * Nested fields can be updated by providing dot-separated field path
-   * strings or by providing FieldPath objects.
-   *
-   * @param documentRef A reference to the document to be updated.
-   * @param field The first field to update.
-   * @param value The first value.
-   * @param moreFieldsAndValues Additional key/value pairs.
-   * @return A Promise resolved once the data has been successfully written
-   * to the backend (Note that it won't resolve while you're offline).
-   */
-  update(
-    documentRef: DocumentReference,
-    field: string | FieldPath,
-    value: any,
-    ...moreFieldsAndValues: any[]
-  ): Transaction;
-
-  /**
-   * Deletes the document referred to by the provided `DocumentReference`.
-   *
-   * @param documentRef A reference to the document to be deleted.
-   * @return This `Transaction` instance. Used for chaining method calls.
-   */
-  delete(documentRef: DocumentReference): Transaction;
 }
 
 // /**
@@ -542,21 +483,21 @@ export interface SnapshotListenOptions {
  * configured to perform granular merges instead of overwriting the target
  * documents in their entirety.
  */
-export interface SetOptions {
-  /**
-   * Changes the behavior of a set() call to only replace the values specified
-   * in its data argument. Fields omitted from the set() call remain
-   * untouched.
-   */
-  readonly merge?: boolean;
+// export interface SetOptions {
+//   /**
+//    * Changes the behavior of a set() call to only replace the values specified
+//    * in its data argument. Fields omitted from the set() call remain
+//    * untouched.
+//    */
+//   readonly merge?: boolean;
 
-  /**
-   * Changes the behavior of set() calls to only replace the specified field
-   * paths. Any field path that is not specified is ignored and remains
-   * untouched.
-   */
-  readonly mergeFields?: (string | FieldPath)[];
-}
+//   /**
+//    * Changes the behavior of set() calls to only replace the specified field
+//    * paths. Any field path that is not specified is ignored and remains
+//    * untouched.
+//    */
+//   readonly mergeFields?: (string | FieldPath)[];
+// }
 
 /**
  * An options object that configures the behavior of `get()` calls on
@@ -1051,18 +992,18 @@ export class Query {
    */
   isEqual(other: Query): boolean;
 
-  /**
-   * Executes the query and returns the results as a QuerySnapshot.
-   *
-   * Note: By default, get() attempts to provide up-to-date data when possible
-   * by waiting for data from the server, but it may return cached data or fail
-   * if you are offline and the server cannot be reached. This behavior can be
-   * altered via the `GetOptions` parameter.
-   *
-   * @param options An object to configure the get behavior.
-   * @return A Promise that will be resolved with the results of the Query.
-   */
-  get(options?: GetOptions): Promise<QuerySnapshot>;
+  // /**
+  //  * Executes the query and returns the results as a QuerySnapshot.
+  //  *
+  //  * Note: By default, get() attempts to provide up-to-date data when possible
+  //  * by waiting for data from the server, but it may return cached data or fail
+  //  * if you are offline and the server cannot be reached. This behavior can be
+  //  * altered via the `GetOptions` parameter.
+  //  *
+  //  * @param options An object to configure the get behavior.
+  //  * @return A Promise that will be resolved with the results of the Query.
+  //  */
+  // get(options?: GetOptions): Promise<QuerySnapshot>;
 
   /**
    * Attaches a listener for QuerySnapshot events. You may either pass
@@ -1081,30 +1022,30 @@ export class Query {
    * @return An unsubscribe function that can be called to cancel
    * the snapshot listener.
    */
-  onSnapshot(observer: {
-    next?: (snapshot: QuerySnapshot) => void;
-    error?: (error: Error) => void;
-    complete?: () => void;
-  }): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    observer: {
-      next?: (snapshot: QuerySnapshot) => void;
-      error?: (error: Error) => void;
-      complete?: () => void;
-    }
-  ): () => void;
-  onSnapshot(
-    onNext: (snapshot: QuerySnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    onNext: (snapshot: QuerySnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
+  // onSnapshot(observer: {
+  //   next?: (snapshot: QuerySnapshot) => void;
+  //   error?: (error: Error) => void;
+  //   complete?: () => void;
+  // }): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   observer: {
+  //     next?: (snapshot: QuerySnapshot) => void;
+  //     error?: (error: Error) => void;
+  //     complete?: () => void;
+  //   }
+  // ): () => void;
+  // onSnapshot(
+  //   onNext: (snapshot: QuerySnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   onNext: (snapshot: QuerySnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
 }
 
 /**
@@ -1256,72 +1197,72 @@ export class CollectionReference extends Query {
  * Sentinel values that can be used when writing document fields with set()
  * or update().
  */
-export class FieldValue {
-  private constructor();
+// export class FieldValue {
+//   private constructor();
 
-  /**
-   * Returns a sentinel used with set() or update() to include a
-   * server-generated timestamp in the written data.
-   */
-  static serverTimestamp(): FieldValue;
+//   /**
+//    * Returns a sentinel used with set() or update() to include a
+//    * server-generated timestamp in the written data.
+//    */
+//   static serverTimestamp(): FieldValue;
 
-  /**
-   * Returns a sentinel for use with update() to mark a field for deletion.
-   */
-  static delete(): FieldValue;
+//   /**
+//    * Returns a sentinel for use with update() to mark a field for deletion.
+//    */
+//   static delete(): FieldValue;
 
-  /**
-   * Returns a special value that can be used with set() or update() that tells
-   * the server to union the given elements with any array value that already
-   * exists on the server. Each specified element that doesn't already exist in
-   * the array will be added to the end. If the field being modified is not
-   * already an array it will be overwritten with an array containing exactly
-   * the specified elements.
-   *
-   * @param elements The elements to union into the array.
-   * @return The FieldValue sentinel for use in a call to set() or update().
-   */
-  static arrayUnion(...elements: any[]): FieldValue;
+//   /**
+//    * Returns a special value that can be used with set() or update() that tells
+//    * the server to union the given elements with any array value that already
+//    * exists on the server. Each specified element that doesn't already exist in
+//    * the array will be added to the end. If the field being modified is not
+//    * already an array it will be overwritten with an array containing exactly
+//    * the specified elements.
+//    *
+//    * @param elements The elements to union into the array.
+//    * @return The FieldValue sentinel for use in a call to set() or update().
+//    */
+//   static arrayUnion(...elements: any[]): FieldValue;
 
-  /**
-   * Returns a special value that can be used with set() or update() that tells
-   * the server to remove the given elements from any array value that already
-   * exists on the server. All instances of each element specified will be
-   * removed from the array. If the field being modified is not already an
-   * array it will be overwritten with an empty array.
-   *
-   * @param elements The elements to remove from the array.
-   * @return The FieldValue sentinel for use in a call to set() or update().
-   */
-  static arrayRemove(...elements: any[]): FieldValue;
+//   /**
+//    * Returns a special value that can be used with set() or update() that tells
+//    * the server to remove the given elements from any array value that already
+//    * exists on the server. All instances of each element specified will be
+//    * removed from the array. If the field being modified is not already an
+//    * array it will be overwritten with an empty array.
+//    *
+//    * @param elements The elements to remove from the array.
+//    * @return The FieldValue sentinel for use in a call to set() or update().
+//    */
+//   static arrayRemove(...elements: any[]): FieldValue;
 
-  /**
-   * Returns a special value that can be used with set() or update() that tells
-   * the server to increment the field's current value by the given value.
-   *
-   * If either the operand or the current field value uses floating point
-   * precision, all arithmetic will follow IEEE 754 semantics. If both values
-   * are integers, values outside of JavaScript's safe number range
-   * (`Number.MIN_SAFE_INTEGER` to `Number.MAX_SAFE_INTEGER`) are also subject
-   * to precision loss. Furthermore, once processed by the Firestore backend,
-   * all integer operations are capped between -2^63 and 2^63-1.
-   *
-   * If the current field value is not of type 'number', or if the field does
-   * not yet exist, the transformation will set the field to the given value.
-   *
-   * @param n The value to increment by.
-   * @return The FieldValue sentinel for use in a call to set() or update().
-   */
-  static increment(n: number): FieldValue;
+//   /**
+//    * Returns a special value that can be used with set() or update() that tells
+//    * the server to increment the field's current value by the given value.
+//    *
+//    * If either the operand or the current field value uses floating point
+//    * precision, all arithmetic will follow IEEE 754 semantics. If both values
+//    * are integers, values outside of JavaScript's safe number range
+//    * (`Number.MIN_SAFE_INTEGER` to `Number.MAX_SAFE_INTEGER`) are also subject
+//    * to precision loss. Furthermore, once processed by the Firestore backend,
+//    * all integer operations are capped between -2^63 and 2^63-1.
+//    *
+//    * If the current field value is not of type 'number', or if the field does
+//    * not yet exist, the transformation will set the field to the given value.
+//    *
+//    * @param n The value to increment by.
+//    * @return The FieldValue sentinel for use in a call to set() or update().
+//    */
+//   static increment(n: number): FieldValue;
 
-  /**
-   * Returns true if this `FieldValue` is equal to the provided one.
-   *
-   * @param other The `FieldValue` to compare against.
-   * @return true if this `FieldValue` is equal to the provided one.
-   */
-  isEqual(other: FieldValue): boolean;
-}
+//   /**
+//    * Returns true if this `FieldValue` is equal to the provided one.
+//    *
+//    * @param other The `FieldValue` to compare against.
+//    * @return true if this `FieldValue` is equal to the provided one.
+//    */
+//   isEqual(other: FieldValue): boolean;
+// }
 
 /**
  * A FieldPath refers to a field in a document. The path may consist of a

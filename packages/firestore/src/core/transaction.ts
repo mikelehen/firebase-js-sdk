@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { ParsedSetData, ParsedUpdateData } from '../api/user_data_converter';
+// import { ParsedSetData, ParsedUpdateData } from '../api/user_data_converter';
 import { documentVersionMap } from '../model/collections';
 import { Document, NoDocument } from '../model/document';
 import { MaybeDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
-import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
+// import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
 import { Datastore } from '../remote/datastore';
 import { fail } from '../util/assert';
 import { Code, FirestoreError } from '../util/error';
@@ -33,7 +33,7 @@ import { SnapshotVersion } from './snapshot_version';
 export class Transaction {
   // The version of each document that was read during this transaction.
   private readVersions = documentVersionMap();
-  private mutations: Mutation[] = [];
+  // private mutations: Mutation[] = [];
   private committed = false;
 
   constructor(private datastore: Datastore) {}
@@ -70,11 +70,11 @@ export class Transaction {
         'Transaction has already completed.'
       );
     }
-    if (this.mutations.length > 0) {
-      return Promise.reject<MaybeDocument[]>(
-        'Transactions lookups are invalid after writes.'
-      );
-    }
+    // if (this.mutations.length > 0) {
+    //   return Promise.reject<MaybeDocument[]>(
+    //     'Transactions lookups are invalid after writes.'
+    //   );
+    // }
     return this.datastore.lookup(keys).then(docs => {
       docs.forEach(doc => {
         if (doc instanceof NoDocument || doc instanceof Document) {
@@ -87,81 +87,82 @@ export class Transaction {
     });
   }
 
-  private write(mutations: Mutation[]): void {
-    if (this.committed) {
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        'Transaction has already completed.'
-      );
-    }
-    this.mutations = this.mutations.concat(mutations);
-  }
+  // private write(mutations: Mutation[]): void {
+  //   if (this.committed) {
+  //     throw new FirestoreError(
+  //       Code.FAILED_PRECONDITION,
+  //       'Transaction has already completed.'
+  //     );
+  //   }
+  //   this.mutations = this.mutations.concat(mutations);
+  // }
 
   /**
    * Returns the version of this document when it was read in this transaction,
    * as a precondition, or no precondition if it was not read.
    */
-  private precondition(key: DocumentKey): Precondition {
-    const version = this.readVersions.get(key);
-    if (version) {
-      return Precondition.updateTime(version);
-    } else {
-      return Precondition.NONE;
-    }
-  }
+  // private precondition(key: DocumentKey): Precondition {
+  //   const version = this.readVersions.get(key);
+  //   if (version) {
+  //     return Precondition.updateTime(version);
+  //   } else {
+  //     return Precondition.NONE;
+  //   }
+  // }
 
   /**
    * Returns the precondition for a document if the operation is an update.
    */
-  private preconditionForUpdate(key: DocumentKey): Precondition {
-    const version = this.readVersions.get(key);
-    if (version && version.isEqual(SnapshotVersion.forDeletedDoc())) {
-      // The document doesn't exist, so fail the transaction.
-      throw new FirestoreError(
-        Code.FAILED_PRECONDITION,
-        "Can't update a document that doesn't exist."
-      );
-    } else if (version) {
-      // Document exists, base precondition on document update time.
-      return Precondition.updateTime(version);
-    } else {
-      // Document was not read, so we just use the preconditions for a blind
-      // update.
-      return Precondition.exists(true);
-    }
-  }
+  // private preconditionForUpdate(key: DocumentKey): Precondition {
+  //   const version = this.readVersions.get(key);
+  //   if (version && version.isEqual(SnapshotVersion.forDeletedDoc())) {
+  //     // The document doesn't exist, so fail the transaction.
+  //     throw new FirestoreError(
+  //       Code.FAILED_PRECONDITION,
+  //       "Can't update a document that doesn't exist."
+  //     );
+  //   } else if (version) {
+  //     // Document exists, base precondition on document update time.
+  //     return Precondition.updateTime(version);
+  //   } else {
+  //     // Document was not read, so we just use the preconditions for a blind
+  //     // update.
+  //     return Precondition.exists(true);
+  //   }
+  // }
 
-  set(key: DocumentKey, data: ParsedSetData): void {
-    this.write(data.toMutations(key, this.precondition(key)));
-  }
+  // set(key: DocumentKey, data: ParsedSetData): void {
+  //   this.write(data.toMutations(key, this.precondition(key)));
+  // }
 
-  update(key: DocumentKey, data: ParsedUpdateData): void {
-    this.write(data.toMutations(key, this.preconditionForUpdate(key)));
-  }
+  // update(key: DocumentKey, data: ParsedUpdateData): void {
+  //   this.write(data.toMutations(key, this.preconditionForUpdate(key)));
+  // }
 
-  delete(key: DocumentKey): void {
-    this.write([new DeleteMutation(key, this.precondition(key))]);
-    // Since the delete will be applied before all following writes, we need to
-    // ensure that the precondition for the next write will be exists: false.
-    this.readVersions = this.readVersions.insert(
-      key,
-      SnapshotVersion.forDeletedDoc()
-    );
-  }
+  // delete(key: DocumentKey): void {
+  //   this.write([new DeleteMutation(key, this.precondition(key))]);
+  //   // Since the delete will be applied before all following writes, we need to
+  //   // ensure that the precondition for the next write will be exists: false.
+  //   this.readVersions = this.readVersions.insert(
+  //     key,
+  //     SnapshotVersion.forDeletedDoc()
+  //   );
+  // }
 
   commit(): Promise<void> {
-    let unwritten = this.readVersions;
+    // let unwritten = this.readVersions;
     // For each mutation, note that the doc was written.
-    this.mutations.forEach(mutation => {
-      unwritten = unwritten.remove(mutation.key);
-    });
-    if (!unwritten.isEmpty()) {
-      return Promise.reject(
-        Error('Every document read in a transaction must also be written.')
-      );
-    }
-    return this.datastore.commit(this.mutations).then(() => {
-      this.committed = true;
-    });
-  }
+  //   this.mutations.forEach(mutation => {
+  //     unwritten = unwritten.remove(mutation.key);
+  //   });
+  //   if (!unwritten.isEmpty()) {
+  //     return Promise.reject(
+  //       Error('Every document read in a transaction must also be written.')
+  //     );
+  //   }
+  //   return this.datastore.commit(this.mutations).then(() => {
+  //     this.committed = true;
+  //   });
+    return Promise.resolve();
+   }
 }

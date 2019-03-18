@@ -36,17 +36,17 @@ import { QueryData, QueryPurpose } from '../local/query_data';
 import { Document, MaybeDocument, NoDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
 import * as fieldValue from '../model/field_value';
-import {
-  DeleteMutation,
-  FieldMask,
-  FieldTransform,
-  Mutation,
-  MutationResult,
-  PatchMutation,
-  Precondition,
-  SetMutation,
-  TransformMutation
-} from '../model/mutation';
+// import {
+//   DeleteMutation,
+//   FieldMask,
+//   FieldTransform,
+//   Mutation,
+//   MutationResult,
+//   PatchMutation,
+//   Precondition,
+//   SetMutation,
+//   TransformMutation
+// } from '../model/mutation';
 import { FieldPath, ResourcePath } from '../model/path';
 import * as api from '../protos/firestore_proto_api';
 import { assert, fail } from '../util/assert';
@@ -139,13 +139,13 @@ export class JsonProtoSerializer {
     private options: SerializerOptions
   ) {}
 
-  private emptyByteString(): ProtoByteString {
-    if (this.options.useProto3Json) {
-      return '';
-    } else {
-      return new Uint8Array(0);
-    }
-  }
+  // private emptyByteString(): ProtoByteString {
+  //   if (this.options.useProto3Json) {
+  //     return '';
+  //   } else {
+  //     return new Uint8Array(0);
+  //   }
+  // }
 
   private unsafeCastProtoByteString(byteString: ProtoByteString): string {
     // byteStrings can be either string or UInt8Array, but the typings say
@@ -506,27 +506,27 @@ export class JsonProtoSerializer {
   }
 
   /** Creates an api.Document from key and fields (but no create/update time) */
-  toMutationDocument(
-    key: DocumentKey,
-    fields: fieldValue.ObjectValue
-  ): api.Document {
-    return {
-      name: this.toName(key),
-      fields: this.toFields(fields)
-    };
-  }
+  // toMutationDocument(
+  //   key: DocumentKey,
+  //   fields: fieldValue.ObjectValue
+  // ): api.Document {
+  //   return {
+  //     name: this.toName(key),
+  //     fields: this.toFields(fields)
+  //   };
+  // }
 
-  toDocument(document: Document): api.Document {
-    assert(
-      !document.hasLocalMutations,
-      "Can't serialize documents with mutations."
-    );
-    return {
-      name: this.toName(document.key),
-      fields: this.toFields(document.data),
-      updateTime: this.toTimestamp(document.version.toTimestamp())
-    };
-  }
+  // toDocument(document: Document): api.Document {
+  //   assert(
+  //     !document.hasLocalMutations,
+  //     "Can't serialize documents with mutations."
+  //   );
+  //   return {
+  //     name: this.toName(document.key),
+  //     fields: this.toFields(document.data),
+  //     updateTime: this.toTimestamp(document.version.toTimestamp())
+  //   };
+  // }
 
   fromDocument(
     document: api.Document,
@@ -814,38 +814,38 @@ export class JsonProtoSerializer {
   //   return this.fromVersion(targetChange.readTime);
   // }
 
-  toMutation(mutation: Mutation): api.Write {
-    let result: api.Write;
-    if (mutation instanceof SetMutation) {
-      result = {
-        update: this.toMutationDocument(mutation.key, mutation.value)
-      };
-    } else if (mutation instanceof DeleteMutation) {
-      result = { delete: this.toName(mutation.key) };
-    } else if (mutation instanceof PatchMutation) {
-      result = {
-        update: this.toMutationDocument(mutation.key, mutation.data),
-        updateMask: this.toDocumentMask(mutation.fieldMask)
-      };
-    } else if (mutation instanceof TransformMutation) {
-      result = {
-        transform: {
-          document: this.toName(mutation.key),
-          fieldTransforms: mutation.fieldTransforms.map(transform =>
-            this.toFieldTransform(transform)
-          )
-        }
-      };
-    } else {
-      return fail('Unknown mutation type ' + mutation.type);
-    }
+  // toMutation(mutation: Mutation): api.Write {
+  //   let result: api.Write;
+  //   if (mutation instanceof SetMutation) {
+  //     result = {
+  //       update: this.toMutationDocument(mutation.key, mutation.value)
+  //     };
+  //   } else if (mutation instanceof DeleteMutation) {
+  //     result = { delete: this.toName(mutation.key) };
+  //   } else if (mutation instanceof PatchMutation) {
+  //     result = {
+  //       update: this.toMutationDocument(mutation.key, mutation.data),
+  //       updateMask: this.toDocumentMask(mutation.fieldMask)
+  //     };
+  //   } else if (mutation instanceof TransformMutation) {
+  //     result = {
+  //       transform: {
+  //         document: this.toName(mutation.key),
+  //         fieldTransforms: mutation.fieldTransforms.map(transform =>
+  //           this.toFieldTransform(transform)
+  //         )
+  //       }
+  //     };
+  //   } else {
+  //     return fail('Unknown mutation type ' + mutation.type);
+  //   }
 
-    if (!mutation.precondition.isNone) {
-      result.currentDocument = this.toPrecondition(mutation.precondition);
-    }
+  //   if (!mutation.precondition.isNone) {
+  //     result.currentDocument = this.toPrecondition(mutation.precondition);
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   // fromMutation(proto: api.Write): Mutation {
   //   const precondition = proto.currentDocument
@@ -880,18 +880,18 @@ export class JsonProtoSerializer {
   //   }
   // }
 
-  private toPrecondition(precondition: Precondition): api.Precondition {
-    assert(!precondition.isNone, "Can't serialize an empty precondition");
-    if (precondition.updateTime !== undefined) {
-      return {
-        updateTime: this.toVersion(precondition.updateTime)
-      };
-    } else if (precondition.exists !== undefined) {
-      return { exists: precondition.exists };
-    } else {
-      return fail('Unknown precondition');
-    }
-  }
+  // private toPrecondition(precondition: Precondition): api.Precondition {
+  //   assert(!precondition.isNone, "Can't serialize an empty precondition");
+  //   if (precondition.updateTime !== undefined) {
+  //     return {
+  //       updateTime: this.toVersion(precondition.updateTime)
+  //     };
+  //   } else if (precondition.exists !== undefined) {
+  //     return { exists: precondition.exists };
+  //   } else {
+  //     return fail('Unknown precondition');
+  //   }
+  // }
 
   // private fromPrecondition(precondition: api.Precondition): Precondition {
   //   if (precondition.updateTime !== undefined) {
@@ -903,104 +903,104 @@ export class JsonProtoSerializer {
   //   }
   // }
 
-  private fromWriteResult(
-    proto: api.WriteResult,
-    commitTime: string
-  ): MutationResult {
-    // NOTE: Deletes don't have an updateTime.
-    const version = proto.updateTime
-      ? this.fromVersion(proto.updateTime)
-      : this.fromVersion(commitTime);
-    let transformResults: fieldValue.FieldValue[] | null = null;
-    if (proto.transformResults && proto.transformResults.length > 0) {
-      transformResults = proto.transformResults.map(result =>
-        this.fromValue(result)
-      );
-    }
-    return new MutationResult(version, transformResults);
-  }
+  // private fromWriteResult(
+  //   proto: api.WriteResult,
+  //   commitTime: string
+  // ): MutationResult {
+  //   // NOTE: Deletes don't have an updateTime.
+  //   const version = proto.updateTime
+  //     ? this.fromVersion(proto.updateTime)
+  //     : this.fromVersion(commitTime);
+  //   let transformResults: fieldValue.FieldValue[] | null = null;
+  //   if (proto.transformResults && proto.transformResults.length > 0) {
+  //     transformResults = proto.transformResults.map(result =>
+  //       this.fromValue(result)
+  //     );
+  //   }
+  //   return new MutationResult(version, transformResults);
+  // }
 
-  fromWriteResults(
-    protos: api.WriteResult[] | undefined,
-    commitTime?: string
-  ): MutationResult[] {
-    if (protos && protos.length > 0) {
-      assert(
-        commitTime !== undefined,
-        'Received a write result without a commit time'
-      );
-      return protos.map(proto => this.fromWriteResult(proto, commitTime!));
-    } else {
-      return [];
-    }
-  }
+  // fromWriteResults(
+  //   protos: api.WriteResult[] | undefined,
+  //   commitTime?: string
+  // ): MutationResult[] {
+  //   if (protos && protos.length > 0) {
+  //     assert(
+  //       commitTime !== undefined,
+  //       'Received a write result without a commit time'
+  //     );
+  //     return protos.map(proto => this.fromWriteResult(proto, commitTime!));
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
-  private toFieldTransform(fieldTransform: FieldTransform): api.FieldTransform {
-    const transform = fieldTransform.transform;
-    if (transform instanceof ServerTimestampTransform) {
-      return {
-        fieldPath: fieldTransform.field.canonicalString(),
-        setToServerValue: 'REQUEST_TIME'
-      };
-    } else if (transform instanceof ArrayUnionTransformOperation) {
-      return {
-        fieldPath: fieldTransform.field.canonicalString(),
-        appendMissingElements: {
-          values: transform.elements.map(v => this.toValue(v))
-        }
-      };
-    } else if (transform instanceof ArrayRemoveTransformOperation) {
-      return {
-        fieldPath: fieldTransform.field.canonicalString(),
-        removeAllFromArray: {
-          values: transform.elements.map(v => this.toValue(v))
-        }
-      };
-    } else if (transform instanceof NumericIncrementTransformOperation) {
-      return {
-        fieldPath: fieldTransform.field.canonicalString(),
-        increment: this.toValue(transform.operand)
-      };
-    } else {
-      throw fail('Unknown transform: ' + fieldTransform.transform);
-    }
-  }
+  // private toFieldTransform(fieldTransform: FieldTransform): api.FieldTransform {
+  //   const transform = fieldTransform.transform;
+  //   if (transform instanceof ServerTimestampTransform) {
+  //     return {
+  //       fieldPath: fieldTransform.field.canonicalString(),
+  //       setToServerValue: 'REQUEST_TIME'
+  //     };
+  //   } else if (transform instanceof ArrayUnionTransformOperation) {
+  //     return {
+  //       fieldPath: fieldTransform.field.canonicalString(),
+  //       appendMissingElements: {
+  //         values: transform.elements.map(v => this.toValue(v))
+  //       }
+  //     };
+  //   } else if (transform instanceof ArrayRemoveTransformOperation) {
+  //     return {
+  //       fieldPath: fieldTransform.field.canonicalString(),
+  //       removeAllFromArray: {
+  //         values: transform.elements.map(v => this.toValue(v))
+  //       }
+  //     };
+  //   } else if (transform instanceof NumericIncrementTransformOperation) {
+  //     return {
+  //       fieldPath: fieldTransform.field.canonicalString(),
+  //       increment: this.toValue(transform.operand)
+  //     };
+  //   } else {
+  //     throw fail('Unknown transform: ' + fieldTransform.transform);
+  //   }
+  // }
 
-  private fromFieldTransform(proto: api.FieldTransform): FieldTransform {
-    // tslint:disable-next-line:no-any We need to match generated Proto types.
-    const type = (proto as any)['transform_type'];
-    let transform: TransformOperation | null = null;
-    if (hasTag(proto, type, 'setToServerValue')) {
-      assert(
-        proto.setToServerValue === 'REQUEST_TIME',
-        'Unknown server value transform proto: ' + JSON.stringify(proto)
-      );
-      transform = ServerTimestampTransform.instance;
-    } else if (hasTag(proto, type, 'appendMissingElements')) {
-      const values = proto.appendMissingElements!.values || [];
-      transform = new ArrayUnionTransformOperation(
-        values.map(v => this.fromValue(v))
-      );
-    } else if (hasTag(proto, type, 'removeAllFromArray')) {
-      const values = proto.removeAllFromArray!.values || [];
-      transform = new ArrayRemoveTransformOperation(
-        values.map(v => this.fromValue(v))
-      );
-    } else if (hasTag(proto, type, 'increment')) {
-      const operand = this.fromValue(proto.increment!);
-      assert(
-        operand instanceof NumberValue,
-        'NUMERIC_ADD transform requires a NumberValue'
-      );
-      transform = new NumericIncrementTransformOperation(
-        operand as NumberValue
-      );
-    } else {
-      fail('Unknown transform proto: ' + JSON.stringify(proto));
-    }
-    const fieldPath = FieldPath.fromServerFormat(proto.fieldPath!);
-    return new FieldTransform(fieldPath, transform!);
-  }
+  // private fromFieldTransform(proto: api.FieldTransform): FieldTransform {
+  //   // tslint:disable-next-line:no-any We need to match generated Proto types.
+  //   const type = (proto as any)['transform_type'];
+  //   let transform: TransformOperation | null = null;
+  //   if (hasTag(proto, type, 'setToServerValue')) {
+  //     assert(
+  //       proto.setToServerValue === 'REQUEST_TIME',
+  //       'Unknown server value transform proto: ' + JSON.stringify(proto)
+  //     );
+  //     transform = ServerTimestampTransform.instance;
+  //   } else if (hasTag(proto, type, 'appendMissingElements')) {
+  //     const values = proto.appendMissingElements!.values || [];
+  //     transform = new ArrayUnionTransformOperation(
+  //       values.map(v => this.fromValue(v))
+  //     );
+  //   } else if (hasTag(proto, type, 'removeAllFromArray')) {
+  //     const values = proto.removeAllFromArray!.values || [];
+  //     transform = new ArrayRemoveTransformOperation(
+  //       values.map(v => this.fromValue(v))
+  //     );
+  //   } else if (hasTag(proto, type, 'increment')) {
+  //     const operand = this.fromValue(proto.increment!);
+  //     assert(
+  //       operand instanceof NumberValue,
+  //       'NUMERIC_ADD transform requires a NumberValue'
+  //     );
+  //     transform = new NumericIncrementTransformOperation(
+  //       operand as NumberValue
+  //     );
+  //   } else {
+  //     fail('Unknown transform proto: ' + JSON.stringify(proto));
+  //   }
+  //   const fieldPath = FieldPath.fromServerFormat(proto.fieldPath!);
+  //   return new FieldTransform(fieldPath, transform!);
+  // }
 
   toDocumentsTarget(query: Query): api.DocumentsTarget {
     return { documents: [this.toQueryPath(query.path)] };
@@ -1182,30 +1182,30 @@ export class JsonProtoSerializer {
     return { compositeFilter: { op: 'AND', filters: protos } };
   }
 
-  private fromFilter(filter: api.Filter | undefined): Filter[] {
-    if (!filter) {
-      return [];
-    } else if (filter.unaryFilter !== undefined) {
-      return [this.fromUnaryFilter(filter)];
-    } else if (filter.fieldFilter !== undefined) {
-      return [this.fromRelationFilter(filter)];
-    } else if (filter.compositeFilter !== undefined) {
-      return filter.compositeFilter
-        .filters!.map(f => this.fromFilter(f))
-        .reduce((accum, current) => accum.concat(current));
-    } else {
-      return fail('Unknown filter: ' + JSON.stringify(filter));
-    }
-  }
+  // private fromFilter(filter: api.Filter | undefined): Filter[] {
+  //   if (!filter) {
+  //     return [];
+  //   } else if (filter.unaryFilter !== undefined) {
+  //     return [this.fromUnaryFilter(filter)];
+  //   } else if (filter.fieldFilter !== undefined) {
+  //     return [this.fromRelationFilter(filter)];
+  //   } else if (filter.compositeFilter !== undefined) {
+  //     return filter.compositeFilter
+  //       .filters!.map(f => this.fromFilter(f))
+  //       .reduce((accum, current) => accum.concat(current));
+  //   } else {
+  //     return fail('Unknown filter: ' + JSON.stringify(filter));
+  //   }
+  // }
 
   private toOrder(orderBys: OrderBy[]): api.Order[] | undefined {
     if (orderBys.length === 0) return;
     return orderBys.map(order => this.toPropertyOrder(order));
   }
 
-  private fromOrder(orderBys: api.Order[]): OrderBy[] {
-    return orderBys.map(order => this.fromPropertyOrder(order));
-  }
+  // private fromOrder(orderBys: api.Order[]): OrderBy[] {
+  //   return orderBys.map(order => this.fromPropertyOrder(order));
+  // }
 
   private toCursor(cursor: Bound): api.Cursor {
     return {
@@ -1214,11 +1214,11 @@ export class JsonProtoSerializer {
     };
   }
 
-  private fromCursor(cursor: api.Cursor): Bound {
-    const before = !!cursor.before;
-    const position = cursor.values!.map(component => this.fromValue(component));
-    return new Bound(position, before);
-  }
+  // private fromCursor(cursor: api.Cursor): Bound {
+  //   const before = !!cursor.before;
+  //   const position = cursor.values!.map(component => this.fromValue(component));
+  //   return new Bound(position, before);
+  // }
 
   // visible for testing
   toDirection(dir: Direction): api.OrderDirection {
@@ -1226,50 +1226,50 @@ export class JsonProtoSerializer {
   }
 
   // visible for testing
-  fromDirection(dir: api.OrderDirection | undefined): Direction | undefined {
-    switch (dir) {
-      case 'ASCENDING':
-        return Direction.ASCENDING;
-      case 'DESCENDING':
-        return Direction.DESCENDING;
-      default:
-        return undefined;
-    }
-  }
+  // fromDirection(dir: api.OrderDirection | undefined): Direction | undefined {
+  //   switch (dir) {
+  //     case 'ASCENDING':
+  //       return Direction.ASCENDING;
+  //     case 'DESCENDING':
+  //       return Direction.DESCENDING;
+  //     default:
+  //       return undefined;
+  //   }
+  // }
 
   // visible for testing
   toOperatorName(op: RelationOp): api.FieldFilterOp {
     return OPERATORS[op.name];
   }
 
-  fromOperatorName(op: api.FieldFilterOp): RelationOp {
-    switch (op) {
-      case 'EQUAL':
-        return RelationOp.EQUAL;
-      case 'GREATER_THAN':
-        return RelationOp.GREATER_THAN;
-      case 'GREATER_THAN_OR_EQUAL':
-        return RelationOp.GREATER_THAN_OR_EQUAL;
-      case 'LESS_THAN':
-        return RelationOp.LESS_THAN;
-      case 'LESS_THAN_OR_EQUAL':
-        return RelationOp.LESS_THAN_OR_EQUAL;
-      case 'ARRAY_CONTAINS':
-        return RelationOp.ARRAY_CONTAINS;
-      case 'OPERATOR_UNSPECIFIED':
-        return fail('Unspecified relation');
-      default:
-        return fail('Unknown relation');
-    }
-  }
+  // fromOperatorName(op: api.FieldFilterOp): RelationOp {
+  //   switch (op) {
+  //     case 'EQUAL':
+  //       return RelationOp.EQUAL;
+  //     case 'GREATER_THAN':
+  //       return RelationOp.GREATER_THAN;
+  //     case 'GREATER_THAN_OR_EQUAL':
+  //       return RelationOp.GREATER_THAN_OR_EQUAL;
+  //     case 'LESS_THAN':
+  //       return RelationOp.LESS_THAN;
+  //     case 'LESS_THAN_OR_EQUAL':
+  //       return RelationOp.LESS_THAN_OR_EQUAL;
+  //     case 'ARRAY_CONTAINS':
+  //       return RelationOp.ARRAY_CONTAINS;
+  //     case 'OPERATOR_UNSPECIFIED':
+  //       return fail('Unspecified relation');
+  //     default:
+  //       return fail('Unknown relation');
+  //   }
+  // }
 
   toFieldPathReference(path: FieldPath): api.FieldReference {
     return { fieldPath: path.canonicalString() };
   }
 
-  fromFieldPathReference(fieldReference: api.FieldReference): FieldPath {
-    return FieldPath.fromServerFormat(fieldReference.fieldPath!);
-  }
+  // fromFieldPathReference(fieldReference: api.FieldReference): FieldPath {
+  //   return FieldPath.fromServerFormat(fieldReference.fieldPath!);
+  // }
 
   // visible for testing
   toPropertyOrder(orderBy: OrderBy): api.Order {
@@ -1279,12 +1279,12 @@ export class JsonProtoSerializer {
     };
   }
 
-  fromPropertyOrder(orderBy: api.Order): OrderBy {
-    return new OrderBy(
-      this.fromFieldPathReference(orderBy.field!),
-      this.fromDirection(orderBy.direction)
-    );
-  }
+  // fromPropertyOrder(orderBy: api.Order): OrderBy {
+  //   return new OrderBy(
+  //     this.fromFieldPathReference(orderBy.field!),
+  //     this.fromDirection(orderBy.direction)
+  //   );
+  // }
 
   // visible for testing
   toRelationFilter(filter: Filter): api.Filter {
@@ -1301,13 +1301,13 @@ export class JsonProtoSerializer {
     }
   }
 
-  fromRelationFilter(filter: api.Filter): Filter {
-    return new RelationFilter(
-      this.fromFieldPathReference(filter.fieldFilter!.field!),
-      this.fromOperatorName(filter.fieldFilter!.op!),
-      this.fromValue(filter.fieldFilter!.value!)
-    );
-  }
+  // fromRelationFilter(filter: api.Filter): Filter {
+  //   return new RelationFilter(
+  //     this.fromFieldPathReference(filter.fieldFilter!.field!),
+  //     this.fromOperatorName(filter.fieldFilter!.op!),
+  //     this.fromValue(filter.fieldFilter!.value!)
+  //   );
+  // }
 
   // visible for testing
   toUnaryFilter(filter: Filter): api.Filter {
@@ -1330,40 +1330,40 @@ export class JsonProtoSerializer {
     }
   }
 
-  fromUnaryFilter(filter: api.Filter): Filter {
-    switch (filter.unaryFilter!.op!) {
-      case 'IS_NAN':
-        const nanField = this.fromFieldPathReference(
-          filter.unaryFilter!.field!
-        );
-        return new NanFilter(nanField);
-      case 'IS_NULL':
-        const nullField = this.fromFieldPathReference(
-          filter.unaryFilter!.field!
-        );
-        return new NullFilter(nullField);
-      case 'OPERATOR_UNSPECIFIED':
-        return fail('Unspecified filter');
-      default:
-        return fail('Unknown filter');
-    }
-  }
+  // fromUnaryFilter(filter: api.Filter): Filter {
+  //   switch (filter.unaryFilter!.op!) {
+  //     case 'IS_NAN':
+  //       const nanField = this.fromFieldPathReference(
+  //         filter.unaryFilter!.field!
+  //       );
+  //       return new NanFilter(nanField);
+  //     case 'IS_NULL':
+  //       const nullField = this.fromFieldPathReference(
+  //         filter.unaryFilter!.field!
+  //       );
+  //       return new NullFilter(nullField);
+  //     case 'OPERATOR_UNSPECIFIED':
+  //       return fail('Unspecified filter');
+  //     default:
+  //       return fail('Unknown filter');
+  //   }
+  // }
 
-  toDocumentMask(fieldMask: FieldMask): api.DocumentMask {
-    const canonicalFields: string[] = [];
-    fieldMask.fields.forEach(field =>
-      canonicalFields.push(field.canonicalString())
-    );
-    return {
-      fieldPaths: canonicalFields
-    };
-  }
+  // toDocumentMask(fieldMask: FieldMask): api.DocumentMask {
+  //   const canonicalFields: string[] = [];
+  //   fieldMask.fields.forEach(field =>
+  //     canonicalFields.push(field.canonicalString())
+  //   );
+  //   return {
+  //     fieldPaths: canonicalFields
+  //   };
+  // }
 
-  fromDocumentMask(proto: api.DocumentMask): FieldMask {
-    const paths = proto.fieldPaths || [];
-    const fields = paths.map(path => FieldPath.fromServerFormat(path));
-    return FieldMask.fromArray(fields);
-  }
+  // fromDocumentMask(proto: api.DocumentMask): FieldMask {
+  //   const paths = proto.fieldPaths || [];
+  //   const fields = paths.map(path => FieldPath.fromServerFormat(path));
+  //   return FieldMask.fromArray(fields);
+  // }
 }
 
 /**

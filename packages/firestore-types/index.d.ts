@@ -1051,18 +1051,18 @@ export class Query {
    */
   isEqual(other: Query): boolean;
 
-  /**
-   * Executes the query and returns the results as a QuerySnapshot.
-   *
-   * Note: By default, get() attempts to provide up-to-date data when possible
-   * by waiting for data from the server, but it may return cached data or fail
-   * if you are offline and the server cannot be reached. This behavior can be
-   * altered via the `GetOptions` parameter.
-   *
-   * @param options An object to configure the get behavior.
-   * @return A Promise that will be resolved with the results of the Query.
-   */
-  get(options?: GetOptions): Promise<QuerySnapshot>;
+  // /**
+  //  * Executes the query and returns the results as a QuerySnapshot.
+  //  *
+  //  * Note: By default, get() attempts to provide up-to-date data when possible
+  //  * by waiting for data from the server, but it may return cached data or fail
+  //  * if you are offline and the server cannot be reached. This behavior can be
+  //  * altered via the `GetOptions` parameter.
+  //  *
+  //  * @param options An object to configure the get behavior.
+  //  * @return A Promise that will be resolved with the results of the Query.
+  //  */
+  // get(options?: GetOptions): Promise<QuerySnapshot>;
 
   /**
    * Attaches a listener for QuerySnapshot events. You may either pass
@@ -1081,30 +1081,30 @@ export class Query {
    * @return An unsubscribe function that can be called to cancel
    * the snapshot listener.
    */
-  onSnapshot(observer: {
-    next?: (snapshot: QuerySnapshot) => void;
-    error?: (error: Error) => void;
-    complete?: () => void;
-  }): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    observer: {
-      next?: (snapshot: QuerySnapshot) => void;
-      error?: (error: Error) => void;
-      complete?: () => void;
-    }
-  ): () => void;
-  onSnapshot(
-    onNext: (snapshot: QuerySnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
-  onSnapshot(
-    options: SnapshotListenOptions,
-    onNext: (snapshot: QuerySnapshot) => void,
-    onError?: (error: Error) => void,
-    onCompletion?: () => void
-  ): () => void;
+  // onSnapshot(observer: {
+  //   next?: (snapshot: QuerySnapshot) => void;
+  //   error?: (error: Error) => void;
+  //   complete?: () => void;
+  // }): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   observer: {
+  //     next?: (snapshot: QuerySnapshot) => void;
+  //     error?: (error: Error) => void;
+  //     complete?: () => void;
+  //   }
+  // ): () => void;
+  // onSnapshot(
+  //   onNext: (snapshot: QuerySnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
+  // onSnapshot(
+  //   options: SnapshotListenOptions,
+  //   onNext: (snapshot: QuerySnapshot) => void,
+  //   onError?: (error: Error) => void,
+  //   onCompletion?: () => void
+  // ): () => void;
 }
 
 /**

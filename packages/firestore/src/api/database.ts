@@ -1698,159 +1698,159 @@ export class Query implements firestore.Query {
     return new Bound(components, before);
   }
 
-  onSnapshot(observer: PartialObserver<firestore.QuerySnapshot>): Unsubscribe;
-  onSnapshot(
-    options: firestore.SnapshotListenOptions,
-    observer: PartialObserver<firestore.QuerySnapshot>
-  ): Unsubscribe;
-  onSnapshot(
-    onNext: NextFn<firestore.QuerySnapshot>,
-    onError?: ErrorFn,
-    onCompletion?: CompleteFn
-  ): Unsubscribe;
-  onSnapshot(
-    options: firestore.SnapshotListenOptions,
-    onNext: NextFn<firestore.QuerySnapshot>,
-    onError?: ErrorFn,
-    onCompletion?: CompleteFn
-  ): Unsubscribe;
+  // onSnapshot(observer: PartialObserver<firestore.QuerySnapshot>): Unsubscribe;
+  // onSnapshot(
+  //   options: firestore.SnapshotListenOptions,
+  //   observer: PartialObserver<firestore.QuerySnapshot>
+  // ): Unsubscribe;
+  // onSnapshot(
+  //   onNext: NextFn<firestore.QuerySnapshot>,
+  //   onError?: ErrorFn,
+  //   onCompletion?: CompleteFn
+  // ): Unsubscribe;
+  // onSnapshot(
+  //   options: firestore.SnapshotListenOptions,
+  //   onNext: NextFn<firestore.QuerySnapshot>,
+  //   onError?: ErrorFn,
+  //   onCompletion?: CompleteFn
+  // ): Unsubscribe;
 
-  onSnapshot(...args: unknown[]): Unsubscribe {
-    validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
-    let options: firestore.SnapshotListenOptions = {};
-    let observer: PartialObserver<firestore.QuerySnapshot>;
-    let currArg = 0;
-    if (
-      typeof args[currArg] === 'object' &&
-      !isPartialObserver(args[currArg])
-    ) {
-      options = args[currArg] as firestore.SnapshotListenOptions;
-      validateOptionNames('Query.onSnapshot', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'Query.onSnapshot',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
-      currArg++;
-    }
+  // onSnapshot(...args: unknown[]): Unsubscribe {
+  //   validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
+  //   let options: firestore.SnapshotListenOptions = {};
+  //   let observer: PartialObserver<firestore.QuerySnapshot>;
+  //   let currArg = 0;
+  //   if (
+  //     typeof args[currArg] === 'object' &&
+  //     !isPartialObserver(args[currArg])
+  //   ) {
+  //     options = args[currArg] as firestore.SnapshotListenOptions;
+  //     validateOptionNames('Query.onSnapshot', options, [
+  //       'includeMetadataChanges'
+  //     ]);
+  //     validateNamedOptionalType(
+  //       'Query.onSnapshot',
+  //       'boolean',
+  //       'includeMetadataChanges',
+  //       options.includeMetadataChanges
+  //     );
+  //     currArg++;
+  //   }
 
-    if (isPartialObserver(args[currArg])) {
-      observer = args[currArg] as PartialObserver<firestore.QuerySnapshot>;
-    } else {
-      validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
-      validateOptionalArgType(
-        'Query.onSnapshot',
-        'function',
-        currArg + 1,
-        args[currArg + 1]
-      );
-      validateOptionalArgType(
-        'Query.onSnapshot',
-        'function',
-        currArg + 2,
-        args[currArg + 2]
-      );
-      observer = {
-        next: args[currArg] as NextFn<firestore.QuerySnapshot>,
-        error: args[currArg + 1] as ErrorFn,
-        complete: args[currArg + 2] as CompleteFn
-      };
-    }
-    return this.onSnapshotInternal(options, observer);
-  }
+  //   if (isPartialObserver(args[currArg])) {
+  //     observer = args[currArg] as PartialObserver<firestore.QuerySnapshot>;
+  //   } else {
+  //     validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
+  //     validateOptionalArgType(
+  //       'Query.onSnapshot',
+  //       'function',
+  //       currArg + 1,
+  //       args[currArg + 1]
+  //     );
+  //     validateOptionalArgType(
+  //       'Query.onSnapshot',
+  //       'function',
+  //       currArg + 2,
+  //       args[currArg + 2]
+  //     );
+  //     observer = {
+  //       next: args[currArg] as NextFn<firestore.QuerySnapshot>,
+  //       error: args[currArg + 1] as ErrorFn,
+  //       complete: args[currArg + 2] as CompleteFn
+  //     };
+  //   }
+  //   return this.onSnapshotInternal(options, observer);
+  // }
 
-  private onSnapshotInternal(
-    options: ListenOptions,
-    observer: PartialObserver<firestore.QuerySnapshot>
-  ): Unsubscribe {
-    let errHandler = (err: Error) => {
-      console.error('Uncaught Error in onSnapshot:', err);
-    };
-    if (observer.error) {
-      errHandler = observer.error.bind(observer);
-    }
+  // private onSnapshotInternal(
+  //   options: ListenOptions,
+  //   observer: PartialObserver<firestore.QuerySnapshot>
+  // ): Unsubscribe {
+  //   let errHandler = (err: Error) => {
+  //     console.error('Uncaught Error in onSnapshot:', err);
+  //   };
+  //   if (observer.error) {
+  //     errHandler = observer.error.bind(observer);
+  //   }
 
-    const asyncObserver = new AsyncObserver<ViewSnapshot>({
-      next: (result: ViewSnapshot): void => {
-        if (observer.next) {
-          observer.next(new QuerySnapshot(this.firestore, this._query, result));
-        }
-      },
-      error: errHandler
-    });
+  //   const asyncObserver = new AsyncObserver<ViewSnapshot>({
+  //     next: (result: ViewSnapshot): void => {
+  //       if (observer.next) {
+  //         observer.next(new QuerySnapshot(this.firestore, this._query, result));
+  //       }
+  //     },
+  //     error: errHandler
+  //   });
 
-    const firestoreClient = this.firestore.ensureClientConfigured();
-    // const internalListener = firestoreClient.listen(
-    //   this._query,
-    //   asyncObserver,
-    //   options
-    // );
-    return () => {
-      asyncObserver.mute();
-      // firestoreClient.unlisten(internalListener);
-    };
-  }
+  //   const firestoreClient = this.firestore.ensureClientConfigured();
+  //   // const internalListener = firestoreClient.listen(
+  //   //   this._query,
+  //   //   asyncObserver,
+  //   //   options
+  //   // );
+  //   return () => {
+  //     asyncObserver.mute();
+  //     // firestoreClient.unlisten(internalListener);
+  //   };
+  // }
 
-  get(options?: firestore.GetOptions): Promise<firestore.QuerySnapshot> {
-    validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
-    validateGetOptions('Query.get', options);
-    return new Promise(
-      (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
-        // if (options && options.source === 'cache') {
-        //   this.firestore
-        //     .ensureClientConfigured()
-        //     .getDocumentsFromLocalCache(this._query)
-        //     .then((viewSnap: ViewSnapshot) => {
-        //       resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
-        //     }, reject);
-        // } else {
-        //   this.getViaSnapshotListener(resolve, reject, options);
-        // }
-      }
-    );
-  }
+  // get(options?: firestore.GetOptions): Promise<firestore.QuerySnapshot> {
+  //   validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
+  //   validateGetOptions('Query.get', options);
+  //   return new Promise(
+  //     (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
+  //       // if (options && options.source === 'cache') {
+  //       //   this.firestore
+  //       //     .ensureClientConfigured()
+  //       //     .getDocumentsFromLocalCache(this._query)
+  //       //     .then((viewSnap: ViewSnapshot) => {
+  //       //       resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
+  //       //     }, reject);
+  //       // } else {
+  //       //   this.getViaSnapshotListener(resolve, reject, options);
+  //       // }
+  //     }
+  //   );
+  // }
 
-  private getViaSnapshotListener(
-    resolve: Resolver<firestore.QuerySnapshot>,
-    reject: Rejecter,
-    options?: firestore.GetOptions
-  ): void {
-    const unlisten = this.onSnapshotInternal(
-      {
-        includeMetadataChanges: true,
-        waitForSyncWhenOnline: true
-      },
-      {
-        next: (result: firestore.QuerySnapshot) => {
-          // Remove query first before passing event to user to avoid
-          // user actions affecting the now stale query.
-          unlisten();
+  // private getViaSnapshotListener(
+  //   resolve: Resolver<firestore.QuerySnapshot>,
+  //   reject: Rejecter,
+  //   options?: firestore.GetOptions
+  // ): void {
+  //   const unlisten = this.onSnapshotInternal(
+  //     {
+  //       includeMetadataChanges: true,
+  //       waitForSyncWhenOnline: true
+  //     },
+  //     {
+  //       next: (result: firestore.QuerySnapshot) => {
+  //         // Remove query first before passing event to user to avoid
+  //         // user actions affecting the now stale query.
+  //         unlisten();
 
-          if (
-            result.metadata.fromCache &&
-            options &&
-            options.source === 'server'
-          ) {
-            reject(
-              new FirestoreError(
-                Code.UNAVAILABLE,
-                'Failed to get documents from server. (However, these ' +
-                  'documents may exist in the local cache. Run again ' +
-                  'without setting source to "server" to ' +
-                  'retrieve the cached documents.)'
-              )
-            );
-          } else {
-            resolve(result);
-          }
-        },
-        error: reject
-      }
-    );
-  }
+  //         if (
+  //           result.metadata.fromCache &&
+  //           options &&
+  //           options.source === 'server'
+  //         ) {
+  //           reject(
+  //             new FirestoreError(
+  //               Code.UNAVAILABLE,
+  //               'Failed to get documents from server. (However, these ' +
+  //                 'documents may exist in the local cache. Run again ' +
+  //                 'without setting source to "server" to ' +
+  //                 'retrieve the cached documents.)'
+  //             )
+  //           );
+  //         } else {
+  //           resolve(result);
+  //         }
+  //       },
+  //       error: reject
+  //     }
+  //   );
+  // }
 
   private validateNewFilter(filter: Filter): void {
     if (filter instanceof RelationFilter) {

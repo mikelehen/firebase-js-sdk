@@ -19,20 +19,20 @@ import { Blob } from '../api/blob';
 import { GeoPoint } from '../api/geo_point';
 import { Timestamp } from '../api/timestamp';
 import { DatabaseId } from '../core/database_info';
-import {
-  Bound,
-  Direction,
-  Filter,
-  NanFilter,
-  NullFilter,
-  OrderBy,
-  Query,
-  RelationFilter,
-  RelationOp
-} from '../core/query';
+// import {
+//   Bound,
+//   Direction,
+//   Filter,
+//   NanFilter,
+//   NullFilter,
+//   OrderBy,
+//   Query,
+//   RelationFilter,
+//   RelationOp
+// } from '../core/query';
 import { SnapshotVersion } from '../core/snapshot_version';
 import { ProtoByteString, TargetId } from '../core/types';
-import { QueryData, QueryPurpose } from '../local/query_data';
+// import { QueryData, QueryPurpose } from '../local/query_data';
 import { Document, MaybeDocument, NoDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
 import * as fieldValue from '../model/field_value';
@@ -63,7 +63,7 @@ import {
   TransformOperation
 } from '../model/transform_operation';
 import { ApiClientObjectMap } from '../protos/firestore_proto_api';
-import { ExistenceFilter } from './existence_filter';
+// import { ExistenceFilter } from './existence_filter';
 import { mapCodeFromRpcCode, mapRpcCodeFromCode } from './rpc_error';
 // import {
 //   DocumentWatchChange,
@@ -73,23 +73,23 @@ import { mapCodeFromRpcCode, mapRpcCodeFromCode } from './rpc_error';
 //   WatchTargetChangeState
 // } from './watch_change';
 
-const DIRECTIONS = (() => {
-  const dirs: { [dir: string]: api.OrderDirection } = {};
-  dirs[Direction.ASCENDING.name] = 'ASCENDING';
-  dirs[Direction.DESCENDING.name] = 'DESCENDING';
-  return dirs;
-})();
+// const DIRECTIONS = (() => {
+//   const dirs: { [dir: string]: api.OrderDirection } = {};
+//   dirs[Direction.ASCENDING.name] = 'ASCENDING';
+//   dirs[Direction.DESCENDING.name] = 'DESCENDING';
+//   return dirs;
+// })();
 
-const OPERATORS = (() => {
-  const ops: { [op: string]: api.FieldFilterOp } = {};
-  ops[RelationOp.LESS_THAN.name] = 'LESS_THAN';
-  ops[RelationOp.LESS_THAN_OR_EQUAL.name] = 'LESS_THAN_OR_EQUAL';
-  ops[RelationOp.GREATER_THAN.name] = 'GREATER_THAN';
-  ops[RelationOp.GREATER_THAN_OR_EQUAL.name] = 'GREATER_THAN_OR_EQUAL';
-  ops[RelationOp.EQUAL.name] = 'EQUAL';
-  ops[RelationOp.ARRAY_CONTAINS.name] = 'ARRAY_CONTAINS';
-  return ops;
-})();
+// const OPERATORS = (() => {
+//   const ops: { [op: string]: api.FieldFilterOp } = {};
+//   ops[RelationOp.LESS_THAN.name] = 'LESS_THAN';
+//   ops[RelationOp.LESS_THAN_OR_EQUAL.name] = 'LESS_THAN_OR_EQUAL';
+//   ops[RelationOp.GREATER_THAN.name] = 'GREATER_THAN';
+//   ops[RelationOp.GREATER_THAN_OR_EQUAL.name] = 'GREATER_THAN_OR_EQUAL';
+//   ops[RelationOp.EQUAL.name] = 'EQUAL';
+//   ops[RelationOp.ARRAY_CONTAINS.name] = 'ARRAY_CONTAINS';
+//   return ops;
+// })();
 
 // A RegExp matching ISO 8601 UTC timestamps with optional fraction.
 const ISO_REG_EXP = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
@@ -139,13 +139,13 @@ export class JsonProtoSerializer {
     private options: SerializerOptions
   ) {}
 
-  private emptyByteString(): ProtoByteString {
-    if (this.options.useProto3Json) {
-      return '';
-    } else {
-      return new Uint8Array(0);
-    }
-  }
+  // private emptyByteString(): ProtoByteString {
+  //   if (this.options.useProto3Json) {
+  //     return '';
+  //   } else {
+  //     return new Uint8Array(0);
+  //   }
+  // }
 
   private unsafeCastProtoByteString(byteString: ProtoByteString): string {
     // byteStrings can be either string or UInt8Array, but the typings say
@@ -169,14 +169,14 @@ export class JsonProtoSerializer {
    * our generated proto interfaces say Int32Value must be. But GRPC actually
    * expects a { value: <number> } struct.
    */
-  private toInt32Value(val: number | null): number | undefined {
-    if (!typeUtils.isNullOrUndefined(val)) {
-      // tslint:disable-next-line:no-any We need to match generated Proto types.
-      return { value: val } as any;
-    } else {
-      return undefined;
-    }
-  }
+  // private toInt32Value(val: number | null): number | undefined {
+  //   if (!typeUtils.isNullOrUndefined(val)) {
+  //     // tslint:disable-next-line:no-any We need to match generated Proto types.
+  //     return { value: val } as any;
+  //   } else {
+  //     return undefined;
+  //   }
+  // }
 
   // /**
   //  * Returns a number (or null) from a google.protobuf.Int32Value proto.
@@ -321,25 +321,25 @@ export class JsonProtoSerializer {
     return this.toResourceName(this.databaseId, key.path);
   }
 
-  fromName(name: string): DocumentKey {
-    const resource = this.fromResourceName(name);
-    assert(
-      resource.get(1) === this.databaseId.projectId,
-      'Tried to deserialize key from different project: ' +
-        resource.get(1) +
-        ' vs ' +
-        this.databaseId.projectId
-    );
-    assert(
-      (!resource.get(3) && !this.databaseId.database) ||
-        resource.get(3) === this.databaseId.database,
-      'Tried to deserialize key from different database: ' +
-        resource.get(3) +
-        ' vs ' +
-        this.databaseId.database
-    );
-    return new DocumentKey(this.extractLocalPathFromResourceName(resource));
-  }
+  // fromName(name: string): DocumentKey {
+  //   const resource = this.fromResourceName(name);
+  //   assert(
+  //     resource.get(1) === this.databaseId.projectId,
+  //     'Tried to deserialize key from different project: ' +
+  //       resource.get(1) +
+  //       ' vs ' +
+  //       this.databaseId.projectId
+  //   );
+  //   assert(
+  //     (!resource.get(3) && !this.databaseId.database) ||
+  //       resource.get(3) === this.databaseId.database,
+  //     'Tried to deserialize key from different database: ' +
+  //       resource.get(3) +
+  //       ' vs ' +
+  //       this.databaseId.database
+  //   );
+  //   return new DocumentKey(this.extractLocalPathFromResourceName(resource));
+  // }
 
   toQueryPath(path: ResourcePath): string {
     return this.toResourceName(this.databaseId, path);
@@ -516,29 +516,29 @@ export class JsonProtoSerializer {
     };
   }
 
-  toDocument(document: Document): api.Document {
-    assert(
-      !document.hasLocalMutations,
-      "Can't serialize documents with mutations."
-    );
-    return {
-      name: this.toName(document.key),
-      fields: this.toFields(document.data),
-      updateTime: this.toTimestamp(document.version.toTimestamp())
-    };
-  }
+  // toDocument(document: Document): api.Document {
+  //   assert(
+  //     !document.hasLocalMutations,
+  //     "Can't serialize documents with mutations."
+  //   );
+  //   return {
+  //     name: this.toName(document.key),
+  //     fields: this.toFields(document.data),
+  //     updateTime: this.toTimestamp(document.version.toTimestamp())
+  //   };
+  // }
 
-  fromDocument(
-    document: api.Document,
-    hasCommittedMutations?: boolean
-  ): Document {
-    return new Document(
-      this.fromName(document.name!),
-      this.fromVersion(document.updateTime!),
-      this.fromFields(document.fields || {}),
-      { hasCommittedMutations: !!hasCommittedMutations }
-    );
-  }
+  // fromDocument(
+  //   document: api.Document,
+  //   hasCommittedMutations?: boolean
+  // ): Document {
+  //   return new Document(
+  //     this.fromName(document.name!),
+  //     this.fromVersion(document.updateTime!),
+  //     this.fromFields(document.fields || {}),
+  //     { hasCommittedMutations: !!hasCommittedMutations }
+  //   );
+  // }
 
   toFields(fields: fieldValue.ObjectValue): { [key: string]: api.Value } {
     const result: { [key: string]: api.Value } = {};
@@ -572,43 +572,43 @@ export class JsonProtoSerializer {
     return { values: result };
   }
 
-  private fromFound(doc: api.BatchGetDocumentsResponse): Document {
-    assert(
-      !!doc.found,
-      'Tried to deserialize a found document from a missing document.'
-    );
-    assertPresent(doc.found!.name, 'doc.found.name');
-    assertPresent(doc.found!.updateTime, 'doc.found.updateTime');
-    const key = this.fromName(doc.found!.name!);
-    const version = this.fromVersion(doc.found!.updateTime!);
-    const fields = this.fromFields(doc.found!.fields || {});
-    return new Document(key, version, fields, {}, doc.found!);
-  }
+  // private fromFound(doc: api.BatchGetDocumentsResponse): Document {
+  //   assert(
+  //     !!doc.found,
+  //     'Tried to deserialize a found document from a missing document.'
+  //   );
+  //   assertPresent(doc.found!.name, 'doc.found.name');
+  //   assertPresent(doc.found!.updateTime, 'doc.found.updateTime');
+  //   const key = this.fromName(doc.found!.name!);
+  //   const version = this.fromVersion(doc.found!.updateTime!);
+  //   const fields = this.fromFields(doc.found!.fields || {});
+  //   return new Document(key, version, fields, {}, doc.found!);
+  // }
 
-  private fromMissing(result: api.BatchGetDocumentsResponse): NoDocument {
-    assert(
-      !!result.missing,
-      'Tried to deserialize a missing document from a found document.'
-    );
-    assert(
-      !!result.readTime,
-      'Tried to deserialize a missing document without a read time.'
-    );
-    const key = this.fromName(result.missing!);
-    const version = this.fromVersion(result.readTime!);
-    return new NoDocument(key, version);
-  }
+  // private fromMissing(result: api.BatchGetDocumentsResponse): NoDocument {
+  //   assert(
+  //     !!result.missing,
+  //     'Tried to deserialize a missing document from a found document.'
+  //   );
+  //   assert(
+  //     !!result.readTime,
+  //     'Tried to deserialize a missing document without a read time.'
+  //   );
+  //   const key = this.fromName(result.missing!);
+  //   const version = this.fromVersion(result.readTime!);
+  //   return new NoDocument(key, version);
+  // }
 
-  fromMaybeDocument(result: api.BatchGetDocumentsResponse): MaybeDocument {
-    // tslint:disable-next-line:no-any
-    const type = (result as any)['result'];
-    if (hasTag(result, type, 'found')) {
-      return this.fromFound(result);
-    } else if (hasTag(result, type, 'missing')) {
-      return this.fromMissing(result);
-    }
-    return fail('invalid batch get response: ' + JSON.stringify(result));
-  }
+  // fromMaybeDocument(result: api.BatchGetDocumentsResponse): MaybeDocument {
+  //   // tslint:disable-next-line:no-any
+  //   const type = (result as any)['result'];
+  //   if (hasTag(result, type, 'found')) {
+  //     return this.fromFound(result);
+  //   } else if (hasTag(result, type, 'missing')) {
+  //     return this.fromMissing(result);
+  //   }
+  //   return fail('invalid batch get response: ' + JSON.stringify(result));
+  // }
 
   // private toWatchTargetChangeState(
   //   state: WatchTargetChangeState
@@ -1002,9 +1002,9 @@ export class JsonProtoSerializer {
   //   return new FieldTransform(fieldPath, transform!);
   // }
 
-  toDocumentsTarget(query: Query): api.DocumentsTarget {
-    return { documents: [this.toQueryPath(query.path)] };
-  }
+  // toDocumentsTarget(query: Query): api.DocumentsTarget {
+  //   return { documents: [this.toQueryPath(query.path)] };
+  // }
 
   // fromDocumentsTarget(documentsTarget: api.DocumentsTarget): Query {
   //   const count = documentsTarget.documents!.length;
@@ -1016,55 +1016,55 @@ export class JsonProtoSerializer {
   //   return Query.atPath(this.fromQueryPath(name));
   // }
 
-  toQueryTarget(query: Query): api.QueryTarget {
-    // Dissect the path into parent, collectionId, and optional key filter.
-    const result: api.QueryTarget = { structuredQuery: {} };
-    const path = query.path;
-    if (query.collectionGroup !== null) {
-      assert(
-        path.length % 2 === 0,
-        'Collection Group queries should be within a document path or root.'
-      );
-      result.parent = this.toQueryPath(path);
-      result.structuredQuery!.from = [
-        {
-          collectionId: query.collectionGroup,
-          allDescendants: true
-        }
-      ];
-    } else {
-      assert(
-        path.length % 2 !== 0,
-        'Document queries with filters are not supported.'
-      );
-      result.parent = this.toQueryPath(path.popLast());
-      result.structuredQuery!.from = [{ collectionId: path.lastSegment() }];
-    }
+  // toQueryTarget(query: Query): api.QueryTarget {
+  //   // Dissect the path into parent, collectionId, and optional key filter.
+  //   const result: api.QueryTarget = { structuredQuery: {} };
+  //   const path = query.path;
+  //   if (query.collectionGroup !== null) {
+  //     assert(
+  //       path.length % 2 === 0,
+  //       'Collection Group queries should be within a document path or root.'
+  //     );
+  //     result.parent = this.toQueryPath(path);
+  //     result.structuredQuery!.from = [
+  //       {
+  //         collectionId: query.collectionGroup,
+  //         allDescendants: true
+  //       }
+  //     ];
+  //   } else {
+  //     assert(
+  //       path.length % 2 !== 0,
+  //       'Document queries with filters are not supported.'
+  //     );
+  //     result.parent = this.toQueryPath(path.popLast());
+  //     result.structuredQuery!.from = [{ collectionId: path.lastSegment() }];
+  //   }
 
-    const where = this.toFilter(query.filters);
-    if (where) {
-      result.structuredQuery!.where = where;
-    }
+  //   const where = this.toFilter(query.filters);
+  //   if (where) {
+  //     result.structuredQuery!.where = where;
+  //   }
 
-    const orderBy = this.toOrder(query.orderBy);
-    if (orderBy) {
-      result.structuredQuery!.orderBy = orderBy;
-    }
+  //   const orderBy = this.toOrder(query.orderBy);
+  //   if (orderBy) {
+  //     result.structuredQuery!.orderBy = orderBy;
+  //   }
 
-    const limit = this.toInt32Value(query.limit);
-    if (limit !== undefined) {
-      result.structuredQuery!.limit = limit;
-    }
+  //   const limit = this.toInt32Value(query.limit);
+  //   if (limit !== undefined) {
+  //     result.structuredQuery!.limit = limit;
+  //   }
 
-    if (query.startAt) {
-      result.structuredQuery!.startAt = this.toCursor(query.startAt);
-    }
-    if (query.endAt) {
-      result.structuredQuery!.endAt = this.toCursor(query.endAt);
-    }
+  //   if (query.startAt) {
+  //     result.structuredQuery!.startAt = this.toCursor(query.startAt);
+  //   }
+  //   if (query.endAt) {
+  //     result.structuredQuery!.endAt = this.toCursor(query.endAt);
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   // fromQueryTarget(target: api.QueryTarget): Query {
   //   let path = this.fromQueryPath(target.parent!);
@@ -1121,66 +1121,66 @@ export class JsonProtoSerializer {
   //   );
   // }
 
-  toListenRequestLabels(
-    queryData: QueryData
-  ): ApiClientObjectMap<string> | null {
-    const value = this.toLabel(queryData.purpose);
-    if (value == null) {
-      return null;
-    } else {
-      return {
-        'goog-listen-tags': value
-      };
-    }
-  }
+  // toListenRequestLabels(
+  //   queryData: QueryData
+  // ): ApiClientObjectMap<string> | null {
+  //   const value = this.toLabel(queryData.purpose);
+  //   if (value == null) {
+  //     return null;
+  //   } else {
+  //     return {
+  //       'goog-listen-tags': value
+  //     };
+  //   }
+  // }
 
-  private toLabel(purpose: QueryPurpose): string | null {
-    switch (purpose) {
-      case QueryPurpose.Listen:
-        return null;
-      case QueryPurpose.ExistenceFilterMismatch:
-        return 'existence-filter-mismatch';
-      case QueryPurpose.LimboResolution:
-        return 'limbo-document';
-      default:
-        return fail('Unrecognized query purpose: ' + purpose);
-    }
-  }
+  // private toLabel(purpose: QueryPurpose): string | null {
+  //   switch (purpose) {
+  //     case QueryPurpose.Listen:
+  //       return null;
+  //     case QueryPurpose.ExistenceFilterMismatch:
+  //       return 'existence-filter-mismatch';
+  //     case QueryPurpose.LimboResolution:
+  //       return 'limbo-document';
+  //     default:
+  //       return fail('Unrecognized query purpose: ' + purpose);
+  //   }
+  // }
 
-  toTarget(queryData: QueryData): api.Target {
-    let result: api.Target;
-    const query = queryData.query;
+  // toTarget(queryData: QueryData): api.Target {
+  //   let result: api.Target;
+  //   const query = queryData.query;
 
-    if (query.isDocumentQuery()) {
-      result = { documents: this.toDocumentsTarget(query) };
-    } else {
-      result = { query: this.toQueryTarget(query) };
-    }
+  //   if (query.isDocumentQuery()) {
+  //     result = { documents: this.toDocumentsTarget(query) };
+  //   } else {
+  //     result = { query: this.toQueryTarget(query) };
+  //   }
 
-    result.targetId = queryData.targetId;
+  //   result.targetId = queryData.targetId;
 
-    if (queryData.resumeToken.length > 0) {
-      result.resumeToken = this.unsafeCastProtoByteString(
-        queryData.resumeToken
-      );
-    }
+  //   if (queryData.resumeToken.length > 0) {
+  //     result.resumeToken = this.unsafeCastProtoByteString(
+  //       queryData.resumeToken
+  //     );
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  private toFilter(filters: Filter[]): api.Filter | undefined {
-    if (filters.length === 0) return;
-    const protos = filters.map(
-      filter =>
-        filter instanceof RelationFilter
-          ? this.toRelationFilter(filter)
-          : this.toUnaryFilter(filter)
-    );
-    if (protos.length === 1) {
-      return protos[0];
-    }
-    return { compositeFilter: { op: 'AND', filters: protos } };
-  }
+  // private toFilter(filters: Filter[]): api.Filter | undefined {
+  //   if (filters.length === 0) return;
+  //   const protos = filters.map(
+  //     filter =>
+  //       filter instanceof RelationFilter
+  //         ? this.toRelationFilter(filter)
+  //         : this.toUnaryFilter(filter)
+  //   );
+  //   if (protos.length === 1) {
+  //     return protos[0];
+  //   }
+  //   return { compositeFilter: { op: 'AND', filters: protos } };
+  // }
 
   // private fromFilter(filter: api.Filter | undefined): Filter[] {
   //   if (!filter) {
@@ -1198,21 +1198,21 @@ export class JsonProtoSerializer {
   //   }
   // }
 
-  private toOrder(orderBys: OrderBy[]): api.Order[] | undefined {
-    if (orderBys.length === 0) return;
-    return orderBys.map(order => this.toPropertyOrder(order));
-  }
+  // private toOrder(orderBys: OrderBy[]): api.Order[] | undefined {
+  //   if (orderBys.length === 0) return;
+  //   return orderBys.map(order => this.toPropertyOrder(order));
+  // }
 
   // private fromOrder(orderBys: api.Order[]): OrderBy[] {
   //   return orderBys.map(order => this.fromPropertyOrder(order));
   // }
 
-  private toCursor(cursor: Bound): api.Cursor {
-    return {
-      before: cursor.before,
-      values: cursor.position.map(component => this.toValue(component))
-    };
-  }
+  // private toCursor(cursor: Bound): api.Cursor {
+  //   return {
+  //     before: cursor.before,
+  //     values: cursor.position.map(component => this.toValue(component))
+  //   };
+  // }
 
   // private fromCursor(cursor: api.Cursor): Bound {
   //   const before = !!cursor.before;
@@ -1221,9 +1221,9 @@ export class JsonProtoSerializer {
   // }
 
   // visible for testing
-  toDirection(dir: Direction): api.OrderDirection {
-    return DIRECTIONS[dir.name];
-  }
+  // toDirection(dir: Direction): api.OrderDirection {
+  //   return DIRECTIONS[dir.name];
+  // }
 
   // visible for testing
   // fromDirection(dir: api.OrderDirection | undefined): Direction | undefined {
@@ -1238,9 +1238,9 @@ export class JsonProtoSerializer {
   // }
 
   // visible for testing
-  toOperatorName(op: RelationOp): api.FieldFilterOp {
-    return OPERATORS[op.name];
-  }
+  // toOperatorName(op: RelationOp): api.FieldFilterOp {
+  //   return OPERATORS[op.name];
+  // }
 
   // fromOperatorName(op: api.FieldFilterOp): RelationOp {
   //   switch (op) {
@@ -1263,21 +1263,21 @@ export class JsonProtoSerializer {
   //   }
   // }
 
-  toFieldPathReference(path: FieldPath): api.FieldReference {
-    return { fieldPath: path.canonicalString() };
-  }
+  // toFieldPathReference(path: FieldPath): api.FieldReference {
+  //   return { fieldPath: path.canonicalString() };
+  // }
 
   // fromFieldPathReference(fieldReference: api.FieldReference): FieldPath {
   //   return FieldPath.fromServerFormat(fieldReference.fieldPath!);
   // }
 
   // visible for testing
-  toPropertyOrder(orderBy: OrderBy): api.Order {
-    return {
-      field: this.toFieldPathReference(orderBy.field),
-      direction: this.toDirection(orderBy.dir)
-    };
-  }
+  // toPropertyOrder(orderBy: OrderBy): api.Order {
+  //   return {
+  //     field: this.toFieldPathReference(orderBy.field),
+  //     direction: this.toDirection(orderBy.dir)
+  //   };
+  // }
 
   // fromPropertyOrder(orderBy: api.Order): OrderBy {
   //   return new OrderBy(
@@ -1287,19 +1287,19 @@ export class JsonProtoSerializer {
   // }
 
   // visible for testing
-  toRelationFilter(filter: Filter): api.Filter {
-    if (filter instanceof RelationFilter) {
-      return {
-        fieldFilter: {
-          field: this.toFieldPathReference(filter.field),
-          op: this.toOperatorName(filter.op),
-          value: this.toValue(filter.value)
-        }
-      };
-    } else {
-      return fail('Unrecognized filter: ' + JSON.stringify(filter));
-    }
-  }
+  // toRelationFilter(filter: Filter): api.Filter {
+  //   if (filter instanceof RelationFilter) {
+  //     return {
+  //       fieldFilter: {
+  //         field: this.toFieldPathReference(filter.field),
+  //         op: this.toOperatorName(filter.op),
+  //         value: this.toValue(filter.value)
+  //       }
+  //     };
+  //   } else {
+  //     return fail('Unrecognized filter: ' + JSON.stringify(filter));
+  //   }
+  // }
 
   // fromRelationFilter(filter: api.Filter): Filter {
   //   return new RelationFilter(
@@ -1309,26 +1309,26 @@ export class JsonProtoSerializer {
   //   );
   // }
 
-  // visible for testing
-  toUnaryFilter(filter: Filter): api.Filter {
-    if (filter instanceof NanFilter) {
-      return {
-        unaryFilter: {
-          field: this.toFieldPathReference(filter.field),
-          op: 'IS_NAN'
-        }
-      };
-    } else if (filter instanceof NullFilter) {
-      return {
-        unaryFilter: {
-          field: this.toFieldPathReference(filter.field),
-          op: 'IS_NULL'
-        }
-      };
-    } else {
-      return fail('Unrecognized filter: ' + JSON.stringify(filter));
-    }
-  }
+  // // visible for testing
+  // toUnaryFilter(filter: Filter): api.Filter {
+  //   if (filter instanceof NanFilter) {
+  //     return {
+  //       unaryFilter: {
+  //         field: this.toFieldPathReference(filter.field),
+  //         op: 'IS_NAN'
+  //       }
+  //     };
+  //   } else if (filter instanceof NullFilter) {
+  //     return {
+  //       unaryFilter: {
+  //         field: this.toFieldPathReference(filter.field),
+  //         op: 'IS_NULL'
+  //       }
+  //     };
+  //   } else {
+  //     return fail('Unrecognized filter: ' + JSON.stringify(filter));
+  //   }
+  // }
 
   // fromUnaryFilter(filter: api.Filter): Filter {
   //   switch (filter.unaryFilter!.op!) {

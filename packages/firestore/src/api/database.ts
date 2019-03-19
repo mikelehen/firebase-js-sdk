@@ -20,7 +20,7 @@ import * as firestore from '@firebase/firestore-types';
 import { FirebaseApp } from '@firebase/app-types';
 import { FirebaseService } from '@firebase/app-types/private';
 import { DatabaseId, DatabaseInfo } from '../core/database_info';
-import { ListenOptions } from '../core/event_manager';
+// import { ListenOptions } from '../core/event_manager';
 import {
   FirestoreClient,
   IndexedDbPersistenceSettings,
@@ -28,18 +28,18 @@ import {
   MemoryPersistenceSettings
 } from '../core/firestore_client';
 import {
-  Bound,
-  Direction,
-  Filter,
-  OrderBy,
-  Query as InternalQuery,
-  RelationFilter,
-  RelationOp
+//   Bound,
+//   Direction,
+//   Filter,
+//   OrderBy,
+   Query as InternalQuery,
+//   RelationFilter,
+//   RelationOp
 } from '../core/query';
 import { Transaction as InternalTransaction } from '../core/transaction';
-import { ChangeType, ViewSnapshot } from '../core/view_snapshot';
+// import { ChangeType, ViewSnapshot } from '../core/view_snapshot';
 import { LruParams } from '../local/lru_garbage_collector';
-import { Document, MaybeDocument, NoDocument } from '../model/document';
+// import { Document, MaybeDocument, NoDocument } from '../model/document';
 import { DocumentKey } from '../model/document_key';
 import {
   ArrayValue,
@@ -49,12 +49,12 @@ import {
   RefValue,
   ServerTimestampValue
 } from '../model/field_value';
-import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
+// import { DeleteMutation, Mutation, Precondition } from '../model/mutation';
 import { FieldPath, ResourcePath } from '../model/path';
 import { PlatformSupport } from '../platform/platform';
 import { makeConstructorPrivate } from '../util/api';
 import { assert, fail } from '../util/assert';
-import { AsyncObserver } from '../util/async_observer';
+// import { AsyncObserver } from '../util/async_observer';
 import { AsyncQueue } from '../util/async_queue';
 import { Code, FirestoreError } from '../util/error';
 import {
@@ -76,7 +76,7 @@ import * as log from '../util/log';
 import { LogLevel } from '../util/log';
 import { AutoId } from '../util/misc';
 import * as objUtils from '../util/obj';
-import { Rejecter, Resolver } from '../util/promise';
+// import { Rejecter, Resolver } from '../util/promise';
 import { FieldPath as ExternalFieldPath } from './field_path';
 
 import {
@@ -86,14 +86,14 @@ import {
   FirebaseCredentialsProvider,
   makeCredentialsProvider
 } from './credentials';
-import {
-  CompleteFn,
-  ErrorFn,
-  isPartialObserver,
-  NextFn,
-  PartialObserver,
-  Unsubscribe
-} from './observer';
+// import {
+//   CompleteFn,
+//   ErrorFn,
+//   isPartialObserver,
+//   NextFn,
+//   PartialObserver,
+//   Unsubscribe
+// } from './observer';
 import {
   DocumentKeyReference,
   fieldPathFromArgument,
@@ -588,47 +588,47 @@ export class Transaction implements firestore.Transaction {
     private _transaction: InternalTransaction
   ) {}
 
-  get(
-    documentRef: firestore.DocumentReference
-  ): Promise<firestore.DocumentSnapshot> {
-    validateExactNumberOfArgs('Transaction.get', arguments, 1);
-    const ref = validateReference(
-      'Transaction.get',
-      documentRef,
-      this._firestore
-    );
-    return this._transaction
-      .lookup([ref._key])
-      .then((docs: MaybeDocument[]) => {
-        if (!docs || docs.length !== 1) {
-          return fail('Mismatch in docs returned from document lookup.');
-        }
-        const doc = docs[0];
-        if (doc instanceof NoDocument) {
-          return new DocumentSnapshot(
-            this._firestore,
-            ref._key,
-            null,
-            /* fromCache= */ false,
-            /* hasPendingWrites= */ false
-          );
-        } else if (doc instanceof Document) {
-          return new DocumentSnapshot(
-            this._firestore,
-            ref._key,
-            doc,
-            /* fromCache= */ false,
-            /* hasPendingWrites= */ false
-          );
-        } else {
-          throw fail(
-            `BatchGetDocumentsRequest returned unexpected document type: ${
-              doc.constructor.name
-            }`
-          );
-        }
-      });
-  }
+  // get(
+  //   documentRef: firestore.DocumentReference
+  // ): Promise<firestore.DocumentSnapshot> {
+  //   validateExactNumberOfArgs('Transaction.get', arguments, 1);
+  //   const ref = validateReference(
+  //     'Transaction.get',
+  //     documentRef,
+  //     this._firestore
+  //   );
+  //   return this._transaction
+  //     .lookup([ref._key])
+  //     .then((docs: MaybeDocument[]) => {
+  //       if (!docs || docs.length !== 1) {
+  //         return fail('Mismatch in docs returned from document lookup.');
+  //       }
+  //       const doc = docs[0];
+  //       if (doc instanceof NoDocument) {
+  //         return new DocumentSnapshot(
+  //           this._firestore,
+  //           ref._key,
+  //           null,
+  //           /* fromCache= */ false,
+  //           /* hasPendingWrites= */ false
+  //         );
+  //       } else if (doc instanceof Document) {
+  //         return new DocumentSnapshot(
+  //           this._firestore,
+  //           ref._key,
+  //           doc,
+  //           /* fromCache= */ false,
+  //           /* hasPendingWrites= */ false
+  //         );
+  //       } else {
+  //         throw fail(
+  //           `BatchGetDocumentsRequest returned unexpected document type: ${
+  //             doc.constructor.name
+  //           }`
+  //         );
+  //       }
+  //     });
+  // }
 
   set(
     documentRef: firestore.DocumentReference,
@@ -1178,366 +1178,176 @@ export class DocumentReference implements firestore.DocumentReference {
   // }
 }
 
-class SnapshotMetadata implements firestore.SnapshotMetadata {
-  constructor(
-    readonly hasPendingWrites: boolean,
-    readonly fromCache: boolean
-  ) {}
+// class SnapshotMetadata implements firestore.SnapshotMetadata {
+//   constructor(
+//     readonly hasPendingWrites: boolean,
+//     readonly fromCache: boolean
+//   ) {}
 
-  isEqual(other: firestore.SnapshotMetadata): boolean {
-    return (
-      this.hasPendingWrites === other.hasPendingWrites &&
-      this.fromCache === other.fromCache
-    );
-  }
-}
+//   isEqual(other: firestore.SnapshotMetadata): boolean {
+//     return (
+//       this.hasPendingWrites === other.hasPendingWrites &&
+//       this.fromCache === other.fromCache
+//     );
+//   }
+// }
 
 /**
  * Options interface that can be provided to configure the deserialization of
  * DocumentSnapshots.
  */
-export interface SnapshotOptions extends firestore.SnapshotOptions {}
+// export interface SnapshotOptions extends firestore.SnapshotOptions {}
 
-export class DocumentSnapshot implements firestore.DocumentSnapshot {
-  constructor(
-    private _firestore: Firestore,
-    private _key: DocumentKey,
-    public _document: Document | null,
-    private _fromCache: boolean,
-    private _hasPendingWrites: boolean
-  ) {}
+// export class DocumentSnapshot implements firestore.DocumentSnapshot {
+//   constructor(
+//     private _firestore: Firestore,
+//     private _key: DocumentKey,
+//     public _document: Document | null,
+//     private _fromCache: boolean,
+//     private _hasPendingWrites: boolean
+//   ) {}
 
-  data(
-    options?: firestore.SnapshotOptions
-  ): firestore.DocumentData | undefined {
-    validateBetweenNumberOfArgs('DocumentSnapshot.data', arguments, 0, 1);
-    options = validateSnapshotOptions('DocumentSnapshot.data', options);
-    return !this._document
-      ? undefined
-      : this.convertObject(
-          this._document.data,
-          FieldValueOptions.fromSnapshotOptions(
-            options,
-            this._firestore._areTimestampsInSnapshotsEnabled()
-          )
-        );
-  }
+//   data(
+//     options?: firestore.SnapshotOptions
+//   ): firestore.DocumentData | undefined {
+//     validateBetweenNumberOfArgs('DocumentSnapshot.data', arguments, 0, 1);
+//     options = validateSnapshotOptions('DocumentSnapshot.data', options);
+//     return !this._document
+//       ? undefined
+//       : this.convertObject(
+//           this._document.data,
+//           FieldValueOptions.fromSnapshotOptions(
+//             options,
+//             this._firestore._areTimestampsInSnapshotsEnabled()
+//           )
+//         );
+//   }
 
-  get(
-    fieldPath: string | ExternalFieldPath,
-    options?: firestore.SnapshotOptions
-  ): unknown {
-    validateBetweenNumberOfArgs('DocumentSnapshot.get', arguments, 1, 2);
-    options = validateSnapshotOptions('DocumentSnapshot.get', options);
-    if (this._document) {
-      const value = this._document.data.field(
-        fieldPathFromArgument('DocumentSnapshot.get', fieldPath)
-      );
-      if (value !== undefined) {
-        return this.convertValue(
-          value,
-          FieldValueOptions.fromSnapshotOptions(
-            options,
-            this._firestore._areTimestampsInSnapshotsEnabled()
-          )
-        );
-      }
-    }
-    return undefined;
-  }
+//   get(
+//     fieldPath: string | ExternalFieldPath,
+//     options?: firestore.SnapshotOptions
+//   ): unknown {
+//     validateBetweenNumberOfArgs('DocumentSnapshot.get', arguments, 1, 2);
+//     options = validateSnapshotOptions('DocumentSnapshot.get', options);
+//     if (this._document) {
+//       const value = this._document.data.field(
+//         fieldPathFromArgument('DocumentSnapshot.get', fieldPath)
+//       );
+//       if (value !== undefined) {
+//         return this.convertValue(
+//           value,
+//           FieldValueOptions.fromSnapshotOptions(
+//             options,
+//             this._firestore._areTimestampsInSnapshotsEnabled()
+//           )
+//         );
+//       }
+//     }
+//     return undefined;
+//   }
 
-  get id(): string {
-    return this._key.path.lastSegment();
-  }
+//   get id(): string {
+//     return this._key.path.lastSegment();
+//   }
 
-  get ref(): firestore.DocumentReference {
-    return new DocumentReference(this._key, this._firestore);
-  }
+//   get ref(): firestore.DocumentReference {
+//     return new DocumentReference(this._key, this._firestore);
+//   }
 
-  get exists(): boolean {
-    return this._document !== null;
-  }
+//   get exists(): boolean {
+//     return this._document !== null;
+//   }
 
-  get metadata(): firestore.SnapshotMetadata {
-    return new SnapshotMetadata(this._hasPendingWrites, this._fromCache);
-  }
+//   get metadata(): firestore.SnapshotMetadata {
+//     return new SnapshotMetadata(this._hasPendingWrites, this._fromCache);
+//   }
 
-  isEqual(other: firestore.DocumentSnapshot): boolean {
-    if (!(other instanceof DocumentSnapshot)) {
-      throw invalidClassError('isEqual', 'DocumentSnapshot', 1, other);
-    }
-    return (
-      this._firestore === other._firestore &&
-      this._fromCache === other._fromCache &&
-      this._key.isEqual(other._key) &&
-      (this._document === null
-        ? other._document === null
-        : this._document.isEqual(other._document))
-    );
-  }
+//   isEqual(other: firestore.DocumentSnapshot): boolean {
+//     if (!(other instanceof DocumentSnapshot)) {
+//       throw invalidClassError('isEqual', 'DocumentSnapshot', 1, other);
+//     }
+//     return (
+//       this._firestore === other._firestore &&
+//       this._fromCache === other._fromCache &&
+//       this._key.isEqual(other._key) &&
+//       (this._document === null
+//         ? other._document === null
+//         : this._document.isEqual(other._document))
+//     );
+//   }
 
-  private convertObject(
-    data: ObjectValue,
-    options: FieldValueOptions
-  ): firestore.DocumentData {
-    const result: firestore.DocumentData = {};
-    data.forEach((key, value) => {
-      result[key] = this.convertValue(value, options);
-    });
-    return result;
-  }
+//   private convertObject(
+//     data: ObjectValue,
+//     options: FieldValueOptions
+//   ): firestore.DocumentData {
+//     const result: firestore.DocumentData = {};
+//     data.forEach((key, value) => {
+//       result[key] = this.convertValue(value, options);
+//     });
+//     return result;
+//   }
 
-  private convertValue(value: FieldValue, options: FieldValueOptions): unknown {
-    if (value instanceof ObjectValue) {
-      return this.convertObject(value, options);
-    } else if (value instanceof ArrayValue) {
-      return this.convertArray(value, options);
-    } else if (value instanceof RefValue) {
-      const key = value.value(options);
-      const database = this._firestore.ensureClientConfigured().databaseId();
-      if (!value.databaseId.isEqual(database)) {
-        // TODO(b/64130202): Somehow support foreign references.
-        log.error(
-          `Document ${this._key.path} contains a document ` +
-            `reference within a different database (` +
-            `${value.databaseId.projectId}/${
-              value.databaseId.database
-            }) which is not ` +
-            `supported. It will be treated as a reference in the current ` +
-            `database (${database.projectId}/${database.database}) ` +
-            `instead.`
-        );
-      }
-      return new DocumentReference(key, this._firestore);
-    } else {
-      return value.value(options);
-    }
-  }
+//   private convertValue(value: FieldValue, options: FieldValueOptions): unknown {
+//     if (value instanceof ObjectValue) {
+//       return this.convertObject(value, options);
+//     } else if (value instanceof ArrayValue) {
+//       return this.convertArray(value, options);
+//     } else if (value instanceof RefValue) {
+//       const key = value.value(options);
+//       const database = this._firestore.ensureClientConfigured().databaseId();
+//       if (!value.databaseId.isEqual(database)) {
+//         // TODO(b/64130202): Somehow support foreign references.
+//         log.error(
+//           `Document ${this._key.path} contains a document ` +
+//             `reference within a different database (` +
+//             `${value.databaseId.projectId}/${
+//               value.databaseId.database
+//             }) which is not ` +
+//             `supported. It will be treated as a reference in the current ` +
+//             `database (${database.projectId}/${database.database}) ` +
+//             `instead.`
+//         );
+//       }
+//       return new DocumentReference(key, this._firestore);
+//     } else {
+//       return value.value(options);
+//     }
+//   }
 
-  private convertArray(
-    data: ArrayValue,
-    options: FieldValueOptions
-  ): unknown[] {
-    return data.internalValue.map(value => {
-      return this.convertValue(value, options);
-    });
-  }
-}
+//   private convertArray(
+//     data: ArrayValue,
+//     options: FieldValueOptions
+//   ): unknown[] {
+//     return data.internalValue.map(value => {
+//       return this.convertValue(value, options);
+//     });
+//   }
+// }
 
-export class QueryDocumentSnapshot extends DocumentSnapshot
-  implements firestore.QueryDocumentSnapshot {
-  constructor(
-    firestore: Firestore,
-    key: DocumentKey,
-    document: Document,
-    fromCache: boolean,
-    hasPendingWrites: boolean
-  ) {
-    super(firestore, key, document, fromCache, hasPendingWrites);
-  }
+// export class QueryDocumentSnapshot extends DocumentSnapshot
+//   implements firestore.QueryDocumentSnapshot {
+//   constructor(
+//     firestore: Firestore,
+//     key: DocumentKey,
+//     document: Document,
+//     fromCache: boolean,
+//     hasPendingWrites: boolean
+//   ) {
+//     super(firestore, key, document, fromCache, hasPendingWrites);
+//   }
 
-  data(options?: SnapshotOptions): firestore.DocumentData {
-    const data = super.data(options);
-    assert(
-      typeof data === 'object',
-      'Document in a QueryDocumentSnapshot should exist'
-    );
-    return data as firestore.DocumentData;
-  }
-}
+//   data(options?: SnapshotOptions): firestore.DocumentData {
+//     const data = super.data(options);
+//     assert(
+//       typeof data === 'object',
+//       'Document in a QueryDocumentSnapshot should exist'
+//     );
+//     return data as firestore.DocumentData;
+//   }
+// }
 
 export class Query implements firestore.Query {
-  constructor(public _query: InternalQuery, readonly firestore: Firestore) {}
-
-  where(
-    field: string | ExternalFieldPath,
-    opStr: firestore.WhereFilterOp,
-    value: unknown
-  ): firestore.Query {
-    validateExactNumberOfArgs('Query.where', arguments, 3);
-    validateArgType('Query.where', 'non-empty string', 2, opStr);
-    validateDefined('Query.where', 3, value);
-    let fieldValue;
-    const fieldPath = fieldPathFromArgument('Query.where', field);
-    const relationOp = RelationOp.fromString(opStr);
-    if (fieldPath.isKeyField()) {
-      if (relationOp === RelationOp.ARRAY_CONTAINS) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          "Invalid Query. You can't perform array-contains queries on " +
-            'FieldPath.documentId() since document IDs are not arrays.'
-        );
-      }
-      if (typeof value === 'string') {
-        if (value === '') {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Function Query.where() requires its third parameter to be a ' +
-              'valid document ID if the first parameter is ' +
-              'FieldPath.documentId(), but it was an empty string.'
-          );
-        }
-        if (
-          !this._query.isCollectionGroupQuery() &&
-          value.indexOf('/') !== -1
-        ) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid third parameter to Query.where(). When querying a collection by ` +
-              `FieldPath.documentId(), the value provided must be a plain document ID, but ` +
-              `'${value}' contains a slash.`
-          );
-        }
-        const path = this._query.path.child(ResourcePath.fromString(value));
-        if (!DocumentKey.isDocumentKey(path)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid third parameter to Query.where(). When querying a collection group by ` +
-              `FieldPath.documentId(), the value provided must result in a valid document path, ` +
-              `but '${path}' is not because it has an odd number of segments (${
-                path.length
-              }).`
-          );
-        }
-        fieldValue = new RefValue(
-          this.firestore._databaseId,
-          new DocumentKey(path)
-        );
-      } else if (value instanceof DocumentReference) {
-        const ref = value as DocumentReference;
-        fieldValue = new RefValue(this.firestore._databaseId, ref._key);
-      } else {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `Function Query.where() requires its third parameter to be a ` +
-            `string or a DocumentReference if the first parameter is ` +
-            `FieldPath.documentId(), but it was: ` +
-            `${valueDescription(value)}.`
-        );
-      }
-    } else {
-      fieldValue = this.firestore._dataConverter.parseQueryValue(
-        'Query.where',
-        value
-      );
-    }
-    const filter = Filter.create(fieldPath, relationOp, fieldValue);
-    this.validateNewFilter(filter);
-    return new Query(this._query.addFilter(filter), this.firestore);
-  }
-
-  orderBy(
-    field: string | ExternalFieldPath,
-    directionStr?: firestore.OrderByDirection
-  ): firestore.Query {
-    validateBetweenNumberOfArgs('Query.orderBy', arguments, 1, 2);
-    validateOptionalArgType(
-      'Query.orderBy',
-      'non-empty string',
-      2,
-      directionStr
-    );
-    let direction: Direction;
-    if (directionStr === undefined || directionStr === 'asc') {
-      direction = Direction.ASCENDING;
-    } else if (directionStr === 'desc') {
-      direction = Direction.DESCENDING;
-    } else {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Function Query.orderBy() has unknown direction '${directionStr}', ` +
-          `expected 'asc' or 'desc'.`
-      );
-    }
-    if (this._query.startAt !== null) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid query. You must not call Query.startAt() or ' +
-          'Query.startAfter() before calling Query.orderBy().'
-      );
-    }
-    if (this._query.endAt !== null) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Invalid query. You must not call Query.endAt() or ' +
-          'Query.endBefore() before calling Query.orderBy().'
-      );
-    }
-    const fieldPath = fieldPathFromArgument('Query.orderBy', field);
-    const orderBy = new OrderBy(fieldPath, direction);
-    this.validateNewOrderBy(orderBy);
-    return new Query(this._query.addOrderBy(orderBy), this.firestore);
-  }
-
-  limit(n: number): firestore.Query {
-    validateExactNumberOfArgs('Query.limit', arguments, 1);
-    validateArgType('Query.limit', 'number', 1, n);
-    if (n <= 0) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid Query. Query limit (${n}) is invalid. Limit must be ` +
-          'positive.'
-      );
-    }
-    return new Query(this._query.withLimit(n), this.firestore);
-  }
-
-  startAt(
-    docOrField: unknown | firestore.DocumentSnapshot,
-    ...fields: unknown[]
-  ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.startAt', arguments, 1);
-    const bound = this.boundFromDocOrFields(
-      'Query.startAt',
-      docOrField,
-      fields,
-      /*before=*/ true
-    );
-    return new Query(this._query.withStartAt(bound), this.firestore);
-  }
-
-  startAfter(
-    docOrField: unknown | firestore.DocumentSnapshot,
-    ...fields: unknown[]
-  ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.startAfter', arguments, 1);
-    const bound = this.boundFromDocOrFields(
-      'Query.startAfter',
-      docOrField,
-      fields,
-      /*before=*/ false
-    );
-    return new Query(this._query.withStartAt(bound), this.firestore);
-  }
-
-  endBefore(
-    docOrField: unknown | firestore.DocumentSnapshot,
-    ...fields: unknown[]
-  ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.endBefore', arguments, 1);
-    const bound = this.boundFromDocOrFields(
-      'Query.endBefore',
-      docOrField,
-      fields,
-      /*before=*/ true
-    );
-    return new Query(this._query.withEndAt(bound), this.firestore);
-  }
-
-  endAt(
-    docOrField: unknown | firestore.DocumentSnapshot,
-    ...fields: unknown[]
-  ): firestore.Query {
-    validateAtLeastNumberOfArgs('Query.endAt', arguments, 1);
-    const bound = this.boundFromDocOrFields(
-      'Query.endAt',
-      docOrField,
-      fields,
-      /*before=*/ false
-    );
-    return new Query(this._query.withEndAt(bound), this.firestore);
-  }
-
+   constructor(public _query: InternalQuery, readonly firestore: Firestore) {}
   isEqual(other: firestore.Query): boolean {
     if (!(other instanceof Query)) {
       throw invalidClassError('isEqual', 'Query', 1, other);
@@ -1546,483 +1356,685 @@ export class Query implements firestore.Query {
       this.firestore === other.firestore && this._query.isEqual(other._query)
     );
   }
-
-  /** Helper function to create a bound from a document or fields */
-  private boundFromDocOrFields(
-    methodName: string,
-    docOrField: unknown | firestore.DocumentSnapshot,
-    fields: unknown[],
-    before: boolean
-  ): Bound {
-    validateDefined(methodName, 1, docOrField);
-    if (docOrField instanceof DocumentSnapshot) {
-      if (fields.length > 0) {
-        throw new FirestoreError(
-          Code.INVALID_ARGUMENT,
-          `Too many arguments provided to ${methodName}().`
-        );
-      }
-      const snap = docOrField;
-      if (!snap.exists) {
-        throw new FirestoreError(
-          Code.NOT_FOUND,
-          `Can't use a DocumentSnapshot that doesn't exist for ` +
-            `${methodName}().`
-        );
-      }
-      return this.boundFromDocument(methodName, snap._document!, before);
-    } else {
-      const allFields = [docOrField].concat(fields);
-      return this.boundFromFields(methodName, allFields, before);
-    }
-  }
-
-  /**
-   * Create a Bound from a query and a document.
-   *
-   * Note that the Bound will always include the key of the document
-   * and so only the provided document will compare equal to the returned
-   * position.
-   *
-   * Will throw if the document does not contain all fields of the order by
-   * of the query or if any of the fields in the order by are an uncommitted
-   * server timestamp.
-   */
-  private boundFromDocument(
-    methodName: string,
-    doc: Document,
-    before: boolean
-  ): Bound {
-    const components: FieldValue[] = [];
-
-    // Because people expect to continue/end a query at the exact document
-    // provided, we need to use the implicit sort order rather than the explicit
-    // sort order, because it's guaranteed to contain the document key. That way
-    // the position becomes unambiguous and the query continues/ends exactly at
-    // the provided document. Without the key (by using the explicit sort
-    // orders), multiple documents could match the position, yielding duplicate
-    // results.
-    for (const orderBy of this._query.orderBy) {
-      if (orderBy.field.isKeyField()) {
-        components.push(new RefValue(this.firestore._databaseId, doc.key));
-      } else {
-        const value = doc.field(orderBy.field);
-        if (value instanceof ServerTimestampValue) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. You are trying to start or end a query using a ' +
-              'document for which the field "' +
-              orderBy.field +
-              '" is an uncommitted server timestamp. (Since the value of ' +
-              'this field is unknown, you cannot start/end a query with it.)'
-          );
-        } else if (value !== undefined) {
-          components.push(value);
-        } else {
-          const field = orderBy.field.canonicalString();
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. You are trying to start or end a query using a ` +
-              `document for which the field '${field}' (used as the ` +
-              `orderBy) does not exist.`
-          );
-        }
-      }
-    }
-    return new Bound(components, before);
-  }
-
-  /**
-   * Converts a list of field values to a Bound for the given query.
-   */
-  private boundFromFields(
-    methodName: string,
-    values: unknown[],
-    before: boolean
-  ): Bound {
-    // Use explicit order by's because it has to match the query the user made
-    const orderBy = this._query.explicitOrderBy;
-    if (values.length > orderBy.length) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Too many arguments provided to ${methodName}(). ` +
-          `The number of arguments must be less than or equal to the ` +
-          `number of Query.orderBy() clauses`
-      );
-    }
-
-    const components: FieldValue[] = [];
-    for (let i = 0; i < values.length; i++) {
-      const rawValue = values[i];
-      const orderByComponent = orderBy[i];
-      if (orderByComponent.field.isKeyField()) {
-        if (typeof rawValue !== 'string') {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. Expected a string for document ID in ` +
-              `${methodName}(), but got a ${typeof rawValue}`
-          );
-        }
-        if (
-          !this._query.isCollectionGroupQuery() &&
-          rawValue.indexOf('/') !== -1
-        ) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. When querying a collection and ordering by FieldPath.documentId(), ` +
-              `the value passed to ${methodName}() must be a plain document ID, but ` +
-              `'${rawValue}' contains a slash.`
-          );
-        }
-        const path = this._query.path.child(ResourcePath.fromString(rawValue));
-        if (!DocumentKey.isDocumentKey(path)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            `Invalid query. When querying a collection group and ordering by ` +
-              `FieldPath.documentId(), the value passed to ${methodName}() must result in a ` +
-              `valid document path, but '${path}' is not because it contains an odd number ` +
-              `of segments.`
-          );
-        }
-        const key = new DocumentKey(path);
-        components.push(new RefValue(this.firestore._databaseId, key));
-      } else {
-        const wrapped = this.firestore._dataConverter.parseQueryValue(
-          methodName,
-          rawValue
-        );
-        components.push(wrapped);
-      }
-    }
-
-    return new Bound(components, before);
-  }
-
-  // onSnapshot(observer: PartialObserver<firestore.QuerySnapshot>): Unsubscribe;
-  // onSnapshot(
-  //   options: firestore.SnapshotListenOptions,
-  //   observer: PartialObserver<firestore.QuerySnapshot>
-  // ): Unsubscribe;
-  // onSnapshot(
-  //   onNext: NextFn<firestore.QuerySnapshot>,
-  //   onError?: ErrorFn,
-  //   onCompletion?: CompleteFn
-  // ): Unsubscribe;
-  // onSnapshot(
-  //   options: firestore.SnapshotListenOptions,
-  //   onNext: NextFn<firestore.QuerySnapshot>,
-  //   onError?: ErrorFn,
-  //   onCompletion?: CompleteFn
-  // ): Unsubscribe;
-
-  // onSnapshot(...args: unknown[]): Unsubscribe {
-  //   validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
-  //   let options: firestore.SnapshotListenOptions = {};
-  //   let observer: PartialObserver<firestore.QuerySnapshot>;
-  //   let currArg = 0;
-  //   if (
-  //     typeof args[currArg] === 'object' &&
-  //     !isPartialObserver(args[currArg])
-  //   ) {
-  //     options = args[currArg] as firestore.SnapshotListenOptions;
-  //     validateOptionNames('Query.onSnapshot', options, [
-  //       'includeMetadataChanges'
-  //     ]);
-  //     validateNamedOptionalType(
-  //       'Query.onSnapshot',
-  //       'boolean',
-  //       'includeMetadataChanges',
-  //       options.includeMetadataChanges
-  //     );
-  //     currArg++;
-  //   }
-
-  //   if (isPartialObserver(args[currArg])) {
-  //     observer = args[currArg] as PartialObserver<firestore.QuerySnapshot>;
-  //   } else {
-  //     validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
-  //     validateOptionalArgType(
-  //       'Query.onSnapshot',
-  //       'function',
-  //       currArg + 1,
-  //       args[currArg + 1]
-  //     );
-  //     validateOptionalArgType(
-  //       'Query.onSnapshot',
-  //       'function',
-  //       currArg + 2,
-  //       args[currArg + 2]
-  //     );
-  //     observer = {
-  //       next: args[currArg] as NextFn<firestore.QuerySnapshot>,
-  //       error: args[currArg + 1] as ErrorFn,
-  //       complete: args[currArg + 2] as CompleteFn
-  //     };
-  //   }
-  //   return this.onSnapshotInternal(options, observer);
-  // }
-
-  // private onSnapshotInternal(
-  //   options: ListenOptions,
-  //   observer: PartialObserver<firestore.QuerySnapshot>
-  // ): Unsubscribe {
-  //   let errHandler = (err: Error) => {
-  //     console.error('Uncaught Error in onSnapshot:', err);
-  //   };
-  //   if (observer.error) {
-  //     errHandler = observer.error.bind(observer);
-  //   }
-
-  //   const asyncObserver = new AsyncObserver<ViewSnapshot>({
-  //     next: (result: ViewSnapshot): void => {
-  //       if (observer.next) {
-  //         observer.next(new QuerySnapshot(this.firestore, this._query, result));
-  //       }
-  //     },
-  //     error: errHandler
-  //   });
-
-  //   const firestoreClient = this.firestore.ensureClientConfigured();
-  //   // const internalListener = firestoreClient.listen(
-  //   //   this._query,
-  //   //   asyncObserver,
-  //   //   options
-  //   // );
-  //   return () => {
-  //     asyncObserver.mute();
-  //     // firestoreClient.unlisten(internalListener);
-  //   };
-  // }
-
-  // get(options?: firestore.GetOptions): Promise<firestore.QuerySnapshot> {
-  //   validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
-  //   validateGetOptions('Query.get', options);
-  //   return new Promise(
-  //     (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
-  //       // if (options && options.source === 'cache') {
-  //       //   this.firestore
-  //       //     .ensureClientConfigured()
-  //       //     .getDocumentsFromLocalCache(this._query)
-  //       //     .then((viewSnap: ViewSnapshot) => {
-  //       //       resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
-  //       //     }, reject);
-  //       // } else {
-  //       //   this.getViaSnapshotListener(resolve, reject, options);
-  //       // }
-  //     }
-  //   );
-  // }
-
-  // private getViaSnapshotListener(
-  //   resolve: Resolver<firestore.QuerySnapshot>,
-  //   reject: Rejecter,
-  //   options?: firestore.GetOptions
-  // ): void {
-  //   const unlisten = this.onSnapshotInternal(
-  //     {
-  //       includeMetadataChanges: true,
-  //       waitForSyncWhenOnline: true
-  //     },
-  //     {
-  //       next: (result: firestore.QuerySnapshot) => {
-  //         // Remove query first before passing event to user to avoid
-  //         // user actions affecting the now stale query.
-  //         unlisten();
-
-  //         if (
-  //           result.metadata.fromCache &&
-  //           options &&
-  //           options.source === 'server'
-  //         ) {
-  //           reject(
-  //             new FirestoreError(
-  //               Code.UNAVAILABLE,
-  //               'Failed to get documents from server. (However, these ' +
-  //                 'documents may exist in the local cache. Run again ' +
-  //                 'without setting source to "server" to ' +
-  //                 'retrieve the cached documents.)'
-  //             )
-  //           );
-  //         } else {
-  //           resolve(result);
-  //         }
-  //       },
-  //       error: reject
-  //     }
-  //   );
-  // }
-
-  private validateNewFilter(filter: Filter): void {
-    if (filter instanceof RelationFilter) {
-      if (filter.isInequality()) {
-        const existingField = this._query.getInequalityFilterField();
-        if (existingField !== null && !existingField.isEqual(filter.field)) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. All where filters with an inequality' +
-              ' (<, <=, >, or >=) must be on the same field. But you have' +
-              ` inequality filters on '${existingField.toString()}'` +
-              ` and '${filter.field.toString()}'`
-          );
-        }
-
-        const firstOrderByField = this._query.getFirstOrderByField();
-        if (firstOrderByField !== null) {
-          this.validateOrderByAndInequalityMatch(
-            filter.field,
-            firstOrderByField
-          );
-        }
-      } else if (filter.op === RelationOp.ARRAY_CONTAINS) {
-        if (this._query.hasArrayContainsFilter()) {
-          throw new FirestoreError(
-            Code.INVALID_ARGUMENT,
-            'Invalid query. Queries only support a single array-contains ' +
-              'filter.'
-          );
-        }
-      }
-    }
-  }
-
-  private validateNewOrderBy(orderBy: OrderBy): void {
-    if (this._query.getFirstOrderByField() === null) {
-      // This is the first order by. It must match any inequality.
-      const inequalityField = this._query.getInequalityFilterField();
-      if (inequalityField !== null) {
-        this.validateOrderByAndInequalityMatch(inequalityField, orderBy.field);
-      }
-    }
-  }
-
-  private validateOrderByAndInequalityMatch(
-    inequality: FieldPath,
-    orderBy: FieldPath
-  ): void {
-    if (!orderBy.isEqual(inequality)) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        `Invalid query. You have a where filter with an inequality ` +
-          `(<, <=, >, or >=) on field '${inequality.toString()}' ` +
-          `and so you must also use '${inequality.toString()}' ` +
-          `as your first Query.orderBy(), but your first Query.orderBy() ` +
-          `is on field '${orderBy.toString()}' instead.`
-      );
-    }
-  }
 }
 
-export class QuerySnapshot implements firestore.QuerySnapshot {
-  private _cachedChanges: firestore.DocumentChange[] | null = null;
-  private _cachedChangesIncludeMetadataChanges: boolean | null = null;
+// export class Query implements firestore.Query {
+//   constructor(public _query: InternalQuery, readonly firestore: Firestore) {}
 
-  readonly metadata: firestore.SnapshotMetadata;
+//   where(
+//     field: string | ExternalFieldPath,
+//     opStr: firestore.WhereFilterOp,
+//     value: unknown
+//   ): firestore.Query {
+//     validateExactNumberOfArgs('Query.where', arguments, 3);
+//     validateArgType('Query.where', 'non-empty string', 2, opStr);
+//     validateDefined('Query.where', 3, value);
+//     let fieldValue;
+//     const fieldPath = fieldPathFromArgument('Query.where', field);
+//     const relationOp = RelationOp.fromString(opStr);
+//     if (fieldPath.isKeyField()) {
+//       if (relationOp === RelationOp.ARRAY_CONTAINS) {
+//         throw new FirestoreError(
+//           Code.INVALID_ARGUMENT,
+//           "Invalid Query. You can't perform array-contains queries on " +
+//             'FieldPath.documentId() since document IDs are not arrays.'
+//         );
+//       }
+//       if (typeof value === 'string') {
+//         if (value === '') {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             'Function Query.where() requires its third parameter to be a ' +
+//               'valid document ID if the first parameter is ' +
+//               'FieldPath.documentId(), but it was an empty string.'
+//           );
+//         }
+//         if (
+//           !this._query.isCollectionGroupQuery() &&
+//           value.indexOf('/') !== -1
+//         ) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid third parameter to Query.where(). When querying a collection by ` +
+//               `FieldPath.documentId(), the value provided must be a plain document ID, but ` +
+//               `'${value}' contains a slash.`
+//           );
+//         }
+//         const path = this._query.path.child(ResourcePath.fromString(value));
+//         if (!DocumentKey.isDocumentKey(path)) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid third parameter to Query.where(). When querying a collection group by ` +
+//               `FieldPath.documentId(), the value provided must result in a valid document path, ` +
+//               `but '${path}' is not because it has an odd number of segments (${
+//                 path.length
+//               }).`
+//           );
+//         }
+//         fieldValue = new RefValue(
+//           this.firestore._databaseId,
+//           new DocumentKey(path)
+//         );
+//       } else if (value instanceof DocumentReference) {
+//         const ref = value as DocumentReference;
+//         fieldValue = new RefValue(this.firestore._databaseId, ref._key);
+//       } else {
+//         throw new FirestoreError(
+//           Code.INVALID_ARGUMENT,
+//           `Function Query.where() requires its third parameter to be a ` +
+//             `string or a DocumentReference if the first parameter is ` +
+//             `FieldPath.documentId(), but it was: ` +
+//             `${valueDescription(value)}.`
+//         );
+//       }
+//     } else {
+//       fieldValue = this.firestore._dataConverter.parseQueryValue(
+//         'Query.where',
+//         value
+//       );
+//     }
+//     const filter = Filter.create(fieldPath, relationOp, fieldValue);
+//     this.validateNewFilter(filter);
+//     return new Query(this._query.addFilter(filter), this.firestore);
+//   }
 
-  constructor(
-    private _firestore: Firestore,
-    private _originalQuery: InternalQuery,
-    private _snapshot: ViewSnapshot
-  ) {
-    this.metadata = new SnapshotMetadata(
-      _snapshot.hasPendingWrites,
-      _snapshot.fromCache
-    );
-  }
+//   orderBy(
+//     field: string | ExternalFieldPath,
+//     directionStr?: firestore.OrderByDirection
+//   ): firestore.Query {
+//     validateBetweenNumberOfArgs('Query.orderBy', arguments, 1, 2);
+//     validateOptionalArgType(
+//       'Query.orderBy',
+//       'non-empty string',
+//       2,
+//       directionStr
+//     );
+//     let direction: Direction;
+//     if (directionStr === undefined || directionStr === 'asc') {
+//       direction = Direction.ASCENDING;
+//     } else if (directionStr === 'desc') {
+//       direction = Direction.DESCENDING;
+//     } else {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         `Function Query.orderBy() has unknown direction '${directionStr}', ` +
+//           `expected 'asc' or 'desc'.`
+//       );
+//     }
+//     if (this._query.startAt !== null) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         'Invalid query. You must not call Query.startAt() or ' +
+//           'Query.startAfter() before calling Query.orderBy().'
+//       );
+//     }
+//     if (this._query.endAt !== null) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         'Invalid query. You must not call Query.endAt() or ' +
+//           'Query.endBefore() before calling Query.orderBy().'
+//       );
+//     }
+//     const fieldPath = fieldPathFromArgument('Query.orderBy', field);
+//     const orderBy = new OrderBy(fieldPath, direction);
+//     this.validateNewOrderBy(orderBy);
+//     return new Query(this._query.addOrderBy(orderBy), this.firestore);
+//   }
 
-  get docs(): firestore.QueryDocumentSnapshot[] {
-    const result: firestore.QueryDocumentSnapshot[] = [];
-    this.forEach(doc => result.push(doc));
-    return result;
-  }
+//   limit(n: number): firestore.Query {
+//     validateExactNumberOfArgs('Query.limit', arguments, 1);
+//     validateArgType('Query.limit', 'number', 1, n);
+//     if (n <= 0) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         `Invalid Query. Query limit (${n}) is invalid. Limit must be ` +
+//           'positive.'
+//       );
+//     }
+//     return new Query(this._query.withLimit(n), this.firestore);
+//   }
 
-  get empty(): boolean {
-    return this._snapshot.docs.isEmpty();
-  }
+//   startAt(
+//     docOrField: unknown | firestore.DocumentSnapshot,
+//     ...fields: unknown[]
+//   ): firestore.Query {
+//     validateAtLeastNumberOfArgs('Query.startAt', arguments, 1);
+//     const bound = this.boundFromDocOrFields(
+//       'Query.startAt',
+//       docOrField,
+//       fields,
+//       /*before=*/ true
+//     );
+//     return new Query(this._query.withStartAt(bound), this.firestore);
+//   }
 
-  get size(): number {
-    return this._snapshot.docs.size;
-  }
+//   startAfter(
+//     docOrField: unknown | firestore.DocumentSnapshot,
+//     ...fields: unknown[]
+//   ): firestore.Query {
+//     validateAtLeastNumberOfArgs('Query.startAfter', arguments, 1);
+//     const bound = this.boundFromDocOrFields(
+//       'Query.startAfter',
+//       docOrField,
+//       fields,
+//       /*before=*/ false
+//     );
+//     return new Query(this._query.withStartAt(bound), this.firestore);
+//   }
 
-  forEach(
-    callback: (result: firestore.QueryDocumentSnapshot) => void,
-    thisArg?: unknown
-  ): void {
-    validateBetweenNumberOfArgs('QuerySnapshot.forEach', arguments, 1, 2);
-    validateArgType('QuerySnapshot.forEach', 'function', 1, callback);
-    this._snapshot.docs.forEach(doc => {
-      callback.call(thisArg, this.convertToDocumentImpl(doc));
-    });
-  }
+//   endBefore(
+//     docOrField: unknown | firestore.DocumentSnapshot,
+//     ...fields: unknown[]
+//   ): firestore.Query {
+//     validateAtLeastNumberOfArgs('Query.endBefore', arguments, 1);
+//     const bound = this.boundFromDocOrFields(
+//       'Query.endBefore',
+//       docOrField,
+//       fields,
+//       /*before=*/ true
+//     );
+//     return new Query(this._query.withEndAt(bound), this.firestore);
+//   }
 
-  get query(): firestore.Query {
-    return new Query(this._originalQuery, this._firestore);
-  }
+//   endAt(
+//     docOrField: unknown | firestore.DocumentSnapshot,
+//     ...fields: unknown[]
+//   ): firestore.Query {
+//     validateAtLeastNumberOfArgs('Query.endAt', arguments, 1);
+//     const bound = this.boundFromDocOrFields(
+//       'Query.endAt',
+//       docOrField,
+//       fields,
+//       /*before=*/ false
+//     );
+//     return new Query(this._query.withEndAt(bound), this.firestore);
+//   }
 
-  docChanges(
-    options?: firestore.SnapshotListenOptions
-  ): firestore.DocumentChange[] {
-    if (options) {
-      validateOptionNames('QuerySnapshot.docChanges', options, [
-        'includeMetadataChanges'
-      ]);
-      validateNamedOptionalType(
-        'QuerySnapshot.docChanges',
-        'boolean',
-        'includeMetadataChanges',
-        options.includeMetadataChanges
-      );
-    }
+//   isEqual(other: firestore.Query): boolean {
+//     if (!(other instanceof Query)) {
+//       throw invalidClassError('isEqual', 'Query', 1, other);
+//     }
+//     return (
+//       this.firestore === other.firestore && this._query.isEqual(other._query)
+//     );
+//   }
 
-    const includeMetadataChanges = !!(
-      options && options.includeMetadataChanges
-    );
+//   /** Helper function to create a bound from a document or fields */
+//   private boundFromDocOrFields(
+//     methodName: string,
+//     docOrField: unknown | firestore.DocumentSnapshot,
+//     fields: unknown[],
+//     before: boolean
+//   ): Bound {
+//     validateDefined(methodName, 1, docOrField);
+//     if (docOrField instanceof DocumentSnapshot) {
+//       if (fields.length > 0) {
+//         throw new FirestoreError(
+//           Code.INVALID_ARGUMENT,
+//           `Too many arguments provided to ${methodName}().`
+//         );
+//       }
+//       const snap = docOrField;
+//       if (!snap.exists) {
+//         throw new FirestoreError(
+//           Code.NOT_FOUND,
+//           `Can't use a DocumentSnapshot that doesn't exist for ` +
+//             `${methodName}().`
+//         );
+//       }
+//       return this.boundFromDocument(methodName, snap._document!, before);
+//     } else {
+//       const allFields = [docOrField].concat(fields);
+//       return this.boundFromFields(methodName, allFields, before);
+//     }
+//   }
 
-    if (includeMetadataChanges && this._snapshot.excludesMetadataChanges) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'To include metadata changes with your document changes, you must ' +
-          'also pass { includeMetadataChanges:true } to onSnapshot().'
-      );
-    }
+//   /**
+//    * Create a Bound from a query and a document.
+//    *
+//    * Note that the Bound will always include the key of the document
+//    * and so only the provided document will compare equal to the returned
+//    * position.
+//    *
+//    * Will throw if the document does not contain all fields of the order by
+//    * of the query or if any of the fields in the order by are an uncommitted
+//    * server timestamp.
+//    */
+//   private boundFromDocument(
+//     methodName: string,
+//     doc: Document,
+//     before: boolean
+//   ): Bound {
+//     const components: FieldValue[] = [];
 
-    if (
-      !this._cachedChanges ||
-      this._cachedChangesIncludeMetadataChanges !== includeMetadataChanges
-    ) {
-      this._cachedChanges = changesFromSnapshot(
-        this._firestore,
-        includeMetadataChanges,
-        this._snapshot
-      );
-      this._cachedChangesIncludeMetadataChanges = includeMetadataChanges;
-    }
+//     // Because people expect to continue/end a query at the exact document
+//     // provided, we need to use the implicit sort order rather than the explicit
+//     // sort order, because it's guaranteed to contain the document key. That way
+//     // the position becomes unambiguous and the query continues/ends exactly at
+//     // the provided document. Without the key (by using the explicit sort
+//     // orders), multiple documents could match the position, yielding duplicate
+//     // results.
+//     for (const orderBy of this._query.orderBy) {
+//       if (orderBy.field.isKeyField()) {
+//         components.push(new RefValue(this.firestore._databaseId, doc.key));
+//       } else {
+//         const value = doc.field(orderBy.field);
+//         if (value instanceof ServerTimestampValue) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             'Invalid query. You are trying to start or end a query using a ' +
+//               'document for which the field "' +
+//               orderBy.field +
+//               '" is an uncommitted server timestamp. (Since the value of ' +
+//               'this field is unknown, you cannot start/end a query with it.)'
+//           );
+//         } else if (value !== undefined) {
+//           components.push(value);
+//         } else {
+//           const field = orderBy.field.canonicalString();
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid query. You are trying to start or end a query using a ` +
+//               `document for which the field '${field}' (used as the ` +
+//               `orderBy) does not exist.`
+//           );
+//         }
+//       }
+//     }
+//     return new Bound(components, before);
+//   }
 
-    return this._cachedChanges;
-  }
+//   /**
+//    * Converts a list of field values to a Bound for the given query.
+//    */
+//   private boundFromFields(
+//     methodName: string,
+//     values: unknown[],
+//     before: boolean
+//   ): Bound {
+//     // Use explicit order by's because it has to match the query the user made
+//     const orderBy = this._query.explicitOrderBy;
+//     if (values.length > orderBy.length) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         `Too many arguments provided to ${methodName}(). ` +
+//           `The number of arguments must be less than or equal to the ` +
+//           `number of Query.orderBy() clauses`
+//       );
+//     }
 
-  /** Check the equality. The call can be very expensive. */
-  isEqual(other: firestore.QuerySnapshot): boolean {
-    if (!(other instanceof QuerySnapshot)) {
-      throw invalidClassError('isEqual', 'QuerySnapshot', 1, other);
-    }
+//     const components: FieldValue[] = [];
+//     for (let i = 0; i < values.length; i++) {
+//       const rawValue = values[i];
+//       const orderByComponent = orderBy[i];
+//       if (orderByComponent.field.isKeyField()) {
+//         if (typeof rawValue !== 'string') {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid query. Expected a string for document ID in ` +
+//               `${methodName}(), but got a ${typeof rawValue}`
+//           );
+//         }
+//         if (
+//           !this._query.isCollectionGroupQuery() &&
+//           rawValue.indexOf('/') !== -1
+//         ) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid query. When querying a collection and ordering by FieldPath.documentId(), ` +
+//               `the value passed to ${methodName}() must be a plain document ID, but ` +
+//               `'${rawValue}' contains a slash.`
+//           );
+//         }
+//         const path = this._query.path.child(ResourcePath.fromString(rawValue));
+//         if (!DocumentKey.isDocumentKey(path)) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             `Invalid query. When querying a collection group and ordering by ` +
+//               `FieldPath.documentId(), the value passed to ${methodName}() must result in a ` +
+//               `valid document path, but '${path}' is not because it contains an odd number ` +
+//               `of segments.`
+//           );
+//         }
+//         const key = new DocumentKey(path);
+//         components.push(new RefValue(this.firestore._databaseId, key));
+//       } else {
+//         const wrapped = this.firestore._dataConverter.parseQueryValue(
+//           methodName,
+//           rawValue
+//         );
+//         components.push(wrapped);
+//       }
+//     }
 
-    return (
-      this._firestore === other._firestore &&
-      this._originalQuery.isEqual(other._originalQuery) &&
-      this._snapshot.isEqual(other._snapshot)
-    );
-  }
+//     return new Bound(components, before);
+//   }
 
-  private convertToDocumentImpl(doc: Document): QueryDocumentSnapshot {
-    return new QueryDocumentSnapshot(
-      this._firestore,
-      doc.key,
-      doc,
-      this.metadata.fromCache,
-      this._snapshot.mutatedKeys.has(doc.key)
-    );
-  }
-}
+//   // onSnapshot(observer: PartialObserver<firestore.QuerySnapshot>): Unsubscribe;
+//   // onSnapshot(
+//   //   options: firestore.SnapshotListenOptions,
+//   //   observer: PartialObserver<firestore.QuerySnapshot>
+//   // ): Unsubscribe;
+//   // onSnapshot(
+//   //   onNext: NextFn<firestore.QuerySnapshot>,
+//   //   onError?: ErrorFn,
+//   //   onCompletion?: CompleteFn
+//   // ): Unsubscribe;
+//   // onSnapshot(
+//   //   options: firestore.SnapshotListenOptions,
+//   //   onNext: NextFn<firestore.QuerySnapshot>,
+//   //   onError?: ErrorFn,
+//   //   onCompletion?: CompleteFn
+//   // ): Unsubscribe;
+
+//   // onSnapshot(...args: unknown[]): Unsubscribe {
+//   //   validateBetweenNumberOfArgs('Query.onSnapshot', arguments, 1, 4);
+//   //   let options: firestore.SnapshotListenOptions = {};
+//   //   let observer: PartialObserver<firestore.QuerySnapshot>;
+//   //   let currArg = 0;
+//   //   if (
+//   //     typeof args[currArg] === 'object' &&
+//   //     !isPartialObserver(args[currArg])
+//   //   ) {
+//   //     options = args[currArg] as firestore.SnapshotListenOptions;
+//   //     validateOptionNames('Query.onSnapshot', options, [
+//   //       'includeMetadataChanges'
+//   //     ]);
+//   //     validateNamedOptionalType(
+//   //       'Query.onSnapshot',
+//   //       'boolean',
+//   //       'includeMetadataChanges',
+//   //       options.includeMetadataChanges
+//   //     );
+//   //     currArg++;
+//   //   }
+
+//   //   if (isPartialObserver(args[currArg])) {
+//   //     observer = args[currArg] as PartialObserver<firestore.QuerySnapshot>;
+//   //   } else {
+//   //     validateArgType('Query.onSnapshot', 'function', currArg, args[currArg]);
+//   //     validateOptionalArgType(
+//   //       'Query.onSnapshot',
+//   //       'function',
+//   //       currArg + 1,
+//   //       args[currArg + 1]
+//   //     );
+//   //     validateOptionalArgType(
+//   //       'Query.onSnapshot',
+//   //       'function',
+//   //       currArg + 2,
+//   //       args[currArg + 2]
+//   //     );
+//   //     observer = {
+//   //       next: args[currArg] as NextFn<firestore.QuerySnapshot>,
+//   //       error: args[currArg + 1] as ErrorFn,
+//   //       complete: args[currArg + 2] as CompleteFn
+//   //     };
+//   //   }
+//   //   return this.onSnapshotInternal(options, observer);
+//   // }
+
+//   // private onSnapshotInternal(
+//   //   options: ListenOptions,
+//   //   observer: PartialObserver<firestore.QuerySnapshot>
+//   // ): Unsubscribe {
+//   //   let errHandler = (err: Error) => {
+//   //     console.error('Uncaught Error in onSnapshot:', err);
+//   //   };
+//   //   if (observer.error) {
+//   //     errHandler = observer.error.bind(observer);
+//   //   }
+
+//   //   const asyncObserver = new AsyncObserver<ViewSnapshot>({
+//   //     next: (result: ViewSnapshot): void => {
+//   //       if (observer.next) {
+//   //         observer.next(new QuerySnapshot(this.firestore, this._query, result));
+//   //       }
+//   //     },
+//   //     error: errHandler
+//   //   });
+
+//   //   const firestoreClient = this.firestore.ensureClientConfigured();
+//   //   // const internalListener = firestoreClient.listen(
+//   //   //   this._query,
+//   //   //   asyncObserver,
+//   //   //   options
+//   //   // );
+//   //   return () => {
+//   //     asyncObserver.mute();
+//   //     // firestoreClient.unlisten(internalListener);
+//   //   };
+//   // }
+
+//   // get(options?: firestore.GetOptions): Promise<firestore.QuerySnapshot> {
+//   //   validateBetweenNumberOfArgs('Query.get', arguments, 0, 1);
+//   //   validateGetOptions('Query.get', options);
+//   //   return new Promise(
+//   //     (resolve: Resolver<firestore.QuerySnapshot>, reject: Rejecter) => {
+//   //       // if (options && options.source === 'cache') {
+//   //       //   this.firestore
+//   //       //     .ensureClientConfigured()
+//   //       //     .getDocumentsFromLocalCache(this._query)
+//   //       //     .then((viewSnap: ViewSnapshot) => {
+//   //       //       resolve(new QuerySnapshot(this.firestore, this._query, viewSnap));
+//   //       //     }, reject);
+//   //       // } else {
+//   //       //   this.getViaSnapshotListener(resolve, reject, options);
+//   //       // }
+//   //     }
+//   //   );
+//   // }
+
+//   // private getViaSnapshotListener(
+//   //   resolve: Resolver<firestore.QuerySnapshot>,
+//   //   reject: Rejecter,
+//   //   options?: firestore.GetOptions
+//   // ): void {
+//   //   const unlisten = this.onSnapshotInternal(
+//   //     {
+//   //       includeMetadataChanges: true,
+//   //       waitForSyncWhenOnline: true
+//   //     },
+//   //     {
+//   //       next: (result: firestore.QuerySnapshot) => {
+//   //         // Remove query first before passing event to user to avoid
+//   //         // user actions affecting the now stale query.
+//   //         unlisten();
+
+//   //         if (
+//   //           result.metadata.fromCache &&
+//   //           options &&
+//   //           options.source === 'server'
+//   //         ) {
+//   //           reject(
+//   //             new FirestoreError(
+//   //               Code.UNAVAILABLE,
+//   //               'Failed to get documents from server. (However, these ' +
+//   //                 'documents may exist in the local cache. Run again ' +
+//   //                 'without setting source to "server" to ' +
+//   //                 'retrieve the cached documents.)'
+//   //             )
+//   //           );
+//   //         } else {
+//   //           resolve(result);
+//   //         }
+//   //       },
+//   //       error: reject
+//   //     }
+//   //   );
+//   // }
+
+//   private validateNewFilter(filter: Filter): void {
+//     if (filter instanceof RelationFilter) {
+//       if (filter.isInequality()) {
+//         const existingField = this._query.getInequalityFilterField();
+//         if (existingField !== null && !existingField.isEqual(filter.field)) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             'Invalid query. All where filters with an inequality' +
+//               ' (<, <=, >, or >=) must be on the same field. But you have' +
+//               ` inequality filters on '${existingField.toString()}'` +
+//               ` and '${filter.field.toString()}'`
+//           );
+//         }
+
+//         const firstOrderByField = this._query.getFirstOrderByField();
+//         if (firstOrderByField !== null) {
+//           this.validateOrderByAndInequalityMatch(
+//             filter.field,
+//             firstOrderByField
+//           );
+//         }
+//       } else if (filter.op === RelationOp.ARRAY_CONTAINS) {
+//         if (this._query.hasArrayContainsFilter()) {
+//           throw new FirestoreError(
+//             Code.INVALID_ARGUMENT,
+//             'Invalid query. Queries only support a single array-contains ' +
+//               'filter.'
+//           );
+//         }
+//       }
+//     }
+//   }
+
+//   private validateNewOrderBy(orderBy: OrderBy): void {
+//     if (this._query.getFirstOrderByField() === null) {
+//       // This is the first order by. It must match any inequality.
+//       const inequalityField = this._query.getInequalityFilterField();
+//       if (inequalityField !== null) {
+//         this.validateOrderByAndInequalityMatch(inequalityField, orderBy.field);
+//       }
+//     }
+//   }
+
+//   private validateOrderByAndInequalityMatch(
+//     inequality: FieldPath,
+//     orderBy: FieldPath
+//   ): void {
+//     if (!orderBy.isEqual(inequality)) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         `Invalid query. You have a where filter with an inequality ` +
+//           `(<, <=, >, or >=) on field '${inequality.toString()}' ` +
+//           `and so you must also use '${inequality.toString()}' ` +
+//           `as your first Query.orderBy(), but your first Query.orderBy() ` +
+//           `is on field '${orderBy.toString()}' instead.`
+//       );
+//     }
+//   }
+// }
+
+// export class QuerySnapshot implements firestore.QuerySnapshot {
+//   private _cachedChanges: firestore.DocumentChange[] | null = null;
+//   private _cachedChangesIncludeMetadataChanges: boolean | null = null;
+
+//   readonly metadata: firestore.SnapshotMetadata;
+
+//   constructor(
+//     private _firestore: Firestore,
+//     private _originalQuery: InternalQuery,
+//     private _snapshot: ViewSnapshot
+//   ) {
+//     this.metadata = new SnapshotMetadata(
+//       _snapshot.hasPendingWrites,
+//       _snapshot.fromCache
+//     );
+//   }
+
+//   get docs(): firestore.QueryDocumentSnapshot[] {
+//     const result: firestore.QueryDocumentSnapshot[] = [];
+//     this.forEach(doc => result.push(doc));
+//     return result;
+//   }
+
+//   get empty(): boolean {
+//     return this._snapshot.docs.isEmpty();
+//   }
+
+//   get size(): number {
+//     return this._snapshot.docs.size;
+//   }
+
+//   forEach(
+//     callback: (result: firestore.QueryDocumentSnapshot) => void,
+//     thisArg?: unknown
+//   ): void {
+//     validateBetweenNumberOfArgs('QuerySnapshot.forEach', arguments, 1, 2);
+//     validateArgType('QuerySnapshot.forEach', 'function', 1, callback);
+//     this._snapshot.docs.forEach(doc => {
+//       callback.call(thisArg, this.convertToDocumentImpl(doc));
+//     });
+//   }
+
+//   get query(): firestore.Query {
+//     return new Query(this._originalQuery, this._firestore);
+//   }
+
+//   docChanges(
+//     options?: firestore.SnapshotListenOptions
+//   ): firestore.DocumentChange[] {
+//     if (options) {
+//       validateOptionNames('QuerySnapshot.docChanges', options, [
+//         'includeMetadataChanges'
+//       ]);
+//       validateNamedOptionalType(
+//         'QuerySnapshot.docChanges',
+//         'boolean',
+//         'includeMetadataChanges',
+//         options.includeMetadataChanges
+//       );
+//     }
+
+//     const includeMetadataChanges = !!(
+//       options && options.includeMetadataChanges
+//     );
+
+//     if (includeMetadataChanges && this._snapshot.excludesMetadataChanges) {
+//       throw new FirestoreError(
+//         Code.INVALID_ARGUMENT,
+//         'To include metadata changes with your document changes, you must ' +
+//           'also pass { includeMetadataChanges:true } to onSnapshot().'
+//       );
+//     }
+
+//     if (
+//       !this._cachedChanges ||
+//       this._cachedChangesIncludeMetadataChanges !== includeMetadataChanges
+//     ) {
+//       this._cachedChanges = changesFromSnapshot(
+//         this._firestore,
+//         includeMetadataChanges,
+//         this._snapshot
+//       );
+//       this._cachedChangesIncludeMetadataChanges = includeMetadataChanges;
+//     }
+
+//     return this._cachedChanges;
+//   }
+
+//   /** Check the equality. The call can be very expensive. */
+//   isEqual(other: firestore.QuerySnapshot): boolean {
+//     if (!(other instanceof QuerySnapshot)) {
+//       throw invalidClassError('isEqual', 'QuerySnapshot', 1, other);
+//     }
+
+//     return (
+//       this._firestore === other._firestore &&
+//       this._originalQuery.isEqual(other._originalQuery) &&
+//       this._snapshot.isEqual(other._snapshot)
+//     );
+//   }
+
+//   private convertToDocumentImpl(doc: Document): QueryDocumentSnapshot {
+//     return new QueryDocumentSnapshot(
+//       this._firestore,
+//       doc.key,
+//       doc,
+//       this.metadata.fromCache,
+//       this._snapshot.mutatedKeys.has(doc.key)
+//     );
+//   }
+// }
 
 // TODO(2018/11/01): As of 2018/04/17 we're changing docChanges from an array
 // into a method. Because this is a runtime breaking change and somewhat subtle
@@ -2030,35 +2042,35 @@ export class QuerySnapshot implements firestore.QuerySnapshot {
 // properties (including Symbol.iterator) to throw a custom error message. In
 // ~6 months we can delete the custom error as most folks will have hopefully
 // migrated.
-function throwDocChangesMethodError(): never {
-  throw new FirestoreError(
-    Code.INVALID_ARGUMENT,
-    'QuerySnapshot.docChanges has been changed from a property into a ' +
-      'method, so usages like "querySnapshot.docChanges" should become ' +
-      '"querySnapshot.docChanges()"'
-  );
-}
+// function throwDocChangesMethodError(): never {
+//   throw new FirestoreError(
+//     Code.INVALID_ARGUMENT,
+//     'QuerySnapshot.docChanges has been changed from a property into a ' +
+//       'method, so usages like "querySnapshot.docChanges" should become ' +
+//       '"querySnapshot.docChanges()"'
+//   );
+// }
 
-const docChangesPropertiesToOverride = [
-  'length',
-  'forEach',
-  'map',
-  ...(typeof Symbol !== 'undefined' ? [Symbol.iterator] : [])
-];
-docChangesPropertiesToOverride.forEach(property => {
-  /**
-   * We are (re-)defining properties on QuerySnapshot.prototype.docChanges which
-   * is a Function. This could fail, in particular in the case of 'length' which
-   * already exists on Function.prototype and on IE11 is improperly defined with
-   * `{ configurable: false }`. So we wrap this in a try/catch to ensure that we
-   * still have a functional SDK.
-   */
-  try {
-    Object.defineProperty(QuerySnapshot.prototype.docChanges, property, {
-      get: () => throwDocChangesMethodError()
-    });
-  } catch (err) {} // Ignore this failure intentionally
-});
+// const docChangesPropertiesToOverride = [
+//   'length',
+//   'forEach',
+//   'map',
+//   ...(typeof Symbol !== 'undefined' ? [Symbol.iterator] : [])
+// ];
+// docChangesPropertiesToOverride.forEach(property => {
+//   /**
+//    * We are (re-)defining properties on QuerySnapshot.prototype.docChanges which
+//    * is a Function. This could fail, in particular in the case of 'length' which
+//    * already exists on Function.prototype and on IE11 is improperly defined with
+//    * `{ configurable: false }`. So we wrap this in a try/catch to ensure that we
+//    * still have a functional SDK.
+//    */
+//   try {
+//     Object.defineProperty(QuerySnapshot.prototype.docChanges, property, {
+//       get: () => throwDocChangesMethodError()
+//     });
+//   } catch (err) {} // Ignore this failure intentionally
+// });
 
 export class CollectionReference extends Query
   implements firestore.CollectionReference {
@@ -2157,41 +2169,41 @@ function validateSetOptions(
   return options;
 }
 
-function validateSnapshotOptions(
-  methodName: string,
-  options: firestore.SnapshotOptions | undefined
-): firestore.SnapshotOptions {
-  if (options === undefined) {
-    return {};
-  }
+// function validateSnapshotOptions(
+//   methodName: string,
+//   options: firestore.SnapshotOptions | undefined
+// ): firestore.SnapshotOptions {
+//   if (options === undefined) {
+//     return {};
+//   }
 
-  validateOptionNames(methodName, options, ['serverTimestamps']);
-  validateNamedOptionalPropertyEquals(
-    methodName,
-    'options',
-    'serverTimestamps',
-    options.serverTimestamps,
-    ['estimate', 'previous', 'none']
-  );
-  return options;
-}
+//   validateOptionNames(methodName, options, ['serverTimestamps']);
+//   validateNamedOptionalPropertyEquals(
+//     methodName,
+//     'options',
+//     'serverTimestamps',
+//     options.serverTimestamps,
+//     ['estimate', 'previous', 'none']
+//   );
+//   return options;
+// }
 
-function validateGetOptions(
-  methodName: string,
-  options: firestore.GetOptions | undefined
-): void {
-  validateOptionalArgType(methodName, 'object', 1, options);
-  if (options) {
-    validateOptionNames(methodName, options, ['source']);
-    validateNamedOptionalPropertyEquals(
-      methodName,
-      'options',
-      'source',
-      options.source,
-      ['default', 'server', 'cache']
-    );
-  }
-}
+// function validateGetOptions(
+//   methodName: string,
+//   options: firestore.GetOptions | undefined
+// ): void {
+//   validateOptionalArgType(methodName, 'object', 1, options);
+//   if (options) {
+//     validateOptionNames(methodName, options, ['source']);
+//     validateNamedOptionalPropertyEquals(
+//       methodName,
+//       'options',
+//       'source',
+//       options.source,
+//       ['default', 'server', 'cache']
+//     );
+//   }
+// }
 
 function validateReference(
   methodName: string,
@@ -2215,85 +2227,85 @@ function validateReference(
  *
  * Exported for testing.
  */
-export function changesFromSnapshot(
-  firestore: Firestore,
-  includeMetadataChanges: boolean,
-  snapshot: ViewSnapshot
-): firestore.DocumentChange[] {
-  if (snapshot.oldDocs.isEmpty()) {
-    // Special case the first snapshot because index calculation is easy and
-    // fast
-    let lastDoc: Document;
-    let index = 0;
-    return snapshot.docChanges.map(change => {
-      const doc = new QueryDocumentSnapshot(
-        firestore,
-        change.doc.key,
-        change.doc,
-        snapshot.fromCache,
-        snapshot.mutatedKeys.has(change.doc.key)
-      );
-      assert(
-        change.type === ChangeType.Added,
-        'Invalid event type for first snapshot'
-      );
-      assert(
-        !lastDoc || snapshot.query.docComparator(lastDoc, change.doc) < 0,
-        'Got added events in wrong order'
-      );
-      lastDoc = change.doc;
-      return {
-        type: 'added' as firestore.DocumentChangeType,
-        doc,
-        oldIndex: -1,
-        newIndex: index++
-      };
-    });
-  } else {
-    // A DocumentSet that is updated incrementally as changes are applied to use
-    // to lookup the index of a document.
-    let indexTracker = snapshot.oldDocs;
-    return snapshot.docChanges
-      .filter(
-        change => includeMetadataChanges || change.type !== ChangeType.Metadata
-      )
-      .map(change => {
-        const doc = new QueryDocumentSnapshot(
-          firestore,
-          change.doc.key,
-          change.doc,
-          snapshot.fromCache,
-          snapshot.mutatedKeys.has(change.doc.key)
-        );
-        let oldIndex = -1;
-        let newIndex = -1;
-        if (change.type !== ChangeType.Added) {
-          oldIndex = indexTracker.indexOf(change.doc.key);
-          assert(oldIndex >= 0, 'Index for document not found');
-          indexTracker = indexTracker.delete(change.doc.key);
-        }
-        if (change.type !== ChangeType.Removed) {
-          indexTracker = indexTracker.add(change.doc);
-          newIndex = indexTracker.indexOf(change.doc.key);
-        }
-        return { type: resultChangeType(change.type), doc, oldIndex, newIndex };
-      });
-  }
-}
+// export function changesFromSnapshot(
+//   firestore: Firestore,
+//   includeMetadataChanges: boolean,
+//   snapshot: ViewSnapshot
+// ): firestore.DocumentChange[] {
+//   if (snapshot.oldDocs.isEmpty()) {
+//     // Special case the first snapshot because index calculation is easy and
+//     // fast
+//     let lastDoc: Document;
+//     let index = 0;
+//     return snapshot.docChanges.map(change => {
+//       const doc = new QueryDocumentSnapshot(
+//         firestore,
+//         change.doc.key,
+//         change.doc,
+//         snapshot.fromCache,
+//         snapshot.mutatedKeys.has(change.doc.key)
+//       );
+//       assert(
+//         change.type === ChangeType.Added,
+//         'Invalid event type for first snapshot'
+//       );
+//       assert(
+//         !lastDoc || snapshot.query.docComparator(lastDoc, change.doc) < 0,
+//         'Got added events in wrong order'
+//       );
+//       lastDoc = change.doc;
+//       return {
+//         type: 'added' as firestore.DocumentChangeType,
+//         doc,
+//         oldIndex: -1,
+//         newIndex: index++
+//       };
+//     });
+//   } else {
+//     // A DocumentSet that is updated incrementally as changes are applied to use
+//     // to lookup the index of a document.
+//     let indexTracker = snapshot.oldDocs;
+//     return snapshot.docChanges
+//       .filter(
+//         change => includeMetadataChanges || change.type !== ChangeType.Metadata
+//       )
+//       .map(change => {
+//         const doc = new QueryDocumentSnapshot(
+//           firestore,
+//           change.doc.key,
+//           change.doc,
+//           snapshot.fromCache,
+//           snapshot.mutatedKeys.has(change.doc.key)
+//         );
+//         let oldIndex = -1;
+//         let newIndex = -1;
+//         if (change.type !== ChangeType.Added) {
+//           oldIndex = indexTracker.indexOf(change.doc.key);
+//           assert(oldIndex >= 0, 'Index for document not found');
+//           indexTracker = indexTracker.delete(change.doc.key);
+//         }
+//         if (change.type !== ChangeType.Removed) {
+//           indexTracker = indexTracker.add(change.doc);
+//           newIndex = indexTracker.indexOf(change.doc.key);
+//         }
+//         return { type: resultChangeType(change.type), doc, oldIndex, newIndex };
+//       });
+//   }
+// }
 
-function resultChangeType(type: ChangeType): firestore.DocumentChangeType {
-  switch (type) {
-    case ChangeType.Added:
-      return 'added';
-    case ChangeType.Modified:
-    case ChangeType.Metadata:
-      return 'modified';
-    case ChangeType.Removed:
-      return 'removed';
-    default:
-      return fail('Unknown change type: ' + type);
-  }
-}
+// function resultChangeType(type: ChangeType): firestore.DocumentChangeType {
+//   switch (type) {
+//     case ChangeType.Added:
+//       return 'added';
+//     case ChangeType.Modified:
+//     case ChangeType.Metadata:
+//       return 'modified';
+//     case ChangeType.Removed:
+//       return 'removed';
+//     default:
+//       return fail('Unknown change type: ' + type);
+//   }
+// }
 
 // Export the classes with a private constructor (it will fail if invoked
 // at runtime). Note that this still allows instanceof checks.
@@ -2317,12 +2329,12 @@ export const PublicDocumentReference = makeConstructorPrivate(
   DocumentReference,
   'Use firebase.firestore().doc() instead.'
 );
-export const PublicDocumentSnapshot = makeConstructorPrivate(DocumentSnapshot);
-export const PublicQueryDocumentSnapshot = makeConstructorPrivate(
-  QueryDocumentSnapshot
-);
+// export const PublicDocumentSnapshot = makeConstructorPrivate(DocumentSnapshot);
+// export const PublicQueryDocumentSnapshot = makeConstructorPrivate(
+//   QueryDocumentSnapshot
+// );
 export const PublicQuery = makeConstructorPrivate(Query);
-export const PublicQuerySnapshot = makeConstructorPrivate(QuerySnapshot);
+// export const PublicQuerySnapshot = makeConstructorPrivate(QuerySnapshot);
 export const PublicCollectionReference = makeConstructorPrivate(
   CollectionReference,
   'Use firebase.firestore().collection() instead.'

@@ -379,7 +379,7 @@ export class Transaction {
    * @param documentRef A reference to the document to be read.
    * @return A DocumentSnapshot for the read data.
    */
-  get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
+  // get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
 
   /**
    * Writes to the document referred to by the provided `DocumentReference`.
@@ -528,13 +528,13 @@ export class Transaction {
  * `Query.onSnapshot()` and `QuerySnapshot.docChanges()` to control which
  * types of changes to include in the result set.
  */
-export interface SnapshotListenOptions {
-  /**
-   * Include a change even if only the metadata of the query or of a document
-   * changed. Default is false.
-   */
-  readonly includeMetadataChanges?: boolean;
-}
+// export interface SnapshotListenOptions {
+//   /**
+//    * Include a change even if only the metadata of the query or of a document
+//    * changed. Default is false.
+//    */
+//   readonly includeMetadataChanges?: boolean;
+// }
 
 /**
  * An options object that configures the behavior of `set()` calls in
@@ -565,29 +565,29 @@ export interface SetOptions {
  * the local cache or attempt to fetch results from the server and fall back to
  * the cache (which is the default).
  */
-export interface GetOptions {
-  /**
-   * Describes whether we should get from server or cache.
-   *
-   * Setting to 'default' (or not setting at all), causes Firestore to try to
-   * retrieve an up-to-date (server-retrieved) snapshot, but fall back to
-   * returning cached data if the server can't be reached.
-   *
-   * Setting to 'server' causes Firestore to avoid the cache, generating an
-   * error if the server cannot be reached. Note that the cache will still be
-   * updated if the server request succeeds. Also note that latency-compensation
-   * still takes effect, so any pending write operations will be visible in the
-   * returned data (merged into the server-provided data).
-   *
-   * Setting to 'cache' causes Firestore to immediately return a value from the
-   * cache, ignoring the server completely (implying that the returned value
-   * may be stale with respect to the value on the server.) If there is no data
-   * in the cache to satisfy the `get()` call, `DocumentReference.get()` will
-   * return an error and `QuerySnapshot.get()` will return an empty
-   * `QuerySnapshot` with no documents.
-   */
-  readonly source?: 'default' | 'server' | 'cache';
-}
+// export interface GetOptions {
+//   /**
+//    * Describes whether we should get from server or cache.
+//    *
+//    * Setting to 'default' (or not setting at all), causes Firestore to try to
+//    * retrieve an up-to-date (server-retrieved) snapshot, but fall back to
+//    * returning cached data if the server can't be reached.
+//    *
+//    * Setting to 'server' causes Firestore to avoid the cache, generating an
+//    * error if the server cannot be reached. Note that the cache will still be
+//    * updated if the server request succeeds. Also note that latency-compensation
+//    * still takes effect, so any pending write operations will be visible in the
+//    * returned data (merged into the server-provided data).
+//    *
+//    * Setting to 'cache' causes Firestore to immediately return a value from the
+//    * cache, ignoring the server completely (implying that the returned value
+//    * may be stale with respect to the value on the server.) If there is no data
+//    * in the cache to satisfy the `get()` call, `DocumentReference.get()` will
+//    * return an error and `QuerySnapshot.get()` will return an empty
+//    * `QuerySnapshot` with no documents.
+//    */
+//   readonly source?: 'default' | 'server' | 'cache';
+// }
 
 /**
  * A `DocumentReference` refers to a document location in a Firestore database
@@ -749,163 +749,163 @@ export class DocumentReference {
  * (e.g. the desired behavior for server timestamps that have not yet been set
  * to their final value).
  */
-export interface SnapshotOptions {
-  /**
-   * If set, controls the return value for server timestamps that have not yet
-   * been set to their final value.
-   *
-   * By specifying 'estimate', pending server timestamps return an estimate
-   * based on the local clock. This estimate will differ from the final value
-   * and cause these values to change once the server result becomes available.
-   *
-   * By specifying 'previous', pending timestamps will be ignored and return
-   * their previous value instead.
-   *
-   * If omitted or set to 'none', `null` will be returned by default until the
-   * server value becomes available.
-   */
-  readonly serverTimestamps?: 'estimate' | 'previous' | 'none';
-}
+// export interface SnapshotOptions {
+//   /**
+//    * If set, controls the return value for server timestamps that have not yet
+//    * been set to their final value.
+//    *
+//    * By specifying 'estimate', pending server timestamps return an estimate
+//    * based on the local clock. This estimate will differ from the final value
+//    * and cause these values to change once the server result becomes available.
+//    *
+//    * By specifying 'previous', pending timestamps will be ignored and return
+//    * their previous value instead.
+//    *
+//    * If omitted or set to 'none', `null` will be returned by default until the
+//    * server value becomes available.
+//    */
+//   readonly serverTimestamps?: 'estimate' | 'previous' | 'none';
+// }
 
 /** Metadata about a snapshot, describing the state of the snapshot. */
-export interface SnapshotMetadata {
-  /**
-   * True if the snapshot contains the result of local writes (e.g. set() or
-   * update() calls) that have not yet been committed to the backend.
-   * If your listener has opted into metadata updates (via
-   * `DocumentListenOptions` or `QueryListenOptions`) you will receive another
-   * snapshot with `hasPendingWrites` equal to false once the writes have been
-   * committed to the backend.
-   */
-  readonly hasPendingWrites: boolean;
+// export interface SnapshotMetadata {
+//   /**
+//    * True if the snapshot contains the result of local writes (e.g. set() or
+//    * update() calls) that have not yet been committed to the backend.
+//    * If your listener has opted into metadata updates (via
+//    * `DocumentListenOptions` or `QueryListenOptions`) you will receive another
+//    * snapshot with `hasPendingWrites` equal to false once the writes have been
+//    * committed to the backend.
+//    */
+//   readonly hasPendingWrites: boolean;
 
-  /**
-   * True if the snapshot was created from cached data rather than
-   * guaranteed up-to-date server data. If your listener has opted into
-   * metadata updates (via `DocumentListenOptions` or `QueryListenOptions`)
-   * you will receive another snapshot with `fromCache` equal to false once
-   * the client has received up-to-date data from the backend.
-   */
-  readonly fromCache: boolean;
+//   /**
+//    * True if the snapshot was created from cached data rather than
+//    * guaranteed up-to-date server data. If your listener has opted into
+//    * metadata updates (via `DocumentListenOptions` or `QueryListenOptions`)
+//    * you will receive another snapshot with `fromCache` equal to false once
+//    * the client has received up-to-date data from the backend.
+//    */
+//   readonly fromCache: boolean;
 
-  /**
-   * Returns true if this `SnapshotMetadata` is equal to the provided one.
-   *
-   * @param other The `SnapshotMetadata` to compare against.
-   * @return true if this `SnapshotMetadata` is equal to the provided one.
-   */
-  isEqual(other: SnapshotMetadata): boolean;
-}
+//   /**
+//    * Returns true if this `SnapshotMetadata` is equal to the provided one.
+//    *
+//    * @param other The `SnapshotMetadata` to compare against.
+//    * @return true if this `SnapshotMetadata` is equal to the provided one.
+//    */
+//   isEqual(other: SnapshotMetadata): boolean;
+// }
 
-/**
- * A `DocumentSnapshot` contains data read from a document in your Firestore
- * database. The data can be extracted with `.data()` or `.get(<field>)` to
- * get a specific field.
- *
- * For a `DocumentSnapshot` that points to a non-existing document, any data
- * access will return 'undefined'. You can use the `exists` property to
- * explicitly verify a document's existence.
- */
-export class DocumentSnapshot {
-  protected constructor();
+// /**
+//  * A `DocumentSnapshot` contains data read from a document in your Firestore
+//  * database. The data can be extracted with `.data()` or `.get(<field>)` to
+//  * get a specific field.
+//  *
+//  * For a `DocumentSnapshot` that points to a non-existing document, any data
+//  * access will return 'undefined'. You can use the `exists` property to
+//  * explicitly verify a document's existence.
+//  */
+// export class DocumentSnapshot {
+//   protected constructor();
 
-  /** True if the document exists. */
-  readonly exists: boolean;
-  /** A `DocumentReference` to the document location. */
-  readonly ref: DocumentReference;
-  /**
-   * The ID of the document for which this `DocumentSnapshot` contains data.
-   */
-  readonly id: string;
-  /**
-   * Metadata about this snapshot, concerning its source and if it has local
-   * modifications.
-   */
-  readonly metadata: SnapshotMetadata;
+//   /** True if the document exists. */
+//   readonly exists: boolean;
+//   /** A `DocumentReference` to the document location. */
+//   readonly ref: DocumentReference;
+//   /**
+//    * The ID of the document for which this `DocumentSnapshot` contains data.
+//    */
+//   readonly id: string;
+//   /**
+//    * Metadata about this snapshot, concerning its source and if it has local
+//    * modifications.
+//    */
+//   readonly metadata: SnapshotMetadata;
 
-  /**
-   * Retrieves all fields in the document as an Object. Returns 'undefined' if
-   * the document doesn't exist.
-   *
-   * By default, `FieldValue.serverTimestamp()` values that have not yet been
-   * set to their final value will be returned as `null`. You can override
-   * this by passing an options object.
-   *
-   * @param options An options object to configure how data is retrieved from
-   * the snapshot (e.g. the desired behavior for server timestamps that have
-   * not yet been set to their final value).
-   * @return An Object containing all fields in the document or 'undefined' if
-   * the document doesn't exist.
-   */
-  data(options?: SnapshotOptions): DocumentData | undefined;
+//   /**
+//    * Retrieves all fields in the document as an Object. Returns 'undefined' if
+//    * the document doesn't exist.
+//    *
+//    * By default, `FieldValue.serverTimestamp()` values that have not yet been
+//    * set to their final value will be returned as `null`. You can override
+//    * this by passing an options object.
+//    *
+//    * @param options An options object to configure how data is retrieved from
+//    * the snapshot (e.g. the desired behavior for server timestamps that have
+//    * not yet been set to their final value).
+//    * @return An Object containing all fields in the document or 'undefined' if
+//    * the document doesn't exist.
+//    */
+//   data(options?: SnapshotOptions): DocumentData | undefined;
 
-  /**
-   * Retrieves the field specified by `fieldPath`. Returns 'undefined' if the
-   * document or field doesn't exist.
-   *
-   * By default, a `FieldValue.serverTimestamp()` that has not yet been set to
-   * its final value will be returned as `null`. You can override this by
-   * passing an options object.
-   *
-   * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
-   * @param options An options object to configure how the field is retrieved
-   * from the snapshot (e.g. the desired behavior for server timestamps that
-   * have not yet been set to their final value).
-   * @return The data at the specified field location or undefined if no such
-   * field exists in the document.
-   */
-  get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
+//   /**
+//    * Retrieves the field specified by `fieldPath`. Returns 'undefined' if the
+//    * document or field doesn't exist.
+//    *
+//    * By default, a `FieldValue.serverTimestamp()` that has not yet been set to
+//    * its final value will be returned as `null`. You can override this by
+//    * passing an options object.
+//    *
+//    * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
+//    * @param options An options object to configure how the field is retrieved
+//    * from the snapshot (e.g. the desired behavior for server timestamps that
+//    * have not yet been set to their final value).
+//    * @return The data at the specified field location or undefined if no such
+//    * field exists in the document.
+//    */
+//   get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
 
-  /**
-   * Returns true if this `DocumentSnapshot` is equal to the provided one.
-   *
-   * @param other The `DocumentSnapshot` to compare against.
-   * @return true if this `DocumentSnapshot` is equal to the provided one.
-   */
-  isEqual(other: DocumentSnapshot): boolean;
-}
+//   /**
+//    * Returns true if this `DocumentSnapshot` is equal to the provided one.
+//    *
+//    * @param other The `DocumentSnapshot` to compare against.
+//    * @return true if this `DocumentSnapshot` is equal to the provided one.
+//    */
+//   isEqual(other: DocumentSnapshot): boolean;
+// }
 
-/**
- * A `QueryDocumentSnapshot` contains data read from a document in your
- * Firestore database as part of a query. The document is guaranteed to exist
- * and its data can be extracted with `.data()` or `.get(<field>)` to get a
- * specific field.
- *
- * A `QueryDocumentSnapshot` offers the same API surface as a
- * `DocumentSnapshot`. Since query results contain only existing documents, the
- * `exists` property will always be true and `data()` will never return
- * 'undefined'.
- */
-export class QueryDocumentSnapshot extends DocumentSnapshot {
-  private constructor();
+// /**
+//  * A `QueryDocumentSnapshot` contains data read from a document in your
+//  * Firestore database as part of a query. The document is guaranteed to exist
+//  * and its data can be extracted with `.data()` or `.get(<field>)` to get a
+//  * specific field.
+//  *
+//  * A `QueryDocumentSnapshot` offers the same API surface as a
+//  * `DocumentSnapshot`. Since query results contain only existing documents, the
+//  * `exists` property will always be true and `data()` will never return
+//  * 'undefined'.
+//  */
+// export class QueryDocumentSnapshot extends DocumentSnapshot {
+//   private constructor();
 
-  /**
-   * Retrieves all fields in the document as an Object.
-   *
-   * By default, `FieldValue.serverTimestamp()` values that have not yet been
-   * set to their final value will be returned as `null`. You can override
-   * this by passing an options object.
-   *
-   * @override
-   * @param options An options object to configure how data is retrieved from
-   * the snapshot (e.g. the desired behavior for server timestamps that have
-   * not yet been set to their final value).
-   * @return An Object containing all fields in the document.
-   */
-  data(options?: SnapshotOptions): DocumentData;
-}
+//   /**
+//    * Retrieves all fields in the document as an Object.
+//    *
+//    * By default, `FieldValue.serverTimestamp()` values that have not yet been
+//    * set to their final value will be returned as `null`. You can override
+//    * this by passing an options object.
+//    *
+//    * @override
+//    * @param options An options object to configure how data is retrieved from
+//    * the snapshot (e.g. the desired behavior for server timestamps that have
+//    * not yet been set to their final value).
+//    * @return An Object containing all fields in the document.
+//    */
+//   data(options?: SnapshotOptions): DocumentData;
+// }
 
-/**
- * The direction of a `Query.orderBy()` clause is specified as 'desc' or 'asc'
- * (descending or ascending).
- */
-export type OrderByDirection = 'desc' | 'asc';
+// /**
+//  * The direction of a `Query.orderBy()` clause is specified as 'desc' or 'asc'
+//  * (descending or ascending).
+//  */
+// export type OrderByDirection = 'desc' | 'asc';
 
-/**
- * Filter conditions in a `Query.where()` clause are specified using the
- * strings '<', '<=', '==', '>=', '>', and 'array-contains'.
- */
-export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
+// /**
+//  * Filter conditions in a `Query.where()` clause are specified using the
+//  * strings '<', '<=', '==', '>=', '>', and 'array-contains'.
+//  */
+// export type WhereFilterOp = '<' | '<=' | '==' | '>=' | '>' | 'array-contains';
 
 /**
  * A `Query` refers to a Query which you can read or listen to. You can also
@@ -920,128 +920,128 @@ export class Query {
    */
   readonly firestore: FirebaseFirestore;
 
-  /**
-   * Creates and returns a new Query with the additional filter that documents
-   * must contain the specified field and the value should satisfy the
-   * relation constraint provided.
-   *
-   * @param fieldPath The path to compare
-   * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=").
-   * @param value The value for comparison
-   * @return The created Query.
-   */
-  where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
+  // /**
+  //  * Creates and returns a new Query with the additional filter that documents
+  //  * must contain the specified field and the value should satisfy the
+  //  * relation constraint provided.
+  //  *
+  //  * @param fieldPath The path to compare
+  //  * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=").
+  //  * @param value The value for comparison
+  //  * @return The created Query.
+  //  */
+  // where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
 
-  /**
-   * Creates and returns a new Query that's additionally sorted by the
-   * specified field, optionally in descending order instead of ascending.
-   *
-   * @param fieldPath The field to sort by.
-   * @param directionStr Optional direction to sort by ('asc' or 'desc'). If
-   * not specified, order will be ascending.
-   * @return The created Query.
-   */
-  orderBy(
-    fieldPath: string | FieldPath,
-    directionStr?: OrderByDirection
-  ): Query;
+  // /**
+  //  * Creates and returns a new Query that's additionally sorted by the
+  //  * specified field, optionally in descending order instead of ascending.
+  //  *
+  //  * @param fieldPath The field to sort by.
+  //  * @param directionStr Optional direction to sort by ('asc' or 'desc'). If
+  //  * not specified, order will be ascending.
+  //  * @return The created Query.
+  //  */
+  // orderBy(
+  //   fieldPath: string | FieldPath,
+  //   directionStr?: OrderByDirection
+  // ): Query;
 
-  /**
-   * Creates and returns a new Query that's additionally limited to only
-   * return up to the specified number of documents.
-   *
-   * @param limit The maximum number of items to return.
-   * @return The created Query.
-   */
-  limit(limit: number): Query;
+  // /**
+  //  * Creates and returns a new Query that's additionally limited to only
+  //  * return up to the specified number of documents.
+  //  *
+  //  * @param limit The maximum number of items to return.
+  //  * @return The created Query.
+  //  */
+  // limit(limit: number): Query;
 
-  /**
-   * Creates and returns a new Query that starts at the provided document
-   * (inclusive). The starting position is relative to the order of the query.
-   * The document must contain all of the fields provided in the orderBy of
-   * this query.
-   *
-   * @param snapshot The snapshot of the document to start at.
-   * @return The created Query.
-   */
-  startAt(snapshot: DocumentSnapshot): Query;
+  // /**
+  //  * Creates and returns a new Query that starts at the provided document
+  //  * (inclusive). The starting position is relative to the order of the query.
+  //  * The document must contain all of the fields provided in the orderBy of
+  //  * this query.
+  //  *
+  //  * @param snapshot The snapshot of the document to start at.
+  //  * @return The created Query.
+  //  */
+  // startAt(snapshot: DocumentSnapshot): Query;
 
-  /**
-   * Creates and returns a new Query that starts at the provided fields
-   * relative to the order of the query. The order of the field values
-   * must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to start this query at, in order
-   * of the query's order by.
-   * @return The created Query.
-   */
-  startAt(...fieldValues: any[]): Query;
+  // /**
+  //  * Creates and returns a new Query that starts at the provided fields
+  //  * relative to the order of the query. The order of the field values
+  //  * must match the order of the order by clauses of the query.
+  //  *
+  //  * @param fieldValues The field values to start this query at, in order
+  //  * of the query's order by.
+  //  * @return The created Query.
+  //  */
+  // startAt(...fieldValues: any[]): Query;
 
-  /**
-   * Creates and returns a new Query that starts after the provided document
-   * (exclusive). The starting position is relative to the order of the query.
-   * The document must contain all of the fields provided in the orderBy of
-   * this query.
-   *
-   * @param snapshot The snapshot of the document to start after.
-   * @return The created Query.
-   */
-  startAfter(snapshot: DocumentSnapshot): Query;
+  // /**
+  //  * Creates and returns a new Query that starts after the provided document
+  //  * (exclusive). The starting position is relative to the order of the query.
+  //  * The document must contain all of the fields provided in the orderBy of
+  //  * this query.
+  //  *
+  //  * @param snapshot The snapshot of the document to start after.
+  //  * @return The created Query.
+  //  */
+  // startAfter(snapshot: DocumentSnapshot): Query;
 
-  /**
-   * Creates and returns a new Query that starts after the provided fields
-   * relative to the order of the query. The order of the field values
-   * must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to start this query after, in order
-   * of the query's order by.
-   * @return The created Query.
-   */
-  startAfter(...fieldValues: any[]): Query;
+  // /**
+  //  * Creates and returns a new Query that starts after the provided fields
+  //  * relative to the order of the query. The order of the field values
+  //  * must match the order of the order by clauses of the query.
+  //  *
+  //  * @param fieldValues The field values to start this query after, in order
+  //  * of the query's order by.
+  //  * @return The created Query.
+  //  */
+  // startAfter(...fieldValues: any[]): Query;
 
-  /**
-   * Creates and returns a new Query that ends before the provided document
-   * (exclusive). The end position is relative to the order of the query. The
-   * document must contain all of the fields provided in the orderBy of this
-   * query.
-   *
-   * @param snapshot The snapshot of the document to end before.
-   * @return The created Query.
-   */
-  endBefore(snapshot: DocumentSnapshot): Query;
+  // /**
+  //  * Creates and returns a new Query that ends before the provided document
+  //  * (exclusive). The end position is relative to the order of the query. The
+  //  * document must contain all of the fields provided in the orderBy of this
+  //  * query.
+  //  *
+  //  * @param snapshot The snapshot of the document to end before.
+  //  * @return The created Query.
+  //  */
+  // endBefore(snapshot: DocumentSnapshot): Query;
 
-  /**
-   * Creates and returns a new Query that ends before the provided fields
-   * relative to the order of the query. The order of the field values
-   * must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to end this query before, in order
-   * of the query's order by.
-   * @return The created Query.
-   */
-  endBefore(...fieldValues: any[]): Query;
+  // /**
+  //  * Creates and returns a new Query that ends before the provided fields
+  //  * relative to the order of the query. The order of the field values
+  //  * must match the order of the order by clauses of the query.
+  //  *
+  //  * @param fieldValues The field values to end this query before, in order
+  //  * of the query's order by.
+  //  * @return The created Query.
+  //  */
+  // endBefore(...fieldValues: any[]): Query;
 
-  /**
-   * Creates and returns a new Query that ends at the provided document
-   * (inclusive). The end position is relative to the order of the query. The
-   * document must contain all of the fields provided in the orderBy of this
-   * query.
-   *
-   * @param snapshot The snapshot of the document to end at.
-   * @return The created Query.
-   */
-  endAt(snapshot: DocumentSnapshot): Query;
+  // /**
+  //  * Creates and returns a new Query that ends at the provided document
+  //  * (inclusive). The end position is relative to the order of the query. The
+  //  * document must contain all of the fields provided in the orderBy of this
+  //  * query.
+  //  *
+  //  * @param snapshot The snapshot of the document to end at.
+  //  * @return The created Query.
+  //  */
+  // endAt(snapshot: DocumentSnapshot): Query;
 
-  /**
-   * Creates and returns a new Query that ends at the provided fields
-   * relative to the order of the query. The order of the field values
-   * must match the order of the order by clauses of the query.
-   *
-   * @param fieldValues The field values to end this query at, in order
-   * of the query's order by.
-   * @return The created Query.
-   */
-  endAt(...fieldValues: any[]): Query;
+  // /**
+  //  * Creates and returns a new Query that ends at the provided fields
+  //  * relative to the order of the query. The order of the field values
+  //  * must match the order of the order by clauses of the query.
+  //  *
+  //  * @param fieldValues The field values to end this query at, in order
+  //  * of the query's order by.
+  //  * @return The created Query.
+  //  */
+  // endAt(...fieldValues: any[]): Query;
 
   /**
    * Returns true if this `Query` is equal to the provided one.
@@ -1114,91 +1114,91 @@ export class Query {
  * number of documents can be determined via the `empty` and `size`
  * properties.
  */
-export class QuerySnapshot {
-  private constructor();
+// export class QuerySnapshot {
+//   private constructor();
 
-  /**
-   * The query on which you called `get` or `onSnapshot` in order to get this
-   * `QuerySnapshot`.
-   */
-  readonly query: Query;
-  /**
-   * Metadata about this snapshot, concerning its source and if it has local
-   * modifications.
-   */
-  readonly metadata: SnapshotMetadata;
+//   /**
+//    * The query on which you called `get` or `onSnapshot` in order to get this
+//    * `QuerySnapshot`.
+//    */
+//   readonly query: Query;
+//   /**
+//    * Metadata about this snapshot, concerning its source and if it has local
+//    * modifications.
+//    */
+//   readonly metadata: SnapshotMetadata;
 
-  /** An array of all the documents in the QuerySnapshot. */
-  readonly docs: QueryDocumentSnapshot[];
+//   /** An array of all the documents in the QuerySnapshot. */
+//   readonly docs: QueryDocumentSnapshot[];
 
-  /** The number of documents in the QuerySnapshot. */
-  readonly size: number;
+//   /** The number of documents in the QuerySnapshot. */
+//   readonly size: number;
 
-  /** True if there are no documents in the QuerySnapshot. */
-  readonly empty: boolean;
+//   /** True if there are no documents in the QuerySnapshot. */
+//   readonly empty: boolean;
 
-  /**
-   * Returns an array of the documents changes since the last snapshot. If this
-   * is the first snapshot, all documents will be in the list as added changes.
-   *
-   * @param options `SnapshotListenOptions` that control whether metadata-only
-   * changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger
-   * snapshot events.
-   */
-  docChanges(options?: SnapshotListenOptions): DocumentChange[];
+//   /**
+//    * Returns an array of the documents changes since the last snapshot. If this
+//    * is the first snapshot, all documents will be in the list as added changes.
+//    *
+//    * @param options `SnapshotListenOptions` that control whether metadata-only
+//    * changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger
+//    * snapshot events.
+//    */
+//   docChanges(options?: SnapshotListenOptions): DocumentChange[];
 
-  /**
-   * Enumerates all of the documents in the QuerySnapshot.
-   *
-   * @param callback A callback to be called with a `QueryDocumentSnapshot` for
-   * each document in the snapshot.
-   * @param thisArg The `this` binding for the callback.
-   */
-  forEach(
-    callback: (result: QueryDocumentSnapshot) => void,
-    thisArg?: any
-  ): void;
+//   /**
+//    * Enumerates all of the documents in the QuerySnapshot.
+//    *
+//    * @param callback A callback to be called with a `QueryDocumentSnapshot` for
+//    * each document in the snapshot.
+//    * @param thisArg The `this` binding for the callback.
+//    */
+//   forEach(
+//     callback: (result: QueryDocumentSnapshot) => void,
+//     thisArg?: any
+//   ): void;
 
-  /**
-   * Returns true if this `QuerySnapshot` is equal to the provided one.
-   *
-   * @param other The `QuerySnapshot` to compare against.
-   * @return true if this `QuerySnapshot` is equal to the provided one.
-   */
-  isEqual(other: QuerySnapshot): boolean;
-}
+//   /**
+//    * Returns true if this `QuerySnapshot` is equal to the provided one.
+//    *
+//    * @param other The `QuerySnapshot` to compare against.
+//    * @return true if this `QuerySnapshot` is equal to the provided one.
+//    */
+//   isEqual(other: QuerySnapshot): boolean;
+// }
 
-/**
- * The type of of a `DocumentChange` may be 'added', 'removed', or 'modified'.
- */
-export type DocumentChangeType = 'added' | 'removed' | 'modified';
+// /**
+//  * The type of of a `DocumentChange` may be 'added', 'removed', or 'modified'.
+//  */
+// export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
-/**
- * A `DocumentChange` represents a change to the documents matching a query.
- * It contains the document affected and the type of change that occurred.
- */
-export interface DocumentChange {
-  /** The type of change ('added', 'modified', or 'removed'). */
-  readonly type: DocumentChangeType;
+// /**
+//  * A `DocumentChange` represents a change to the documents matching a query.
+//  * It contains the document affected and the type of change that occurred.
+//  */
+// export interface DocumentChange {
+//   /** The type of change ('added', 'modified', or 'removed'). */
+//   readonly type: DocumentChangeType;
 
-  /** The document affected by this change. */
-  readonly doc: QueryDocumentSnapshot;
+//   /** The document affected by this change. */
+//   readonly doc: QueryDocumentSnapshot;
 
-  /**
-   * The index of the changed document in the result set immediately prior to
-   * this DocumentChange (i.e. supposing that all prior DocumentChange objects
-   * have been applied). Is -1 for 'added' events.
-   */
-  readonly oldIndex: number;
+//   /**
+//    * The index of the changed document in the result set immediately prior to
+//    * this DocumentChange (i.e. supposing that all prior DocumentChange objects
+//    * have been applied). Is -1 for 'added' events.
+//    */
+//   readonly oldIndex: number;
 
-  /**
-   * The index of the changed document in the result set immediately after
-   * this DocumentChange (i.e. supposing that all prior DocumentChange
-   * objects and the current DocumentChange object have been applied).
-   * Is -1 for 'removed' events.
-   */
-  readonly newIndex: number;
-}
+//   /**
+//    * The index of the changed document in the result set immediately after
+//    * this DocumentChange (i.e. supposing that all prior DocumentChange
+//    * objects and the current DocumentChange object have been applied).
+//    * Is -1 for 'removed' events.
+//    */
+//   readonly newIndex: number;
+// }
 
 /**
  * A `CollectionReference` object can be used for adding documents, getting
